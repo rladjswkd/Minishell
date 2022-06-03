@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_current_working_directory.c                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
+/*   Updated: 2022/05/29 18:19:32 by jim              ###   ########seoul.kr  */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <stddef.h>
 #include <unistd.h>
@@ -14,7 +24,7 @@ char*	print_current_working_directory_cmd(void)
 {
 	char	*buf;
 	size_t	size;
-	
+
 	buf = NULL;
 	size = 0;
 	/*

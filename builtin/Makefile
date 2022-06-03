@@ -7,7 +7,9 @@ RM = rm
 SRCS = ./main.c	\
 		./change_directory.c \
 		./print_current_working_directory.c \
-		./exit.c
+		./exit.c \
+		./environment_variable.c
+
 
 OBJS = $(SRCS:.c=.o)
 
