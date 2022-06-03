@@ -118,15 +118,17 @@ int	main(int argc, char **argv)
 		close(fd[0]);
 		close(fd[1]);
 		// printf("argv[4] : %s\n", argv[4]);
-		// file2_fd = open(argv[4], O_CREAT | O_RDONLY | O_TRUNC);
-		// if (file2_fd < 0)
-		// {
-		// 	printf("file2_fd error\n");
-		// 	strerror(errno);
-		// 	return (3);
-		// }
+		file2_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 644);
+		// printf("file2_fd : %d\n", file2_fd);
+		if (file2_fd < 0)
+		{
+			printf("file2_fd error\n");
+			strerror(errno);
+			return (3);
+		}
 		// printf("file2_fd have benn opened : %d\n", file2_fd);
 		// dup2(STDOUT_FILENO, file2_fd);
+		dup2(file2_fd, STDOUT_FILENO);
 		execlp(argv[3], argv[3], NULL);
 		// path = ft_strjoin("/bin/", argv[3]);
 		// printf("path : %s\n", path);
@@ -136,9 +138,9 @@ int	main(int argc, char **argv)
 		// 	free(path);
 		// 	path = NULL;
 		// }
-		free(path);
-		path = NULL;
-		// close(file2_fd);
+		// free(path);
+		// path = NULL;
+		close(file2_fd);
 	}
 	/* */
 	close(fd[0]);

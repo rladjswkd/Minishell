@@ -1,15 +1,17 @@
 NAME = PipeX
 CC = gcc
-CFLAGRS = #-Wall -Wextra -Werror
-RM = rm
+# CFLAGS = #-Wall -Wextra -Werror
+RM = rm -rf
 SRCS = ./main.c
 OBJS = $(SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) $(CFLAGRS) -c $^ -o $@
+	$(CC) -c $^ -o $@
+# $(CC) $(CFLAGS) -c $^ -o $@
 
 $(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@
+#$(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)
 
@@ -22,3 +24,5 @@ fclean : clean
 re :
 	make fclean
 	make all
+
+ .PHONY : all clean fclean re
