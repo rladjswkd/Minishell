@@ -1,9 +1,15 @@
-NAME = PipeX
+NAME = pipex
 CC = gcc
 # CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
-SRCS_DIR = srcs
-SRCS = ./main.c
+SRCS = ./main.c \
+		./ft_split.c \
+		./ft_strdup.c \
+		./ft_strncmp.c \
+		./ft_substr.c \
+		./ft_strlcpy.c \
+		./utils.c
+
 OBJS = $(SRCS:.c=.o)
 
 %.o : %.c

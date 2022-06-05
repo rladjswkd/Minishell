@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 20:37:50 by jim               #+#    #+#             */
-/*   Updated: 2022/06/03 21:52:55 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/05 21:59:53 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	main(int argc, char **argv)
 		close(fd[0]);
 		close(fd[1]);
 		execlp(argv[2], argv[2], NULL);
-		// execve 사용의 문제 pipe 구성은 성공
+		// ¡  사용의 문제 pipe 구성은 성공
 		// path = ft_strjoin("/bin/", argv[2]);
 		// if (execve(path, &argv[2], NULL) < 0)
 		// {
