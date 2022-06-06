@@ -1,13 +1,22 @@
-NAME = PipeX
+NAME = pipeX
 CC = gcc
 # CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
 SRCS_DIR = srcs
-SRCS = ./main.c
+INCLUDE = include
+SRCS = $(addprefix $(SRCS_DIR)/, \
+			main.c	\
+			ft_split.c	\
+			ft_strdup.c	\
+			ft_strlcpy.c	\
+			ft_strncmp.c	\
+			ft_substr.c	\
+			utils.c	\
+	)
 OBJS = $(SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -c $^ -o $@
+	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -c $^ -o $@
 
 $(NAME) : $(OBJS)
