@@ -1,4 +1,4 @@
-NAME = pipeX
+NAME = pipex
 CC = gcc
 # CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
@@ -10,7 +10,8 @@ SRCS = $(addprefix $(SRCS_DIR)/, \
 			ft_strdup.c	\
 			ft_strlcpy.c	\
 			ft_strncmp.c	\
-			ft_substr.c	\
+			ft_substr.c		\
+			ft_strnstr.c	\
 			utils.c	\
 	)
 OBJS = $(SRCS:.c=.o)

@@ -71,19 +71,11 @@ static size_t	ft_word_cnt(char const *s, char c)
 
 int	free_list(char ***word_list)
 {
-	int	idx;
+	size_t			idx;
 
-	printf("**word_list : %s\n", **word_list);
 	idx = 0;
-	while (**word_list)
+	while ((*word_list)[idx])
 	{
-		printf("ft_split word : %s\n", *word_list[idx]);
-		idx++;
-	}
-	idx = 0;
-	while (*word_list[idx])
-	{
-		// printf("*word_list[idx] : %s\n", *word_list[idx]);
 		free((*word_list)[idx]);
 		(*word_list)[idx] = NULL;
 		idx++;

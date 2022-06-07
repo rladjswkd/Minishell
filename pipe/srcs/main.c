@@ -17,7 +17,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "utils.h"
+
+typedef enum	e_bool_flag
+{
+	FALSE = 0,
+	TRUE = 1,
+}				t_e_bool_flag;
+
+typedef enum	e_flag
+{
+	ERROR = -1,
+	SUCCESS = 0,
+	FAIL = 1,
+}				t_e_flag;
+
+static void	safe_free(char	**char_pptr)
+{
+	free(*char_pptr);
+	*char_pptr = NULL;
+}
 
 static char	*ft_strjoin(const char *s1, const char *s2)
 {
@@ -48,18 +68,92 @@ static char	*ft_strjoin(const char *s1, const char *s2)
 	return (str);
 }
 
+char	**find_path_list(char **envp)
+{
+	/*
+	- 동작과정
+		env에서 PATH 환경변수를 가져온다.
+			- environ에 접근하여
+				PATH로 시작하는 것을 찾는다.
+				strnstr()사용
+			- PATH를 ":" 기준으로 자른다.
+				한개씩 반복문 돌면서 execve로 실행시킨다.
+	
+	*/
+	char	*path;
+	char	**path_list;
+	size_t	idx;
+
+	path = NULL;
+	while (*envp && path == NULL)
+	{
+		path = ft_strnstr(*envp, "PATH", ft_strlen("PATH="));
+		envp++;
+	}
+	if (path == NULL)
+		return (NULL);
+	path += sizeof(char) * ft_strlen("PATH=");
+	return (ft_split(path, ':'));
+
+}
+
+int	execute_cmd(char **path_list, char *argv)
+{
+	char	**cmd;
+	char	*cmd_path;
+	char	*path_with_slash;
+	size_t	idx;
+
+	idx = 0;
+	cmd = ft_split(argv, ' ');
+	if (cmd == NULL)
+	{
+		free_list(&path_list);
+		return (ERROR);
+	}
+	while (path_list[idx])
+	{
+		path_with_slash = ft_strjoin(path_list[idx], "/");
+		cmd_path = ft_strjoin(path_with_slash, cmd[0]);
+		safe_free(&path_with_slash);
+		printf("cmd_path : %s\n", cmd_path);
+		execve(cmd_path, cmd, NULL);
+		// execve 정상동작되는 경우 반환값 없으며 테스트 결과 호출된 함수 밖으로 나가는 것으로 보임
+		// printf("before safe_free\n");
+		safe_free(&cmd_path);
+		idx++;
+	}
+	printf("after while\n");
+	free_list(&cmd);
+	free_list(&path_list);
+	return (SUCCESS);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	int		fd[2];
-	int		file1_fd;
-	int		file2_fd;
-	int		pid1;
-	int		pid2;
-	char	*path;
-	char	**cmd;
+	// int		fd[2];
+	// int		file1_fd;
+	// int		file2_fd;
+	// int		pid1;
+	// int		pid2;
+	// char	*path;
+	// char	**cmd;
+	char	**path_list;
+	int		execute_cmd_return_val;
 
 	// if (argc != 5)
 	// 	return (1);
+	path_list = find_path_list(envp);
+	if (path_list == NULL)
+	{
+		printf("path_list is NULL\n");
+		return (1);
+	}
+	execute_cmd_return_val = execute_cmd(path_list, argv[1]);
+	printf("execute_cmd_return_val : %d\n", execute_cmd_return_val);
+	while (42);
+	// execute_cmd(char **path_list, char *argv)
+	/*
 	if (pipe(fd) < 0)
 	{
 		printf("pipe error, %s\n", strerror(errno));
@@ -74,15 +168,13 @@ int	main(int argc, char **argv, char **envp)
 		file1_fd = open(argv[1], O_RDONLY);
 		if (file1_fd < 0)
 		{
-			printf("%s %s\n", argv[1], strerror(errno));
-			perror("error");
+			printf("%s : %s\n", argv[1], strerror(errno));
 			ft_putstr("");
 			return (3);
 		}
 		if (dup2(file1_fd, STDIN_FILENO) < 0)
 		{
 			printf("%s dup2 %s\n", argv[1], strerror(errno));
-			perror("error");
 			return (4);
 		}
 		close(file1_fd);
@@ -105,7 +197,7 @@ int	main(int argc, char **argv, char **envp)
 		path = ft_strjoin("/bin/", cmd[0]);
 		if (execve(path, cmd, NULL) < 0)
 		{
-			strerror(errno);
+			printf("%s\n", argv[1], strerror(errno));
 			free(path);
 			path = NULL;
 		}
@@ -156,13 +248,12 @@ int	main(int argc, char **argv, char **envp)
 		// free_list(&cmd);
 		free(path);
 		path = NULL;
-		//
 
 	}
-	/* */
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(pid1, NULL, 0);
 	// waitpid(pid2, NULL, 0);
+	*/
 	return (0);
 }
