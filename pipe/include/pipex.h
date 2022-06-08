@@ -13,4 +13,17 @@
 #ifndef PIPEX_H
 # define PIPEX_H
 
+typedef enum	e_bool_flag
+{
+	FALSE = 0,
+	TRUE = 1,
+}				t_e_bool_flag;
+
+typedef enum	e_flag
+{
+	ERROR = -1,
+	SUCCESS = 0,
+	FAIL = 1,
+}				t_e_flag;
+
 #endif
