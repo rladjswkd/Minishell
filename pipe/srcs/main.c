@@ -66,7 +66,6 @@ char	**find_path_list(char **envp)
 				strnstr()사용
 			- PATH를 ":" 기준으로 자른다.
 				한개씩 반복문 돌면서 execve로 실행시킨다.
-	
 	*/
 	char	*path;
 	char	**path_list;
@@ -75,7 +74,7 @@ char	**find_path_list(char **envp)
 	path = NULL;
 	while (*envp && path == NULL)
 	{
-		path = ft_strnstr(*envp, "PATH", ft_strlen("PATH="));
+		path = ft_strnstr(*envp, "PATH", ft_strlen("PATH"));
 		envp++;
 	}
 	if (path == NULL)
@@ -111,14 +110,13 @@ int	execute_cmd(char **envp, char *argv)
 		cmd_path = ft_strjoin(path_with_slash, cmd[0]);
 		safe_free(&path_with_slash);
 		// printf("cmd_path : %s\n", cmd_path);
-		execve(cmd_path, cmd, NULL);
+		execve(cmd_path, cmd, envp);
 		// execve 정상동작되는 경우 반환값 없으며 테스트 결과 호출된 함수 밖으로 나가는 것으로 보임
 		safe_free(&cmd_path);
 		idx++;
 	}
 	free_list(&cmd);
 	free_list(&path_list);
-	printf("%s: command not found\n", argv);
 	return (FAIL);
 }
 
@@ -170,9 +168,9 @@ int	main(int argc, char **argv, char **envp)
 			return (4);
 		}
 		execute_cmd_return_val = execute_cmd(envp, argv[2]);
-		// printf("first execute_cmd_return_val : %d", execute_cmd_return_val);
 		close(fd[0]);
 		close(fd[1]);
+		exit(1);
 	}
 	// while (42);
 	
@@ -193,7 +191,8 @@ int	main(int argc, char **argv, char **envp)
 		}
 		close(fd[0]);
 		close(fd[1]);
-		file2_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0777);
+		file2_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		// file2_fd = open(argv[4], O_CREAT, 0644);
 		if (file2_fd < 0)
 		{
 			printf("file2_fd error, %s\n", strerror(errno));

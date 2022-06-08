@@ -6,12 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/05 22:24:15 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/06 19:36:14 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include "utils.h"
 
 void	ft_putstr(char *s)
@@ -32,30 +33,30 @@ size_t	ft_strlen(const char *s)
 	return (idx);
 }
 
-int	ft_atoi(const char *str, int *atoi_flag)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	int			sign;
-	long long	result;
+	char	*dst;
+	size_t	s1_size;
+	size_t	s2_size;
 
-	sign = 1;
-	while (*str == ' ')
-		str++;
-	if (*str == '-' || *str == '+')
+	if (s2 == NULL)
+		return (NULL);
+	if (s1 == NULL)
 	{
-		if (*str == '-')
-			sign = -1;
-		str++;
+		s1 = ft_strdup("");
+		if (s1 == NULL)
+			return (NULL);
 	}
-	if (!(*str))
-		*atoi_flag = -1;
-	result = 0;
-	while (*str >= '0' && *str <= '9')
+	s1_size = ft_strlen(s1);
+	s2_size = ft_strlen(s2);
+	dst = (char *)malloc(sizeof(char) * (s1_size + s2_size + 1));
+	if (dst == NULL)
 	{
-		result = result * 10 + (*str - '0');
-		str++;
-	}
-	result = result * sign;
-	if (*str || result > 2147483647 || result < -2147483648)
-		*atoi_flag = -1;
-	return ((int)result);
+		free(s1);
+		return (NULL);
+	}	
+	ft_strlcpy(dst, s1, s1_size + 1);
+	free(s1);
+	ft_strlcat(dst, s2, s1_size + s2_size + 1);
+	return (dst);
 }

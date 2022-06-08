@@ -12,15 +12,6 @@
 
 #include <unistd.h>
 #include <stddef.h>
-#include "utils.h"
-
-void	ft_putstr(char *s)
-{
-	size_t	str_len;
-
-	str_len = ft_strlen(s);
-	write(1, s, str_len);
-}
 
 size_t	ft_strlen(const char *s)
 {
@@ -30,4 +21,12 @@ size_t	ft_strlen(const char *s)
 	while (s[idx])
 		idx++;
 	return (idx);
+}
+
+void	ft_putstr(char *s)
+{
+	size_t	str_len;
+
+	str_len = ft_strlen(s);
+	write(1, s, str_len);
 }
