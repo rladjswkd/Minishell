@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/06 19:36:14 by jim              ###   ########seoul.kr  */
+/*   Created: 2021/06/25 17:37:48 by jim               #+#    #+#             */
+/*   Updated: 2021/09/13 17:03:47 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stddef.h>
+#include "utils.h"
 
-size_t	ft_strlen(const char *s)
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 {
-	size_t	idx;
+	size_t			needle_len;
 
-	idx = 0;
-	while (s[idx])
-		idx++;
-	return (idx);
-}
-
-void	ft_putstr(char *s)
-{
-	size_t	str_len;
-
-	str_len = ft_strlen(s);
-	write(1, s, str_len);
+	needle_len = ft_strlen(needle);
+	if (needle_len == 0)
+		return ((char *)haystack);
+	while (*haystack && len >= needle_len)
+	{
+		if (!(ft_strncmp(haystack, needle, needle_len)))
+			return ((char *)haystack);
+		haystack++;
+		len--;
+	}
+	return (0);
 }

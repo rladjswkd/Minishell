@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "utils.h"
+#include "get_next_line.h"
 #include "pipex.h"
 
 static void	safe_free(char	**char_pptr)
@@ -90,18 +91,121 @@ static size_t	max_nonnegative(char *s1, char *s2)
 	return (s2_size);
 }
 
+static int	error_handler(int error_status)
+{
+	perror(NULL);
+	return (error_status);
+}
+
+int	file_open(t_file_flag file_flag, char *file_name)
+{
+	int	file_fd;
+	if (file_flag == FILE_READ)
+		file_fd = open(file_name, O_RDONLY);
+	else if (file_flag == FILE_WRITE)
+		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC);
+	else if (file_flag == FILE_APPEND)
+		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND);
+	return (file_fd);
+}
+
+int	redirection(t_redirection_flag redirection_flag, char *file_name)
+{
+	int	file_fd;
+
+	if (redirection_flag == INPUT)
+		file_fd = file_open(FILE_READ, file_name);
+	else if (redirection_flag == OUTPUT)
+		file_fd = file_open(FILE_READ, file_name);
+	else if (redirection_flag == HERE_DOC)
+		file_fd = file_open(FILE_READ, file_name);
+	else if (redirection_flag == APPEND)
+		file_fd = file_open(FILE_READ, file_name);
+	else
+		printf("unknown redirection_flag\n.");
+	if (file_fd < 0)
+	{
+		perror(file_name);
+		exit(1);
+	}
+}
+
+/*
+	./pipex here_doc LIMITER cmd1 cmd2 file
+	cmd1 << LIMITER | cmd2 >> file
+*/
 static int	here_doc(int argc, char **argv, char **envp)
 {
+	char	*limiter;
+	char	*cmd1;
+	char	*cmd2;
+	char	*file_name;
+	char	*read_str;
+	int		fd[2];
+	int		read_fd;
+	int		write_fd;
+	int		pid1;
+	int		pid2;
+
+	limiter = argv[2];
+	cmd1 = argv[3];
+	cmd2 = argv[4];
+	file_name = argv[5];
+	if (pipe(fd) < 0)
+	{
+		perror("pipe");
+		return (-1);
+	}
+	pid1 = fork();
+	if (pid1 < 0)
+		return (error_handler(2));
+	else if (pid1 == 0) //child process
+	{
+		read_fd = redirection(HERE_DOC, file_name);
+		close(fd[0]);
+		if (read_fd < 0)
+			return (error_handler(1));
+		if (dup2(STDIN_FILENO, read_fd) < 0)
+			return (error_handler(2));
+		if (dup2(STDOUT_FILENO, fd[1]) < 0)
+			return (error_handler(2));
+		read_str = get_next_line(read_fd);
+		while (strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
+
+		dup2()
+		execute_cmd(envp, cmd1);
+		exit(127);
+	}
+	pid2 = fork();
+	if (pid2 < 0)
+		return (error_handler(2));
+	else if (pid1 == 0) //child process
+	{
+		read_fd = redirection(HERE_DOC, file_name);
+		if (read_fd < 0)
+			return (error_handler(1));
+		if (dup2(STDIN_FILENO, read_fd) < 0)
+			return (error_handler(2));
+		if (dup2(STDOUT_FILENO, fd[1]) < 0)
+			return (error_handler(2));
+		execute_cmd(envp, cmd1);
+		exit(127);
+	}
+
+
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
 
 	return (1);
 }
 
 /*
 	// multipipe
-	/*
 		./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
 		< file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
-	*/
+	
 */
 static int	multipipe(int argc, char **argv, char **envp)
 {
@@ -179,7 +283,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 	}
 	if (pid[2] == 0)
 	{
-		file2_fd = open(argv[argc - 1], O_CREATE | O_RDWR | O_TRUNC);
+		file2_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC);
 		if (file2_fd < 0)
 		{
 			printf("%s\n", strerror(errno));
@@ -227,8 +331,10 @@ int	main(int argc, char **argv, char **envp)
 			./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
 			< file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
 		*/
-		if (multipipe(argc, argv, envp) < 0)
-			return (1);
+		printf("multi-pipe\n");
+		// if (multipipe(argc, argv, envp) < 0)
+		// 	return (1);
 	}
 	return (0);
 }
+
