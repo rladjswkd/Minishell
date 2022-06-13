@@ -79,18 +79,6 @@ static int	execute_cmd(char **envp, char *argv)
 	return (FAIL);
 }
 
-static size_t	max_nonnegative(char *s1, char *s2)
-{
-	size_t	s1_size;
-	size_t	s2_size;
-
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
-}
-
 static int	error_handler(int error_status)
 {
 	perror(NULL);
@@ -100,6 +88,7 @@ static int	error_handler(int error_status)
 int	file_open(t_file_flag file_flag, char *file_name)
 {
 	int	file_fd;
+
 	if (file_flag == FILE_READ)
 		file_fd = open(file_name, O_RDONLY);
 	else if (file_flag == FILE_WRITE)
@@ -123,11 +112,7 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 		file_fd = file_open(FILE_READ, file_name);
 	else
 		printf("unknown redirection_flag\n.");
-	if (file_fd < 0)
-	{
-		perror(file_name);
-		exit(1);
-	}
+	return (file_fd);
 }
 
 /*
@@ -144,6 +129,7 @@ static int	here_doc(int argc, char **argv, char **envp)
 	int		fd[2];
 	int		read_fd;
 	int		write_fd;
+	int		tmp_file;
 	int		pid1;
 	int		pid2;
 
@@ -161,16 +147,40 @@ static int	here_doc(int argc, char **argv, char **envp)
 		return (error_handler(2));
 	else if (pid1 == 0) //child process
 	{
-		read_fd = redirection(HERE_DOC, file_name);
 		close(fd[0]);
+		read_str = get_next_line(STDIN_FILENO);
+		while (ft_strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
+			// save_read_str(read_str, pList);
+			// linked list 이용
+		tmp_file = redirection(FILE_WRITE);
+		if (tmp_file < 0)
+		{
+			// delete_linked_list(&pList);
+			return (error_handler(2));
+		}
+		// save_node_to_file();
+		// linked list에 있는 data들을 순차적으로 file에 저장한다
+		// delete_linked_list(&pList);
+		/*
+			임시파일을 만들수 있지만 마지막에 EOF에 해당하는 HERE_DOC 들어오고서
+			생긴다음에 삭제되는것으로 보인다.
+			그러므로 마지막 전까지는 linked list에 node로 저장하고
+			here_doc 단어가 들어오면 임시파일에 linked list의 데이터들을 저장한다.
+
+		*/
+		/*
+			get_next_line로 읽은것을 STDIN이나 STDOUT으로 쓸수없다.
+			STDIN으로하면 다음에 get_next_lineg할 것을 못 읽고
+			STDOUT은 cmd를 실행결과용으로 쓸것이다.
+			즉,  get_next_line으로 읽은 것을 우선 다른 공간에 저장해놓아야한다.
+		*/
 		if (read_fd < 0)
 			return (error_handler(1));
 		if (dup2(STDIN_FILENO, read_fd) < 0)
 			return (error_handler(2));
 		if (dup2(STDOUT_FILENO, fd[1]) < 0)
 			return (error_handler(2));
-		read_str = get_next_line(read_fd);
-		while (strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
+		
 
 		dup2()
 		execute_cmd(envp, cmd1);
