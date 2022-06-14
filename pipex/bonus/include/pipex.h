@@ -34,12 +34,6 @@ typedef enum e_file_flag
 	FILE_WRITE_ONLY,
 }				t_file_flag;
 
-typedef enum e_bool_flag
-{
-	FALSE = 0,
-	TRUE = 1,
-}				t_e_bool_flag;
-
 typedef enum e_flag
 {
 	ERROR = -1,

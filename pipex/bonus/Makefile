@@ -1,6 +1,6 @@
-NAME = pipex_bonus
+NAME = pipex
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
 SRCS_DIR = srcs
 INCLUDE = include

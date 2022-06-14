@@ -125,45 +125,50 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	cmd1 << LIMITER | cmd2 >> file
 */
 
-static int	init_value(void)
-{
-	/*
-		구조체 필요
-	*/
-	return (0);
-}
 
 static char	*check_tmp_file(void)
 {
 	char	*file_name;
+	char	*file_name_form;
 	char	*tmp_file_name;
-	int		file_fd;
+	char	*itoa_num;
 	int		num;
 
-	file_name = ft_strdup(".tmp_heredoc_file");
+	file_name_form = ".heredoc_tmpfile_";
+	file_name = ft_strjoin(file_name_form, "0");
 	if (file_name == NULL)
 		return (NULL);
-	num = 0;
-	while (redirection(HERE_DOC, file_name) == -1)
+	num = 1;
+	tmp_file_name = NULL;
+	while (redirection(INPUT, file_name) > 0)
 	{
-		tmp_file_name = ft_strjoin(file_name, ft_itoa(num));
-		if (tmp_file_name == NULL)
+		itoa_num = ft_itoa(num);
+		if (itoa_num == NULL)
 		{
 			free(file_name);
 			return (NULL);
 		}
-		free(file_name);
+		if (tmp_file_name != NULL)
+			free(tmp_file_name);
+		tmp_file_name = ft_strjoin(file_name, itoa_num);
+		if (tmp_file_name == NULL)
+		{
+			free(itoa_num);
+			free(file_name);
+			return (NULL);
+		}
+		// free(file_name);
+		printf("num : %d\n", num);
+		free(itoa_num);
 		file_name = tmp_file_name;
+		num++;
 	}
-	/*
-
-	*/
+	return (file_name);
 }
 
 static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 {
 	/*
-
 		- open tmp file to write
 		- gnl done
 		- pipe connect (STDOUT to pipe[WRITE_END]
@@ -189,11 +194,23 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	{
 		if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
 			exit(1);
+		free(read_str);
 	}
+	read_str = get_next_line(tmp_file);
+	while (read_str)
+	{
+		write(STDOUT_FILENO, read_str, ft_strlen(read_str));
+		free(read_str);
+		read_str = get_next_line(tmp_file);
+	}
+	close(tmp_file);
+	unlink(file_name);
+	free(file_name);
 	if (dup2(tmp_file, STDIN_FILENO) < 0)
 		return (error_handler(1));
 	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
 		return (error_handler(1));
+	return (0);
 }
 
 static int	here_doc(int argc, char **argv, char **envp)
@@ -203,8 +220,7 @@ static int	here_doc(int argc, char **argv, char **envp)
 	char	*cmd2;
 	char	*file_name;
 	int		fd[2];
-	int		read_fd;
-	// int		write_fd;
+	int		write_fd;
 	int		pid1;
 	int		pid2;
 
@@ -228,24 +244,6 @@ static int	here_doc(int argc, char **argv, char **envp)
 		heredoc_tmpfile_handle(heredoc_word, fd);
 		execute_cmd(envp, cmd1);
 		exit(127);
-			// save_read_str(read_str, pList);
-			// linked list 이용
-		// save_node_to_file();
-		// linked list에 있는 data들을 순차적으로 file에 저장한다
-		// delete_linked_list(&pList);
-		/*
-			임시파일을 만들수 있지만 마지막에 EOF에 해당하는 HERE_DOC 들어오고서
-			생긴다음에 삭제되는것으로 보인다.
-			그러므로 마지막 전까지는 linked list에 node로 저장하고
-			here_doc 단어가 들어오면 임시파일에 linked list의 데이터들을 저장한다.
-
-		*/
-		/*
-			get_next_line로 읽은것을 STDIN이나 STDOUT으로 쓸수없다.
-			STDIN으로하면 다음에 get_next_lineg할 것을 못 읽고
-			STDOUT은 cmd를 실행결과용으로 쓸것이다.
-			즉,  get_next_line으로 읽은 것을 우선 다른 공간에 저장해놓아야한다.
-		*/
 	}
 	pid2 = fork();
 	if (pid2 < 0)
@@ -253,23 +251,22 @@ static int	here_doc(int argc, char **argv, char **envp)
 	else if (pid1 == 0) //child process
 	{
 		close(fd[WRITE_END]);
-		read_fd = redirection(HERE_DOC, file_name);
-		if (read_fd < 0)
+		write_fd = redirection(FILE_APPEND, file_name);
+		if (write_fd < 0)
 			return (error_handler(1));
-		if (dup2(STDIN_FILENO, read_fd) < 0)
-			return (error_handler(2));
-		if (dup2(STDOUT_FILENO, fd[WRITE_END]) < 0)
-			return (error_handler(2));
-		execute_cmd(envp, cmd1);
+		if (dup2(fd[READ_END], STDIN_FILENO) < 0)
+			return (error_handler(1));
+		if (dup2(write_fd, STDOUT_FILENO) < 0)
+			return (error_handler(1));
+		execute_cmd(envp, cmd2);
 		exit(127);
 	}
-	close(fd[0]);
+	close(fd[READ_END]);
 	close(fd[WRITE_END]);
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, NULL, 0);
 	return (0);
 }
-
 /*
 	// multipipe
 		./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
@@ -380,6 +377,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 
 int	main(int argc, char **argv, char **envp)
 {
+	(void)envp;
 	if (argc < 6)
 		return (1);
 	if (ft_strncmp(argv[1], "here_doc", max_nonnegative("here_doc", argv[1])) \
@@ -390,7 +388,9 @@ int	main(int argc, char **argv, char **envp)
 			./pipex here_doc LIMITER cmd cmd1 file
 			cmd << LIMITER | cmd1 >> file
 		*/
-		return (here_doc(argc, argv, envp));
+		printf("here_doc routine\n");
+		printf("check_tmp_file() : %s\n", check_tmp_file());
+		// return (here_doc(argc, argv, envp));
 	}
 	else
 	{
