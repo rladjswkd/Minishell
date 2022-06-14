@@ -129,8 +129,8 @@ int	main(int argc, char **argv, char **envp)
 	int		pid2;
 	int		execute_cmd_return_val;
 
-	// if (argc != 5)
-	// 	return (1);
+	if (argc != 5)
+		return (1);
 	/*
 		환경변수를 명령어 실행할때마다 받는데 찾는 과정이 비효율적이다.
 		파이프나 redirction으로 나뉘어있더라도 해당 명령이 입력될때까지는 1번만 환경변수를 가져와서 다른 명령어들에 주면될거같다.
@@ -155,22 +155,22 @@ int	main(int argc, char **argv, char **envp)
 		if (file1_fd < 0)
 		{
 			printf("%s : %s\n", argv[1], strerror(errno));
-			return (3);
+			return (1);
 		}
 		if (dup2(file1_fd, STDIN_FILENO) < 0)
 		{
 			printf("%s dup2 %s\n", argv[1], strerror(errno));
-			return (4);
+			return (1);
 		}
 		close(file1_fd);
 		if (dup2(fd[1], STDOUT_FILENO) < 0)
 		{
 			printf("%s dup2 %s\n", argv[1], strerror(errno));
-			return (4);
+			return (1);
 		}
-		execute_cmd_return_val = execute_cmd(envp, argv[2]);
 		close(fd[1]);
-		exit(1);
+		execute_cmd_return_val = execute_cmd(envp, argv[2]);
+		exit(127);
 	}
 	// while (42);
 	
@@ -196,11 +196,12 @@ int	main(int argc, char **argv, char **envp)
 		if (file2_fd < 0)
 		{
 			printf("file2_fd error, %s\n", strerror(errno));
-			return (3);
+			return (1);
 		}
 		dup2(file2_fd, STDOUT_FILENO);
 		close(file2_fd);
 		execute_cmd_return_val = execute_cmd(envp, argv[3]);
+		exit(127);
 		// printf("second execute_cmd_return_val : %d", execute_cmd_return_val);
 	}
 	/**/

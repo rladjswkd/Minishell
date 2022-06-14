@@ -147,20 +147,23 @@ static int	here_doc(int argc, char **argv, char **envp)
 		return (error_handler(2));
 	else if (pid1 == 0) //child process
 	{
-		close(fd[0]);
+		close(fd[READ_END]);
 		tmp_file = redirection(HERE_DOC);
 		if (tmp_file < 0)
 		{
 			// delete_linked_list(&pList);
-			return (error_handler(2));
+			return (error_handler(1));
 		}
 		read_str = get_next_line(STDIN_FILENO);
 		while (ft_strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
-			write(tmp_file, read_str, ft_strlen(read_str));
+		{
+			if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
+				exit(1);
+		}
 		if (dup2(tmp_file, STDIN_FILENO) < 0)
-			return (error_handler(2);
-		if (dup2(fd[1], STDOUT_FILENO) < 0)
-			return (error_handler(2);
+			return (error_handler(1));
+		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
+			return (error_handler(1));
 		execute_cmd(envp, cmd1);
 		exit(127);
 			// save_read_str(read_str, pList);
@@ -187,12 +190,13 @@ static int	here_doc(int argc, char **argv, char **envp)
 		return (error_handler(2));
 	else if (pid1 == 0) //child process
 	{
+		close(fd[WRITE_END]);
 		read_fd = redirection(HERE_DOC, file_name);
 		if (read_fd < 0)
 			return (error_handler(1));
 		if (dup2(STDIN_FILENO, read_fd) < 0)
 			return (error_handler(2));
-		if (dup2(STDOUT_FILENO, fd[1]) < 0)
+		if (dup2(STDOUT_FILENO, fd[WRITE_END]) < 0)
 			return (error_handler(2));
 		execute_cmd(envp, cmd1);
 		exit(127);
@@ -200,11 +204,11 @@ static int	here_doc(int argc, char **argv, char **envp)
 
 
 	close(fd[0]);
-	close(fd[1]);
+	close(fd[WRITE_END]);
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, NULL, 0);
 
-	return (1);
+	return (0);
 }
 
 /*
@@ -222,7 +226,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 	int		file_fd[2];
 	int		idx;
 
-	if (pipe(fd[0]) < 0)
+	if (pipe(fd[READ_END]) < 0)
 	{
 		printf("%s\n", strerror(errno));
 		return (1);
@@ -247,7 +251,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 			return (1);
 		}
 		close(file_fd[0]);
-		if (dup2(fd[0][1], STDOUT_FILENO))
+		if (dup2(fd[0][WRITE_END], STDOUT_FILENO))
 		{
 			printf("%s\n", strerror(errno));
 			return (1);
@@ -262,7 +266,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 		/*
 			pipe 2개를 돌아가면서 쓴다.
 		*/
-		if (pipe(fd[1]) < 0)
+		if (pipe(fd[idx][WRITE_END]) < 0)
 		{
 			printf("%s\n", strerror(errno));
 			return (1);
@@ -301,7 +305,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 			printf("%s\n", strerror(errno));
 			return (1);	
 		}
-		if (dup2(STDOUT_FILENO, file_fd[1]) < 0)
+		if (dup2(STDOUT_FILENO, file_fd[WRITE_END]) < 0)
 		{
 			printf("%s\n", strerror(errno));
 			return (1);
@@ -327,8 +331,7 @@ int	main(int argc, char **argv, char **envp)
 			./pipex here_doc LIMITER cmd cmd1 file
 			cmd << LIMITER | cmd1 >> file
 		*/
-		if (here_doc(argc, argv, envp) < 0)
-			return (1);
+		return (here_doc(argc, argv, envp));
 	}
 	else
 	{
@@ -338,8 +341,7 @@ int	main(int argc, char **argv, char **envp)
 			< file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
 		*/
 		printf("multi-pipe\n");
-		// if (multipipe(argc, argv, envp) < 0)
-		// 	return (1);
+		return (multipipe(argc, argv, envp));
 	}
 	return (0);
 }

@@ -26,4 +26,10 @@ typedef enum	e_flag
 	FAIL = 1,
 }				t_e_flag;
 
+typedef enum	e_pipe_flag
+{
+	READ_END,
+	WRITE_END,
+}				t_pipe_flag;
+
 #endif
