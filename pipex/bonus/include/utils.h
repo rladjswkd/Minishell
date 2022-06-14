@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 12:15:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/06 21:13:11 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/14 16:55:48 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 int		ft_strchr(char *s, int c);
 char	*ft_strjoin(char *s1, char *s2);
 size_t	ft_strlcat(char *dst, char *src, size_t dstsize);
+char	*ft_itoa(int n);
 
 size_t	max_nonnegative(char *s1, char *s2);
 

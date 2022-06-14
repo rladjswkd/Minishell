@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 20:37:50 by jim               #+#    #+#             */
-/*   Updated: 2022/06/06 21:38:51 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/14 17:30:26 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,12 +89,15 @@ int	file_open(t_file_flag file_flag, char *file_name)
 {
 	int	file_fd;
 
+	file_fd = -1;
 	if (file_flag == FILE_READ)
 		file_fd = open(file_name, O_RDONLY);
 	else if (file_flag == FILE_WRITE)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC);
 	else if (file_flag == FILE_APPEND)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND);
+	else if (file_flag == FILE_WRITE_ONLY)
+		file_fd = open(file_name, O_CREAT | O_RDWR);
 	return (file_fd);
 }
 
@@ -102,12 +105,13 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 {
 	int	file_fd;
 
+	file_fd = -1;
 	if (redirection_flag == INPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == HERE_DOC)
-		file_fd = file_open(FILE_APPEND, file_name);
+		file_fd = file_open(FILE_WRITE_ONLY, file_name);
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
 	else
@@ -115,55 +119,110 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	return (file_fd);
 }
 
+
 /*
 	./pipex here_doc LIMITER cmd1 cmd2 file
 	cmd1 << LIMITER | cmd2 >> file
 */
+
+static int	init_value(void)
+{
+	/*
+		구조체 필요
+	*/
+	return (0);
+}
+
+static char	*check_tmp_file(void)
+{
+	char	*file_name;
+	char	*tmp_file_name;
+	int		file_fd;
+	int		num;
+
+	file_name = ft_strdup(".tmp_heredoc_file");
+	if (file_name == NULL)
+		return (NULL);
+	num = 0;
+	while (redirection(HERE_DOC, file_name) == -1)
+	{
+		tmp_file_name = ft_strjoin(file_name, ft_itoa(num));
+		if (tmp_file_name == NULL)
+		{
+			free(file_name);
+			return (NULL);
+		}
+		free(file_name);
+		file_name = tmp_file_name;
+	}
+	/*
+
+	*/
+}
+
+static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
+{
+	/*
+
+		- open tmp file to write
+		- gnl done
+		- pipe connect (STDOUT to pipe[WRITE_END]
+		- write tmp file data to STDOUT
+			- tmp file 닫아야해서 위 작업이 필요하다.
+		- close tmp file
+		- remove tmp file using path
+	*/
+	int		tmp_file;
+	char	*read_str;
+
+	// - tmpfile name check
+	tmp_file = redirection(HERE_DOC, ".tmpfile");
+	if (tmp_file < 0)
+		return (error_handler(1));
+	read_str = get_next_line(STDIN_FILENO);
+	while (ft_strncmp(read_str, heredoc_word, \
+			max_nonnegative(read_str, heredoc_word)))
+	{
+		if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
+			exit(1);
+	}
+	if (dup2(tmp_file, STDIN_FILENO) < 0)
+		return (error_handler(1));
+	if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
+		return (error_handler(1));
+}
+
 static int	here_doc(int argc, char **argv, char **envp)
 {
-	char	*limiter;
+	char	*heredoc_word;
 	char	*cmd1;
 	char	*cmd2;
 	char	*file_name;
 	char	*read_str;
 	int		fd[2];
 	int		read_fd;
-	int		write_fd;
+	// int		write_fd;
 	int		tmp_file;
 	int		pid1;
 	int		pid2;
 
-	limiter = argv[2];
+	(void)argc;
+	heredoc_word = argv[2];
 	cmd1 = argv[3];
 	cmd2 = argv[4];
 	file_name = argv[5];
 	if (pipe(fd) < 0)
 	{
 		perror("pipe");
-		return (-1);
+		return (1);
 	}
 	pid1 = fork();
 	if (pid1 < 0)
-		return (error_handler(2));
+		return (error_handler(1));
 	else if (pid1 == 0) //child process
 	{
 		close(fd[READ_END]);
-		tmp_file = redirection(HERE_DOC);
-		if (tmp_file < 0)
-		{
-			// delete_linked_list(&pList);
-			return (error_handler(1));
-		}
-		read_str = get_next_line(STDIN_FILENO);
-		while (ft_strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
-		{
-			if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
-				exit(1);
-		}
-		if (dup2(tmp_file, STDIN_FILENO) < 0)
-			return (error_handler(1));
-		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
-			return (error_handler(1));
+		// need to file name check
 		execute_cmd(envp, cmd1);
 		exit(127);
 			// save_read_str(read_str, pList);
@@ -201,13 +260,10 @@ static int	here_doc(int argc, char **argv, char **envp)
 		execute_cmd(envp, cmd1);
 		exit(127);
 	}
-
-
 	close(fd[0]);
 	close(fd[WRITE_END]);
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, NULL, 0);
-
 	return (0);
 }
 
@@ -215,8 +271,9 @@ static int	here_doc(int argc, char **argv, char **envp)
 	// multipipe
 		./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
 		< file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
-	
+
 */
+/*
 static int	multipipe(int argc, char **argv, char **envp)
 {
 	int		fd[2][2];
@@ -263,9 +320,6 @@ static int	multipipe(int argc, char **argv, char **envp)
 	// for making pipeline
 	while (idx < argc - 1)
 	{
-		/*
-			pipe 2개를 돌아가면서 쓴다.
-		*/
 		if (pipe(fd[idx][WRITE_END]) < 0)
 		{
 			printf("%s\n", strerror(errno));
@@ -283,7 +337,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 		// 부모 프로세스의 pid[1]를 가리킬것인가?
 		waitpid(pid[1]);
 	}
-	/* redirection to output file*/
+	// redirection to output file
 	pid[2] = fork();
 	if (pid[2] < 0)
 	{
@@ -303,7 +357,7 @@ static int	multipipe(int argc, char **argv, char **envp)
 		if (dup2(fd[(argc - 1) % 2][0], STDIN_FILENO) < 0)
 		{
 			printf("%s\n", strerror(errno));
-			return (1);	
+			return (1);
 		}
 		if (dup2(STDOUT_FILENO, file_fd[WRITE_END]) < 0)
 		{
@@ -319,12 +373,14 @@ static int	multipipe(int argc, char **argv, char **envp)
 	waitpid(pid[0]);
 	return (0);
 }
+*/
 
 int	main(int argc, char **argv, char **envp)
 {
 	if (argc < 6)
 		return (1);
-	if (ft_strncmp(argv[1], "here_doc", max_nonnegative("here_doc", argv[1])) == 0)
+	if (ft_strncmp(argv[1], "here_doc", max_nonnegative("here_doc", argv[1])) \
+		== 0)
 	{
 		// here_doc routine
 		/*
@@ -341,7 +397,7 @@ int	main(int argc, char **argv, char **envp)
 			< file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
 		*/
 		printf("multi-pipe\n");
-		return (multipipe(argc, argv, envp));
+		// return (multipipe(argc, argv, envp));
 	}
 	return (0);
 }
