@@ -107,9 +107,9 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == HERE_DOC)
-		file_fd = file_open(FILE_READ, file_name);
+		file_fd = file_open(FILE_APPEND, file_name);
 	else if (redirection_flag == APPEND)
-		file_fd = file_open(FILE_READ, file_name);
+		file_fd = file_open(FILE_APPEND, file_name);
 	else
 		printf("unknown redirection_flag\n.");
 	return (file_fd);
@@ -148,16 +148,23 @@ static int	here_doc(int argc, char **argv, char **envp)
 	else if (pid1 == 0) //child process
 	{
 		close(fd[0]);
-		read_str = get_next_line(STDIN_FILENO);
-		while (ft_strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
-			// save_read_str(read_str, pList);
-			// linked list 이용
-		tmp_file = redirection(FILE_WRITE);
+		tmp_file = redirection(HERE_DOC);
 		if (tmp_file < 0)
 		{
 			// delete_linked_list(&pList);
 			return (error_handler(2));
 		}
+		read_str = get_next_line(STDIN_FILENO);
+		while (ft_strncmp(read_str, limiter, max_nonnegative(read_str, limiter)))
+			write(tmp_file, read_str, ft_strlen(read_str));
+		if (dup2(tmp_file, STDIN_FILENO) < 0)
+			return (error_handler(2);
+		if (dup2(fd[1], STDOUT_FILENO) < 0)
+			return (error_handler(2);
+		execute_cmd(envp, cmd1);
+		exit(127);
+			// save_read_str(read_str, pList);
+			// linked list 이용
 		// save_node_to_file();
 		// linked list에 있는 data들을 순차적으로 file에 저장한다
 		// delete_linked_list(&pList);
@@ -174,17 +181,6 @@ static int	here_doc(int argc, char **argv, char **envp)
 			STDOUT은 cmd를 실행결과용으로 쓸것이다.
 			즉,  get_next_line으로 읽은 것을 우선 다른 공간에 저장해놓아야한다.
 		*/
-		if (read_fd < 0)
-			return (error_handler(1));
-		if (dup2(STDIN_FILENO, read_fd) < 0)
-			return (error_handler(2));
-		if (dup2(STDOUT_FILENO, fd[1]) < 0)
-			return (error_handler(2));
-		
-
-		dup2()
-		execute_cmd(envp, cmd1);
-		exit(127);
 	}
 	pid2 = fork();
 	if (pid2 < 0)
