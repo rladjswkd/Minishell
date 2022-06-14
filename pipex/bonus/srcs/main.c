@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 20:37:50 by jim               #+#    #+#             */
-/*   Updated: 2022/06/14 17:30:26 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/14 18:39:52 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,10 +173,14 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 		- remove tmp file using path
 	*/
 	int		tmp_file;
+	char	*file_name;
 	char	*read_str;
 
 	// - tmpfile name check
-	tmp_file = redirection(HERE_DOC, ".tmpfile");
+	file_name = check_tmp_file();
+	if (file_name == NULL)
+		return (error_handler(1));
+	tmp_file = redirection(HERE_DOC, file_name);
 	if (tmp_file < 0)
 		return (error_handler(1));
 	read_str = get_next_line(STDIN_FILENO);
@@ -188,7 +192,7 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	}
 	if (dup2(tmp_file, STDIN_FILENO) < 0)
 		return (error_handler(1));
-	if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
+	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
 		return (error_handler(1));
 }
 
@@ -198,11 +202,9 @@ static int	here_doc(int argc, char **argv, char **envp)
 	char	*cmd1;
 	char	*cmd2;
 	char	*file_name;
-	char	*read_str;
 	int		fd[2];
 	int		read_fd;
 	// int		write_fd;
-	int		tmp_file;
 	int		pid1;
 	int		pid2;
 
@@ -223,6 +225,7 @@ static int	here_doc(int argc, char **argv, char **envp)
 	{
 		close(fd[READ_END]);
 		// need to file name check
+		heredoc_tmpfile_handle(heredoc_word, fd);
 		execute_cmd(envp, cmd1);
 		exit(127);
 			// save_read_str(read_str, pList);

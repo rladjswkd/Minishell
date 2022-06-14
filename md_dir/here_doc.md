@@ -1,0 +1,21 @@
+To handle
+
+- init pipe
+- process1 fork
+- get_next_line
+	- here_doc입력을 받는다.
+	- STDIN으로 넘어오는 값을 개행단위로 입력받아서 저장한다.
+		- 자료구조에 저장한뒤 마지막에 임시파일을 쓰거나
+		- 처음부터 임시파일에 저장한다.
+- tmp file
+	- check
+	- tmp file open
+- here_doc str wrte to tmp file
+	- 이전 here doc 입력값이 덮여쓰이지는 않는지 확인필요
+		- 덮여쓰여지지 않는다.
+- write tmp file data to STDIN
+- connect pipe
+	- process1 pipe[WRITE_END] to STDOUT
+	- process2 pipe[READ_END] to STDIN
+- execute cmd
+	- 만약 없는 cmd라면 exit(127);
