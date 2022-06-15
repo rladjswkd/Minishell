@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+# include "utils.h"
 
 char	*get_next_line(int fd)
 {
@@ -30,7 +31,7 @@ char	*get_next_line(int fd)
 		if (read_size <= 0)
 			break ;
 		read_str[read_size] = '\0';
-		save[fd] = ft_strjoin(save[fd], read_str);
+		save[fd] = ft_gnl_strjoin(save[fd], read_str);
 		if (save[fd] == NULL)
 			return (NULL);
 	}	

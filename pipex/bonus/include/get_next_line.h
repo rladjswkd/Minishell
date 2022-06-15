@@ -17,7 +17,6 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# include "utils.h"
 
 typedef enum e_bool_flag
 {

@@ -97,7 +97,7 @@ int	file_open(t_file_flag file_flag, char *file_name)
 	else if (file_flag == FILE_APPEND)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND);
 	else if (file_flag == FILE_WRITE_ONLY)
-		file_fd = open(file_name, O_CREAT | O_RDWR);
+		file_fd = open(file_name, O_CREAT | O_WRONLY);
 	return (file_fd);
 }
 
@@ -115,7 +115,8 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
 	else
-		printf("unknown redirection_flag\n.");
+		write(2, &"unknown redirection_flag\n.", \
+				ft_strlen("unknown redirection_flag\n."));
 	return (file_fd);
 }
 
@@ -129,41 +130,34 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 static char	*check_tmp_file(void)
 {
 	char	*file_name;
-	char	*file_name_form;
-	char	*tmp_file_name;
 	char	*itoa_num;
 	int		num;
 
-	file_name_form = ".heredoc_tmpfile_";
-	file_name = ft_strjoin(file_name_form, "0");
-	if (file_name == NULL)
-		return (NULL);
-	num = 1;
-	tmp_file_name = NULL;
-	while (redirection(INPUT, file_name) > 0)
+	num = 0;
+	while (TRUE)
 	{
 		itoa_num = ft_itoa(num);
 		if (itoa_num == NULL)
-		{
-			free(file_name);
 			return (NULL);
-		}
-		if (tmp_file_name != NULL)
-			free(tmp_file_name);
-		tmp_file_name = ft_strjoin(file_name, itoa_num);
-		if (tmp_file_name == NULL)
-		{
-			free(itoa_num);
-			free(file_name);
+		file_name = ft_strjoin(".heredoc_tmpfile_", itoa_num);
+		safe_free(&itoa_num);
+		if (file_name == NULL)
 			return (NULL);
-		}
-		// free(file_name);
-		printf("num : %d\n", num);
-		free(itoa_num);
-		file_name = tmp_file_name;
+		if (file_open(FILE_READ, file_name) < 0)
+			break ;
+		safe_free(&file_name);
 		num++;
 	}
 	return (file_name);
+}
+
+static char	*remove_newline(char *str)
+{
+	size_t	last_idx;
+
+	last_idx = ft_strlen(str) - 1;
+	if (str[last_idx] == '\n')
+		str[last_idx] = '\0';
 }
 
 static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
@@ -189,12 +183,22 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	if (tmp_file < 0)
 		return (error_handler(1));
 	read_str = get_next_line(STDIN_FILENO);
+	printf("heredoc_word : %s\n", heredoc_word);
+	// remove new line
+	// max_nonnegative  사용해서 하는데 read_str에 개행이 포함되어서 길이수가 안맞게되는 문제가있다.
+	// 개행을 제거해서 하면되지만 제거한 버젼을 별도로 동적할당해야한다. 쓰고서 바로 free해야하는데
+	// max_nonnegative에서 처리하게 하고자하니 모듈화가 안된다.
+	// 즉 max_nonnegative에 넘겨줄때 read_str에 개행을 제거한 걸 보내주는게 낫다.
+	// max_nonnegative를 안쓰고도 할수있는 확인한다.
 	while (ft_strncmp(read_str, heredoc_word, \
 			max_nonnegative(read_str, heredoc_word)))
 	{
+		printf("read_str : %s\n", read_str);
+		printf("max_nonnegative(read_str, heredoc_word) : %zu\n", max_nonnegative(read_str, heredoc_word));
 		if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
 			exit(1);
-		free(read_str);
+		safe_free(&read_str);
+		read_str = get_next_line(STDIN_FILENO);
 	}
 	read_str = get_next_line(tmp_file);
 	while (read_str)
@@ -388,9 +392,7 @@ int	main(int argc, char **argv, char **envp)
 			./pipex here_doc LIMITER cmd cmd1 file
 			cmd << LIMITER | cmd1 >> file
 		*/
-		printf("here_doc routine\n");
-		printf("check_tmp_file() : %s\n", check_tmp_file());
-		// return (here_doc(argc, argv, envp));
+		return (here_doc(argc, argv, envp));
 	}
 	else
 	{

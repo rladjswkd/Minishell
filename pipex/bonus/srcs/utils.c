@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include "utils.h"
 
-size_t	max_nonnegative(char *s1, char *s2)
+size_t	max_nonnegative(char const *s1, char const *s2)
 {
 	size_t	s1_size;
 	size_t	s2_size;
@@ -45,7 +45,7 @@ size_t	ft_strlen(const char *s)
 	return (idx);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_gnl_strjoin(char *s1, char *s2)
 {
 	char	*dst;
 	size_t	s1_size;
@@ -70,5 +70,19 @@ char	*ft_strjoin(char *s1, char *s2)
 	ft_strlcpy(dst, s1, s1_size + 1);
 	free(s1);
 	ft_strlcat(dst, s2, s1_size + s2_size + 1);
+	return (dst);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*dst;
+	size_t	dstsize;
+
+	dstsize = ft_strlen(s1) + ft_strlen(s2) + 1;
+	dst = (char *)malloc(sizeof(char) * (dstsize));
+	if (!dst)
+		return (0);
+	ft_strlcpy(dst, s1, ft_strlen(s1) + 1);
+	ft_strlcat(dst, s2, dstsize);
 	return (dst);
 }

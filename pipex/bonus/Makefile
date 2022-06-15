@@ -1,6 +1,6 @@
 NAME = pipex
 CC = gcc
-CFLAGS = #-Wall -Wextra -Werror
+# CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
 SRCS_DIR = srcs
 INCLUDE = include
@@ -21,10 +21,12 @@ SRCS = $(addprefix $(SRCS_DIR)/, \
 OBJS = $(SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
+	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@
+	# $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@
+	# $(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)
 
@@ -39,3 +41,4 @@ re :
 	make all
 
  .PHONY : all clean fclean re
+
