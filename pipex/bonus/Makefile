@@ -1,5 +1,5 @@
 NAME = pipex
-CC = gcc
+CC = gcc -g
 # CFLAGS = #-Wall -Wextra -Werror
 RM = rm -rf
 SRCS_DIR = srcs

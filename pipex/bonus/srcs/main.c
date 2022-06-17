@@ -56,10 +56,10 @@ static int	execute_cmd(char **envp, char *argv)
 	if (envp == NULL || argv == NULL)
 		return (FALSE);
 	idx = 0;
-	path_list = find_path_list(envp);
+	path_list = find_path_list(envp); // PATH= : : : : ; 
 	if (path_list == NULL)
 		return (ERROR);
-	cmd = ft_split(argv, ' ');
+	cmd = ft_split(argv, ' '); // ls -al
 	if (cmd == NULL)
 	{
 		free_list(&path_list);
@@ -180,6 +180,7 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 		- remove tmp file using path
 	*/
 	int		tmp_file;
+	int		tmp_file_open;
 	char	*file_name;
 	char	*read_str;
 	char	*read_str_less_newline;
@@ -188,18 +189,13 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	file_name = check_tmp_file();
 	if (file_name == NULL)
 		return (error_handler(1));
-	tmp_file = redirection(HERE_DOC, file_name);
+	tmp_file_open = redirection(HERE_DOC, file_name);
+	tmp_file = dup(tmp_file_open);
 	if (tmp_file < 0)
 	{
 		safe_free(&file_name);
 		return (error_handler(1));
 	}
-	// remove new line
-	// max_nonnegative  사용해서 하는데 read_str에 개행이 포함되어서 길이수가 안맞게되는 문제가있다.
-	// 개행을 제거해서 하면되지만 제거한 버젼을 별도로 동적할당해야한다. 쓰고서 바로 free해야하는데
-	// max_nonnegative에서 처리하게 하고자하니 모듈화가 안된다.
-	// 즉 max_nonnegative에 넘겨줄때 read_str에 개행을 제거한 걸 보내주는게 낫다.
-	// max_nonnegative를 안쓰고도 할수있는 확인한다.
 	while (TRUE)
 	{
 		read_str = get_next_line(STDIN_FILENO);
@@ -218,11 +214,11 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	}
 	close(tmp_file);
 	tmp_file = file_open(FILE_READ, file_name);
-	if (dup2(tmp_file, STDIN_FILENO) < 0)
-		exit(1);
-	close(tmp_file);
+	close(tmp_file_open);
 	unlink(file_name);
 	safe_free(&file_name);
+	dup2(tmp_file, STDIN_FILENO);
+	close(tmp_file);
 	return (0);
 }
 
@@ -258,9 +254,11 @@ static int	here_doc(int argc, char **argv, char **envp)
 			return (error_handler(1));
 		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
 			return (error_handler(1));
+		printf("before executing cmd\n");
 		execute_cmd(envp, cmd1);
 		exit(127);
 	}
+	/**/
 	pid2 = fork();
 	if (pid2 < 0)
 		return (error_handler(2));
@@ -280,10 +278,11 @@ static int	here_doc(int argc, char **argv, char **envp)
 		close(write_fd);
 		exit(127);
 	}
+	
 	close(fd[READ_END]);
 	close(fd[WRITE_END]);
 	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	// waitpid(pid2, NULL, 0);
 	return (0);
 }
 /*
