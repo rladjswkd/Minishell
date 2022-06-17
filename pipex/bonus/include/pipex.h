@@ -31,7 +31,7 @@ typedef enum e_file_flag
 	FILE_READ,
 	FILE_WRITE,
 	FILE_APPEND,
-	FILE_WRITE_ONLY,
+	FILE_RDWR,
 }				t_file_flag;
 
 typedef enum e_flag

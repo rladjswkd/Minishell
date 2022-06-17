@@ -91,13 +91,13 @@ int	file_open(t_file_flag file_flag, char *file_name)
 
 	file_fd = -1;
 	if (file_flag == FILE_READ)
-		file_fd = open(file_name, O_RDONLY);
+		file_fd = open(file_name, O_RDONLY, 0644);
 	else if (file_flag == FILE_WRITE)
-		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC);
+		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	else if (file_flag == FILE_APPEND)
-		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND);
-	else if (file_flag == FILE_WRITE_ONLY)
-		file_fd = open(file_name, O_CREAT | O_WRONLY);
+		file_fd = open(file_name, O_APPEND, 0644);
+	else if (file_flag == FILE_RDWR)
+		file_fd = open(file_name, O_CREAT | O_RDWR, 0644);
 	return (file_fd);
 }
 
@@ -111,7 +111,7 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == HERE_DOC)
-		file_fd = file_open(FILE_WRITE_ONLY, file_name);
+		file_fd = file_open(FILE_RDWR, file_name);
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
 	else
@@ -151,13 +151,21 @@ static char	*check_tmp_file(void)
 	return (file_name);
 }
 
-static char	*remove_newline(char *str)
+static char	*remove_rightmost_newline(char *line)
 {
-	size_t	last_idx;
+	size_t	end_of_string;
+	char	*return_string;
 
-	last_idx = ft_strlen(str) - 1;
-	if (str[last_idx] == '\n')
-		str[last_idx] = '\0';
+	end_of_string = ft_strlen(line) - 1;
+	if (line[end_of_string] == '\n')
+	{
+		return_string = ft_strdup(line);
+		if (return_string == NULL)
+			return (NULL);
+		return_string[end_of_string] = '\0';
+		return (return_string);
+	}
+	return (NULL);
 }
 
 static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
@@ -174,6 +182,7 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	int		tmp_file;
 	char	*file_name;
 	char	*read_str;
+	char	*read_str_less_newline;
 
 	// - tmpfile name check
 	file_name = check_tmp_file();
@@ -181,39 +190,39 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 		return (error_handler(1));
 	tmp_file = redirection(HERE_DOC, file_name);
 	if (tmp_file < 0)
+	{
+		safe_free(&file_name);
 		return (error_handler(1));
-	read_str = get_next_line(STDIN_FILENO);
-	printf("heredoc_word : %s\n", heredoc_word);
+	}
 	// remove new line
 	// max_nonnegative  사용해서 하는데 read_str에 개행이 포함되어서 길이수가 안맞게되는 문제가있다.
 	// 개행을 제거해서 하면되지만 제거한 버젼을 별도로 동적할당해야한다. 쓰고서 바로 free해야하는데
 	// max_nonnegative에서 처리하게 하고자하니 모듈화가 안된다.
 	// 즉 max_nonnegative에 넘겨줄때 read_str에 개행을 제거한 걸 보내주는게 낫다.
 	// max_nonnegative를 안쓰고도 할수있는 확인한다.
-	while (ft_strncmp(read_str, heredoc_word, \
-			max_nonnegative(read_str, heredoc_word)))
+	while (TRUE)
 	{
-		printf("read_str : %s\n", read_str);
-		printf("max_nonnegative(read_str, heredoc_word) : %zu\n", max_nonnegative(read_str, heredoc_word));
+		read_str = get_next_line(STDIN_FILENO);
+		read_str_less_newline = remove_rightmost_newline(read_str);
+		if (ft_strncmp(read_str_less_newline, heredoc_word, \
+			max_nonnegative(read_str_less_newline, heredoc_word)) == 0)
+		{
+			safe_free(&read_str);
+			safe_free(&read_str_less_newline);
+			break ;
+		}
 		if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
 			exit(1);
 		safe_free(&read_str);
-		read_str = get_next_line(STDIN_FILENO);
-	}
-	read_str = get_next_line(tmp_file);
-	while (read_str)
-	{
-		write(STDOUT_FILENO, read_str, ft_strlen(read_str));
-		free(read_str);
-		read_str = get_next_line(tmp_file);
+		safe_free(&read_str_less_newline);
 	}
 	close(tmp_file);
-	unlink(file_name);
-	free(file_name);
+	tmp_file = file_open(FILE_READ, file_name);
 	if (dup2(tmp_file, STDIN_FILENO) < 0)
-		return (error_handler(1));
-	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
-		return (error_handler(1));
+		exit(1);
+	close(tmp_file);
+	unlink(file_name);
+	safe_free(&file_name);
 	return (0);
 }
 
@@ -227,6 +236,7 @@ static int	here_doc(int argc, char **argv, char **envp)
 	int		write_fd;
 	int		pid1;
 	int		pid2;
+	char	*tmp_str;
 
 	(void)argc;
 	heredoc_word = argv[2];
@@ -244,18 +254,22 @@ static int	here_doc(int argc, char **argv, char **envp)
 	else if (pid1 == 0) //child process
 	{
 		close(fd[READ_END]);
-		// need to file name check
-		heredoc_tmpfile_handle(heredoc_word, fd);
+		if (heredoc_tmpfile_handle(heredoc_word, fd) < 0)
+			return (error_handler(1));
+		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
+			return (error_handler(1));
 		execute_cmd(envp, cmd1);
 		exit(127);
 	}
 	pid2 = fork();
 	if (pid2 < 0)
 		return (error_handler(2));
-	else if (pid1 == 0) //child process
+	else if (pid2 == 0) //child process
 	{
 		close(fd[WRITE_END]);
 		write_fd = redirection(FILE_APPEND, file_name);
+		// printf("read(fd[READ_END], tmp_str, 42) : %ld\n", read(fd[READ_END], tmp_str, 42));
+		// printf("tmp_str : %s\n", tmp_str);
 		if (write_fd < 0)
 			return (error_handler(1));
 		if (dup2(fd[READ_END], STDIN_FILENO) < 0)
@@ -263,6 +277,7 @@ static int	here_doc(int argc, char **argv, char **envp)
 		if (dup2(write_fd, STDOUT_FILENO) < 0)
 			return (error_handler(1));
 		execute_cmd(envp, cmd2);
+		close(write_fd);
 		exit(127);
 	}
 	close(fd[READ_END]);
