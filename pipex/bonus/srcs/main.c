@@ -53,13 +53,11 @@ static int	execute_cmd(char **envp, char *argv)
 	char	*path_with_slash;
 	size_t	idx;
 
-	if (envp == NULL || argv == NULL)
-		return (FALSE);
 	idx = 0;
-	path_list = find_path_list(envp); // PATH= : : : : ; 
+	path_list = find_path_list(envp);
 	if (path_list == NULL)
 		return (ERROR);
-	cmd = ft_split(argv, ' '); // ls -al
+	cmd = ft_split(argv, ' ');
 	if (cmd == NULL)
 	{
 		free_list(&path_list);
@@ -93,11 +91,11 @@ int	file_open(t_file_flag file_flag, char *file_name)
 	if (file_flag == FILE_READ)
 		file_fd = open(file_name, O_RDONLY, 0644);
 	else if (file_flag == FILE_WRITE)
-		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY  | O_TRUNC, 0644);
 	else if (file_flag == FILE_APPEND)
-		file_fd = open(file_name, O_APPEND, 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY  | O_APPEND, 0644);
 	else if (file_flag == FILE_RDWR)
-		file_fd = open(file_name, O_CREAT | O_RDWR, 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY , 0644);
 	return (file_fd);
 }
 
@@ -119,13 +117,6 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 				ft_strlen("unknown redirection_flag\n."));
 	return (file_fd);
 }
-
-
-/*
-	./pipex here_doc LIMITER cmd1 cmd2 file
-	cmd1 << LIMITER | cmd2 >> file
-*/
-
 
 static char	*check_tmp_file(void)
 {
@@ -151,7 +142,7 @@ static char	*check_tmp_file(void)
 	return (file_name);
 }
 
-static char	*remove_rightmost_newline(char *line)
+static char	*remove_rightmost_newline(char const *line)
 {
 	size_t	end_of_string;
 	char	*return_string;
@@ -168,37 +159,14 @@ static char	*remove_rightmost_newline(char *line)
 	return (NULL);
 }
 
-static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
+static void	input_to_tmpfile(char *file_name, int tmp_file_fd, char *heredoc_word)
 {
-	/*
-		- open tmp file to write
-		- gnl done
-		- pipe connect (STDOUT to pipe[WRITE_END]
-		- write tmp file data to STDOUT
-			- tmp file 닫아야해서 위 작업이 필요하다.
-		- close tmp file
-		- remove tmp file using path
-	*/
-	int		tmp_file;
-	int		tmp_file_open;
-	char	*file_name;
 	char	*read_str;
 	char	*read_str_less_newline;
 
-	// - tmpfile name check
-	file_name = check_tmp_file();
-	if (file_name == NULL)
-		return (error_handler(1));
-	tmp_file_open = redirection(HERE_DOC, file_name);
-	tmp_file = dup(tmp_file_open);
-	if (tmp_file < 0)
-	{
-		safe_free(&file_name);
-		return (error_handler(1));
-	}
 	while (TRUE)
 	{
-		read_str = get_next_line(STDIN_FILENO);
+		read_str = get_next_line(STDIN_FILENO); // here doc word를 기준으로 체크하지만 NULL 체크가 필요한가?
 		read_str_less_newline = remove_rightmost_newline(read_str);
 		if (ft_strncmp(read_str_less_newline, heredoc_word, \
 			max_nonnegative(read_str_less_newline, heredoc_word)) == 0)
@@ -207,82 +175,127 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 			safe_free(&read_str_less_newline);
 			break ;
 		}
-		if (write(tmp_file, read_str, ft_strlen(read_str)) < 0)
+		safe_free(&read_str_less_newline);
+		if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
 			exit(1);
 		safe_free(&read_str);
-		safe_free(&read_str_less_newline);
 	}
-	close(tmp_file);
-	tmp_file = file_open(FILE_READ, file_name);
-	close(tmp_file_open);
-	unlink(file_name);
+	close(tmp_file_fd);
+}
+
+static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
+{
+	int		tmp_file_fd;
+	char	*file_name;
+	char	*read_str;
+	char	*read_str_less_newline;
+
+	file_name = check_tmp_file();
+	if (file_name == NULL)
+		return (error_handler(1));
+	tmp_file_fd = redirection(HERE_DOC, file_name);
+	if (tmp_file_fd < 0)
+	{
+		safe_free(&file_name);
+		return (error_handler(1));
+	}
+	input_to_tmpfile(file_name, tmp_file_fd, heredoc_word);
+	tmp_file_fd = file_open(FILE_READ, file_name);
+	dup2(tmp_file_fd, STDIN_FILENO);
+	unlink(file_name);//wsl에서는 문제 발생
 	safe_free(&file_name);
-	dup2(tmp_file, STDIN_FILENO);
-	close(tmp_file);
+	close(tmp_file_fd);
 	return (0);
+}
+
+
+/*
+	시작 부분
+	redirection이 있는지에 따라 달라질 수 있다.
+	e.g) cat infile | ... | cat file1
+	cat infile part를 의미
+*/
+static int	fork_process(t_execute_info execute_info)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid < 0)
+		return (error_handler(1));
+	else if (pid == 0)
+	{
+		close(execute_info.pipe_fd[READ_END]);
+		if (execute_info.redirection_flag == HERE_DOC)
+			if (heredoc_tmpfile_handle(execute_info.heredoc_word, \
+										execute_info.pipe_fd) < 0)
+				return (error_handler(1));
+		if (dup2(execute_info.pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
+			return (error_handler(1));
+		close(execute_info.pipe_fd[WRITE_END]);
+		execute_cmd(execute_info.envp, execute_info.cmd);
+		exit(127);
+	}
+	else
+	{
+		close(execute_info.pipe_fd[WRITE_END]);
+		close(execute_info.pipe_fd[READ_END]);
+		return (waitpid(pid, NULL, 0));
+	}
+}
+
+static void	init_value(t_execute_info *execute_info, char **argv, char **envp)
+{
+	execute_info->envp = envp;
+	execute_info->cmd = NULL;
+	execute_info->pipe_fd = NULL;
+	execute_info->heredoc_word = NULL;
+	execute_info->redirection_flag = NONE;
+	execute_info->file_name = NULL;
 }
 
 static int	here_doc(int argc, char **argv, char **envp)
 {
-	char	*heredoc_word;
-	char	*cmd1;
-	char	*cmd2;
-	char	*file_name;
-	int		fd[2];
-	int		write_fd;
-	int		pid1;
-	int		pid2;
-	char	*tmp_str;
+	int				write_fd;
+	char			*tmp_str;
+	t_execute_info	execute_info;
 
-	(void)argc;
-	heredoc_word = argv[2];
-	cmd1 = argv[3];
-	cmd2 = argv[4];
-	file_name = argv[5];
-	if (pipe(fd) < 0)
+	init_value(&execute_info, argv, envp);
+	(&execute_info)->redirection_flag = HERE_DOC;
+	(&execute_info)->heredoc_word = argv[2];
+	(&execute_info)->cmd = argv[3];
+	if (pipe((&execute_info)->pipe_fd) < 0)
 	{
 		perror("pipe");
-		return (1);
+		return (126);
 	}
-	pid1 = fork();
-	if (pid1 < 0)
-		return (error_handler(1));
-	else if (pid1 == 0) //child process
-	{
-		close(fd[READ_END]);
-		if (heredoc_tmpfile_handle(heredoc_word, fd) < 0)
-			return (error_handler(1));
-		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
-			return (error_handler(1));
-		printf("before executing cmd\n");
-		execute_cmd(envp, cmd1);
-		exit(127);
-	}
+	(&execute_info)->pipe_fd = argv[3];
+	fork_process(&execute_info);
 	/**/
+	close((&execute_info)->pipe_fd[WRITE_END]);
+	(&execute_info)->heredoc_word = NULL;
+	(&execute_info)->cmd = argv[4];
+	(&execute_info)->redirection_flag = APPEND;
+	fork_process(&execute_info);
 	pid2 = fork();
 	if (pid2 < 0)
 		return (error_handler(2));
 	else if (pid2 == 0) //child process
 	{
-		close(fd[WRITE_END]);
 		write_fd = redirection(FILE_APPEND, file_name);
-		// printf("read(fd[READ_END], tmp_str, 42) : %ld\n", read(fd[READ_END], tmp_str, 42));
-		// printf("tmp_str : %s\n", tmp_str);
 		if (write_fd < 0)
 			return (error_handler(1));
 		if (dup2(fd[READ_END], STDIN_FILENO) < 0)
-			return (error_handler(1));
+			return (error_handler(126));
+		close(fd[READ_END]);
 		if (dup2(write_fd, STDOUT_FILENO) < 0)
-			return (error_handler(1));
-		execute_cmd(envp, cmd2);
+			return (error_handler(126));
 		close(write_fd);
+		execute_cmd(envp, cmd2);
 		exit(127);
 	}
-	
 	close(fd[READ_END]);
-	close(fd[WRITE_END]);
 	waitpid(pid1, NULL, 0);
-	// waitpid(pid2, NULL, 0);
+	waitpid(pid2, NULL, 0);
 	return (0);
 }
 /*
@@ -395,9 +408,9 @@ static int	multipipe(int argc, char **argv, char **envp)
 
 int	main(int argc, char **argv, char **envp)
 {
-	(void)envp;
 	if (argc < 6)
 		return (1);
+	init_value(argc, argv, envp);
 	if (ft_strncmp(argv[1], "here_doc", max_nonnegative("here_doc", argv[1])) \
 		== 0)
 	{

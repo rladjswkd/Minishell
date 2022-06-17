@@ -21,14 +21,14 @@ int main(int argc, char **argv)
 
 	if (argc < 2)
 		return (42);
-	fd = open("test1152.txt", O_RDONLY, 0644);
-	// read_fd =
+	printf("append test\n");
+	fd = open("test1152", O_CREAT | O_WRONLY | O_APPEND, 644);
+	printf("fd : %d\n", fd);
 	if (fd < 0)
 	{
 		printf("fd : %d\n", fd);
 		return (1);
 	}
-	write(fd, argv[1], ft_strlen(argv[1]));
 	write(fd, argv[1], ft_strlen(argv[1]));
 	write(fd, &"\n", 1);
 	close(fd);
