@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 20:37:50 by jim               #+#    #+#             */
-/*   Updated: 2022/06/14 18:39:52 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/18 19:03:42 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,61 +20,13 @@
 #include <stdbool.h>
 #include "utils.h"
 #include "get_next_line.h"
+#include "pipex_struct.h"
 #include "pipex.h"
 
 static void	safe_free(char	**char_pptr)
 {
 	free(*char_pptr);
 	*char_pptr = NULL;
-}
-
-static char	**find_path_list(char **envp)
-{
-	char	*path;
-
-	path = NULL;
-	while (*envp && path == NULL)
-	{
-		path = ft_strnstr(*envp, "PATH", ft_strlen("PATH="));
-		envp++;
-	}
-	if (path == NULL)
-		return (NULL);
-	path += sizeof(char) * ft_strlen("PATH=");
-	return (ft_split(path, ':'));
-
-}
-
-static int	execute_cmd(char **envp, char *argv)
-{
-	char	**cmd;
-	char	*cmd_path;
-	char	**path_list;
-	char	*path_with_slash;
-	size_t	idx;
-
-	idx = 0;
-	path_list = find_path_list(envp);
-	if (path_list == NULL)
-		return (ERROR);
-	cmd = ft_split(argv, ' ');
-	if (cmd == NULL)
-	{
-		free_list(&path_list);
-		return (ERROR);
-	}
-	while (path_list[idx])
-	{
-		path_with_slash = ft_strjoin(path_list[idx], "/");
-		cmd_path = ft_strjoin(path_with_slash, cmd[0]);
-		safe_free(&path_with_slash);
-		execve(cmd_path, cmd, envp);
-		safe_free(&cmd_path);
-		idx++;
-	}
-	free_list(&cmd);
-	free_list(&path_list);
-	return (FAIL);
 }
 
 static int	error_handler(int error_status)
@@ -91,11 +43,11 @@ int	file_open(t_file_flag file_flag, char *file_name)
 	if (file_flag == FILE_READ)
 		file_fd = open(file_name, O_RDONLY, 0644);
 	else if (file_flag == FILE_WRITE)
-		file_fd = open(file_name, O_CREAT | O_WRONLY  | O_TRUNC, 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	else if (file_flag == FILE_APPEND)
-		file_fd = open(file_name, O_CREAT | O_WRONLY  | O_APPEND, 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	else if (file_flag == FILE_RDWR)
-		file_fd = open(file_name, O_CREAT | O_WRONLY , 0644);
+		file_fd = open(file_name, O_CREAT | O_WRONLY, 0644);
 	return (file_fd);
 }
 
@@ -208,7 +160,6 @@ static int	heredoc_tmpfile_handle(char *heredoc_word, int *pipe_fd)
 	return (0);
 }
 
-
 /*
 	시작 부분
 	redirection이 있는지에 따라 달라질 수 있다.
@@ -268,9 +219,8 @@ static int	here_doc(int argc, char **argv, char **envp)
 		perror("pipe");
 		return (126);
 	}
-	(&execute_info)->pipe_fd = argv[3];
+	*(&execute_info)->pipe_fd = argv[3];
 	fork_process(&execute_info);
-	/**/
 	close((&execute_info)->pipe_fd[WRITE_END]);
 	(&execute_info)->heredoc_word = NULL;
 	(&execute_info)->cmd = argv[4];

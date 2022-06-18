@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 12:15:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/14 16:55:48 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/18 18:35:02 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 # define UTILS_H
 # include <stddef.h>
 
-void	ft_putstr(char *s);
 size_t	ft_strlen(const char *s);
+void	ft_putstr(char *s);
 
 int		free_list(char ***word_list);
 char	**ft_split(char const *s, char c);
@@ -27,10 +27,10 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 
 int		ft_strchr(char *s, int c);
-char	*ft_gnl_strjoin(char *s1, char *s2);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 char	*ft_itoa(int n);
+char	*ft_gnl_strjoin(char *s1, char *s2);
 
 size_t	max_nonnegative(char const *s1, char const *s2);
 
