@@ -1,16 +1,12 @@
-#for builtin
-NAME = builtin
+#for linked_list
+NAME = linked_list_simple
 CC = gcc
 #CFLAGS = -Wall -Wextra -Werror
 RM = rm -rf
 
-SRCS = ./main.c	\
-		./change_directory.c \
-		./print_current_working_directory.c \
-		./exit.c \
-		./environment_variable.c \
+SRCS = ./linked_list_simple.c	\
+		./ft_strncmp.c \
 		./utils.c
-
 
 OBJS = $(SRCS:.c=.o)
 

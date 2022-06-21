@@ -1,33 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*   error_msg_handler.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/25 17:37:38 by jim               #+#    #+#             */
-/*   Updated: 2022/06/05 22:25:20 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/21 17:20:57 by jim               #+#    #+#             */
+/*   Updated: 2022/06/21 17:53:20 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
+#include "utils.h"
+#include <stdlib.h>
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+void	combine_err_msg(char *s)
 {
-	size_t	i;
-	size_t	k;
-
-	i = 0;
-	k = 0;
-	while (src[i] != '\0')
-		i++;
-	if (dstsize == 0)
-		return (i);
-	while ((k < dstsize - 1) && src[k])
-	{
-		dst[k] = src[k];
-		k++;
-	}
-	dst[k] = '\0';
-	return (i);
+	// 나만의 미니쉘을 만드는 것이므로 별도로 만들지 않는다.
 }

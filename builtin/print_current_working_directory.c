@@ -6,12 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/05/29 18:19:32 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/21 20:22:33 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
+#include <limits.h>
 #include <unistd.h>
+#include "utils.h"
 /*
  * pwd cmd
  * size에 어떤값을 넣어줘야하는지 애매, buf 사이즈라고 하지만 0을 주어도 동작한다.
@@ -20,17 +22,19 @@
  * 우선은 NULL로하여 구현
  * 세부사항에 대한 확인 필요.
  */
-char*	print_current_working_directory_cmd(void)
+void	print_current_working_directory_cmd(void)
 {
-	char	*buf;
+	char	buf[PATH_MAX];
 	size_t	size;
 
-	buf = NULL;
-	size = 0;
-	/*
-		-ing 수정 필요
-		- size, buf에 대한 체크
-		- getcwd반환값에 대한 체크는 밖에서 하게 할것인가?
-	*/
-	return (getcwd(buf, size));
+	if (getcwd(buf, sizeof(buf)) != NULL)
+	{
+		ft_putstr_fd(buf, STDOUT_FILENO);
+		print_newline_fd(STDOUT_FILENO);
+	}
+	else
+	{
+		ft_putstr_fd(buf, STDERR_FILENO);
+		print_newline_fd(STDERR_FILENO);
+	}
 }

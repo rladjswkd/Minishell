@@ -1,30 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnstr.c                                       :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/25 17:37:48 by jim               #+#    #+#             */
-/*   Updated: 2021/09/13 17:03:47 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/21 14:27:14 by jim               #+#    #+#             */
+/*   Updated: 2022/06/21 18:24:43 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+#include <stddef.h>
 #include "utils.h"
 
-char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+size_t	ft_strlen(char const *s)
 {
-	size_t			needle_len;
+	size_t	len;
 
-	needle_len = ft_strlen(needle);
-	if (needle_len == 0)
-		return ((char *)haystack);
-	while (*haystack && len >= needle_len)
-	{
-		if (!(ft_strncmp(haystack, needle, needle_len)))
-			return ((char *)haystack);
-		haystack++;
-		len--;
-	}
-	return (0);
+	len = 0;
+	while (s[len])
+		len++;
+	return (len);
+}
+
+void	ft_putstr_fd(char const *s, int fd)
+{
+	// if (s == NULL)
+	// 	return ;
+	// NULL check 하는게 맞는가?
+	write(fd, s, ft_strlen(s));
+}
+
+void	print_newline_fd(int fd)
+{
+	write(fd, &"\n", 1);
 }
