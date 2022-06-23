@@ -15,22 +15,13 @@
 #include "linked_list_simple.h"
 #include "utils.h"
 
-/*
-	create List
-	create ListNode
-
-	find
-	add
-	remove
-	delete
-	clear
-	display
-*/
-
 t_LinkedList	*create_linked_list(void)
 {
 	t_LinkedList	*plinked_list;
 
+	plinked_list = (t_LinkedList *)malloc(sizeof(t_LinkedList));
+	if (plinked_list == NULL)
+		return (NULL);
 	plinked_list->list_length = 0;
 	plinked_list->header_node = NULL;
 	return (plinked_list);
@@ -45,6 +36,7 @@ t_LinkedListNode	*create_linked_node(char *str)
 		return (NULL);
 	plinked_node->node_str = str;
 	plinked_node->next_node = NULL;
+	plinked_node->type = NONE;
 	return (plinked_node);
 }
 
@@ -67,15 +59,12 @@ t_LinkedListNode	*get_linked_node(t_LinkedList *pLinkedList, \
 	return (cur_linked_node);
 }
 
-/*
-	position이 0일때를 감안
-*/
 int	add_back_linked_node(t_LinkedList *pLinkedList, \
 						t_LinkedListNode *newLinkedListNode)
 {
 	t_LinkedListNode	*cur_linked_node;
 
-	if (pLinkedList == NULL || newLinkedListNode == NULL)
+	if (pLinkedList == NULL)
 		return (-1);
 	if (pLinkedList->list_length == 0)
 		pLinkedList->header_node = newLinkedListNode;
@@ -158,8 +147,8 @@ int	delete_linked_list(t_LinkedList **pLinkedList)
 	if (pLinkedList == NULL || *pLinkedList == NULL)
 		return (-1);
 	clear_linked_list(*pLinkedList);
-	free(pLinkedList);
-	pLinkedList = NULL;
+	free(*pLinkedList);
+	*pLinkedList = NULL;
 	return (0);
 }
 
@@ -176,12 +165,15 @@ int	display_linked_list(t_LinkedList *pLinkedList)
 		return (-1);
 	}
 	curNode = pLinkedList->header_node;
-	// printf("in display function()\n");
+	printf("======== in display function() ========\n");
 	while (curNode)
 	{
-		printf("%s\t", curNode->node_str);
+		printf("%s", curNode->node_str);
+		if (curNode->next_node)
+			printf("->");
 		curNode = curNode->next_node;
 	}
+	printf("\n");
 	return (0);
 }
 
@@ -191,7 +183,7 @@ int	main(int argc, char **argv)
 {
 	t_LinkedList		*pLinkedList;
 	t_LinkedListNode	*plinked_node;
-	size_t			idx;
+	size_t				idx;
 	/*
 		test
 		sentence
@@ -202,10 +194,12 @@ int	main(int argc, char **argv)
 	pLinkedList = create_linked_list();
 	if (pLinkedList == NULL)
 		return (1);
+	// printf("pLinkedList->list_length in main() : %zu\n", pLinkedList->list_length);
 	idx = 1;
 	while (argc > idx)
 	{
-		plinked_node = create_linked_node(argv[idx]);
+		// printf("argv[idx] : %s\n", argv[idx]);
+		plinked_node = create_linked_node(argv[idx]);		
 		// printf("plinked_node->data_str : %s\n", plinked_node->node_str);
 		if (plinked_node == NULL)
 		{
@@ -213,11 +207,16 @@ int	main(int argc, char **argv)
 			return (1);
 		}
 		add_back_linked_node(pLinkedList, plinked_node);
+		// free(plinked_node);
+		// plinked_node = NULL;
 		idx++;
 	}
 	display_linked_list(pLinkedList);
+	delete_linked_list(&pLinkedList);
+	display_linked_list(pLinkedList);
 	clear_linked_list(pLinkedList);
-	// display_linked_list(pLinkedList);
+	display_linked_list(pLinkedList);
 	//delete pLinkedList
 	return (0);
 }
+

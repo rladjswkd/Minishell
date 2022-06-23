@@ -14,10 +14,25 @@
 # define LINKED_LIST_SIMPLE_H
 # include <stddef.h>
 
+/*
+	t_token_type에 대한 대분류 필요
+	추가적으로 더 들어갈 것들은 무엇인가?
+*/
+typedef enum e_token_type
+{
+	NONE,
+	TEXT,
+	REDIR,
+	PIPE,
+	S_QUOTE,
+	D_QUOTE,
+}			t_token_type;
+
 typedef struct s_LinkedListNode
 {
 	struct s_LinkedListNode	*next_node;
 	char					*node_str;
+	t_token_type			type;
 }				t_LinkedListNode;
 
 typedef struct s_LinkedList
