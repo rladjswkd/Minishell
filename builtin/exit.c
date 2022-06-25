@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/06/21 17:44:07 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/25 16:14:41 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 	- long long 넘어가는 것은 어떻게할 것인가?
 	- 애초에 문자열인 케이스는 어떻게 파악할것인가?
 	- 기존 atol, atoi를 이용해서 확인한다.
-
+	-
 */
 static long long	ft_atol(char *str)
 {
@@ -30,7 +30,6 @@ static long long	ft_atol(char *str)
 	idx = 0;
 	while (str[idx])
 	{
-
 		idx++;
 	}
 	return (0);

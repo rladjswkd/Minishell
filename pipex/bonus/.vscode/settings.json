@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "pipex.h": "c",
-        "get_next_line.h": "c",
-        "utils.h": "c"
-    }
-}
