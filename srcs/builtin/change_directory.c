@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/06/21 20:00:14 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/26 18:21:35 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,13 @@
  * cd만 들어오는 경우에는 $HOME으로 이동필요
  * 파싱결과를 자료구조에 어떻게 저장하느냐에 따라 달라짐
  * PWD, OLDPWD에 저장이 필요하다.
+ * cd ../ a
+ * 이동된다 하지만 cd a ../는 안된다.
+ * cd (유효경로) (유효하지 않은 경로)
+ * builtin에 대한 에러니까 builtint
+ * .., ../ 처리 "/"위치에서의 ../ 처리 필요
  */
-int	change_directory_cmd(const char *path)
+int	change_directory_cmd(const char **path)
 {
 	int	ret;
 
@@ -37,10 +42,16 @@ int	change_directory_cmd(const char *path)
 		print_newline_fd(STDERR_FILENO);
 	}
 	else
-	{
-		;
-		// PWD
-		// OLDPWD에 저장필요
-	}
+		exit(1);
+	/*
+		시스템콜 에러가 발생하면 exit하는게 맞는가?
+		그러고서 exit code를 주면 되는가?
+	*/
 	return (ret);
 }
+/*
+signal 들어왔을때 exit code전달을 어떻게할지 애매하므로 전역변수가 필요하다.
+signal이 들어왔을때 호출되는 함수가 있고
+ctrl + c(SIGINT)만 처리하면 된다.(1로 처리)
+echo $?
+*/

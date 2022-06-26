@@ -17,10 +17,21 @@
 
 typedef struct s_LinkedListNode
 {
-	struct s_LinkedListNode	*next_node;
-	char					*node_str;
-	t_token_type			type;
+	void			*next_node;
+	void			*data;
 }				t_LinkedListNode;
+
+typedef struct s_env_node
+{
+	char	*key;
+	char	*value;
+}				t_env_node;
+
+typedef struct s_parse_node
+{
+	char			*token_val;
+	t_token_type	type;
+}				t_parse_node;
 
 typedef struct s_LinkedList
 {
