@@ -21,7 +21,7 @@ extern char	**environ;
  * linked list에 넣어둔다.
  * 명령어가 들어오면 해당 linked list를 가져온다.
  */
-int	env_cmd()
+int	env_cmd(t_env env)
 {
 	int i = 0;
 

@@ -9,6 +9,7 @@ SRCS = ./main.c	\
 		./print_current_working_directory.c \
 		./exit.c \
 		./environment_variable.c \
+		./echo.c \
 		./utils.c
 
 

@@ -13,8 +13,10 @@
 #ifndef BUILTIN_H
 # define BUILTIN_H
 
+// int		change_directory_cmd(char const **path);
 int		change_directory_cmd(const char *path);
 char	*print_current_working_directory_cmd(void);
-void	exit_cmd(int status);
+int		echo_cmd(char **arg_list);
+// int		echo_cmd(char **arg_list, char **option);
 
 #endif

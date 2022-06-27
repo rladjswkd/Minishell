@@ -45,7 +45,9 @@ static long long	ft_atol(char *str)
  */
 void	exit_cmd(char *status)
 {
-	if (status <= (__LONG_LONG_MAX__) && status <= INT64_MIN)
-		ft_putstr_fd("numeric argument required", STDERR_FILENO);
-	exit((char)status);
+	printf("exit\n");
+	// if (status <= (__LONG_LONG_MAX__) && status <= INT64_MIN)
+	// 	ft_putstr_fd("numeric argument required", STDERR_FILENO);
+	// exit((char)status);
+	;
 }
