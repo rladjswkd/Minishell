@@ -23,8 +23,8 @@ typedef enum e_tf_flag
 
 typedef enum e_sf_flag
 {
+	FAIL = -1,
 	SUCCESS,
-	FAIL,
 }			t_sf_flag;
 
 // int		change_directory_cmd(char const **path);

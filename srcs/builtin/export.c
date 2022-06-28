@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-	첫번쨰 =를 기준으로 저장한다.
-*/
-
 #include "env_list.h"
 #include "builtin.h"
 #include "utils.h"
@@ -48,33 +44,64 @@ static t_env_node	*find_export_key(t_env_list *env_list, char *key)
 /*
 	- "="이 있는지 확인한다.
 	- 없으면 해당 인자를 key로만 넣고 value를  NULL로 처리힌다.
+	- 종류별 에러는 에러문구를 define을 통해서 처리할수도 있다.
 */
-static int	str_to_export_list(t_env_list *env_list, char *str)
+
+static int	find_key_value_str(char *argv, char *key, char *value)
 {
-	
+	int			delimiter_idx;
+
+	delimiter_idx = ft_strchr(argv, '=');
+	key = ft_strndup(argv, delimiter_idx);
+	if (key == NULL)
+		return (-1); //할당에러처리 이곳에서 호출한 다음에 exit()한다. , 자식프로세스에서 하는것이라 종료값($?)을 받을 수 있다.
+	value = NULL;
+	if (delimiter_idx >= 0)
+	{
+		value = ft_strndup(&(argv[delimiter_idx + 1]), \
+					ft_strlen(argv) - (delimiter_idx + 1));
+		if (value == NULL)
+			return (-1);
+	}
 }
 
 static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 {
-	t_env_node	*cur_node;
+	t_env_node	*new_node;
 	t_env_node	*found_node;
 	size_t		idx;
 	char		*key;
-	int			delimiter_idx;
+	char		*value;
 
-	cur_node = env_list->header_node;
 	idx = 0;
 	while (arg_list[idx])
 	{
-		delimiter_idx = ft_strchr(arg_list[idx], '=');
-		key = ft_strndup(arg_list[idx], delimiter_idx);
-		if (key == NULL)
-			return (-1);
+		// find_key_value_str return 값을 받아서 error msg 처리할 것인가?
+		find_key_value_str(arg_list[idx], key, value);
 		found_node = find_export_key(env_list, key);
+		if (found_node != NULL)
+			found_node->value = value;
+		else
+		{
+			//linked list에서 포인터를 가지고 있으니까 leak 안나는가?
+			new_node = create_env_node(key, value);
+			if (new_node == NULL)
+				return (-1);
+			add_back_env_node(env_list, new_node);
+		}
 		idx++;
 	}
-	add_back_env_node(env_list,);
 	return (0);
+}
+
+/*
+ - = + file스타일의 이름명이 아니면 error인것으로 판단된다.
+ isalpha_num과 under_bar까지만 된다.
+*/
+static int	check_valid(char *argv)
+{
+
+	return (FAIL);
 }
 
 int	export_cmd(t_env_list *env_list, char **arg_list)
