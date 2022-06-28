@@ -33,14 +33,39 @@
 // option이 있을때에 대한 처리가 필요하다.
 // builtin별로 일관된 처리가 어렵다.
 // 결국 builtin별로 나눠서 처리할것인가?
+/*
+	첫번째 argument가 -n으로 시작해서 중간에 다른 문자없이 끝나면 개행제거이다
+*/
+
+int	is_n_option(char *argv)
+{
+	size_t	idx;
+
+	idx = 0;
+	if (argv[idx] == '-')
+	{
+		while (argv[idx] == 'n')
+			idx++;
+		if (argv[idx] == '\0')
+			return (TRUE);
+	}
+	return (FALSE);
+}
+
 int	echo_cmd(char **arg_list)
 {
 	int	idx;
+	int	newline_flag;
 
 	idx = 0;
+	newline_flag = TRUE;
+	if (is_n_option(arg_list[idx]) == TRUE)
+		newline_flag = FALSE;
 	while (arg_list[idx])
 	{
-		printf("%s\n", arg_list[idx]);
+		ft_putstr_fd(arg_list[idx], STDOUT_FILENO);
+		if (newline_flag == TRUE)
+			print_newline_fd(STDOUT_FILENO);
 		// ft_putstr_fd(STDOUT_FILENO, arg_list[idx], ft_strlen(arg_list[idx]));
 		// print_newline_fd(STDOUT_FILENO);
 		idx++;

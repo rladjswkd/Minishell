@@ -38,7 +38,8 @@ void	print_current_working_directory_cmd(void)
 	}
 	else
 	{
-		ft_putstr_fd(buf, STDERR_FILENO);
-		print_newline_fd(STDERR_FILENO);
+		// error handling
+		// ft_putstr_fd(buf, STDERR_FILENO);
+		// print_newline_fd(STDERR_FILENO);
 	}
 }

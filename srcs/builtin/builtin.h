@@ -14,6 +14,19 @@
 # define BUILTIN_H
 
 # include "env_list.h"
+
+typedef enum e_tf_flag
+{
+	FALSE,
+	TRUE,
+}			t_tf_flag;
+
+typedef enum e_sf_flag
+{
+	SUCCESS,
+	FAIL,
+}			t_sf_flag;
+
 // int		change_directory_cmd(char const **path);
 int		change_directory_cmd(const char *path);
 char	*print_current_working_directory_cmd(void);

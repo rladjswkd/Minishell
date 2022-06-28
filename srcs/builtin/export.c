@@ -51,10 +51,10 @@ static t_env_node	*find_export_key(t_env_list *env_list, char *key)
 */
 static int	str_to_export_list(t_env_list *env_list, char *str)
 {
-
+	
 }
 
-static int	add_to_export_list(t_env_list *env_list, char **argument)
+static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 {
 	t_env_node	*cur_node;
 	t_env_node	*found_node;
@@ -64,10 +64,10 @@ static int	add_to_export_list(t_env_list *env_list, char **argument)
 
 	cur_node = env_list->header_node;
 	idx = 0;
-	while (argument[idx])
+	while (arg_list[idx])
 	{
-		delimiter_idx = ft_strchr(argument[idx], '=');
-		key = ft_strndup(argument[idx], delimiter_idx);
+		delimiter_idx = ft_strchr(arg_list[idx], '=');
+		key = ft_strndup(arg_list[idx], delimiter_idx);
 		if (key == NULL)
 			return (-1);
 		found_node = find_export_key(env_list, key);
@@ -77,15 +77,15 @@ static int	add_to_export_list(t_env_list *env_list, char **argument)
 	return (0);
 }
 
-int	export_cmd(t_env_list *env_list, char **argument)
+int	export_cmd(t_env_list *env_list, char **arg_list)
 {
 	if (env_list == NULL)
 		return (-1); // system 종료해야할 문제
-	if (argument == NULL)
+	if (arg_list == NULL)
 		print_export_list(env_list);
 	else
 	{
-		if (add_to_export_list(env_list, argument) < 0)
+		if (add_to_export_list(env_list, arg_list) < 0)
 			return (1);// error_msg();
 		print_export_list(env_list);
 	}
