@@ -1,25 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/18 18:34:25 by jim               #+#    #+#             */
+/*   Updated: 2022/06/18 18:34:43 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+char	*ft_gnl_strjoin(char *s1, char *s2)
 {
+	char	*dst;
 	size_t	s1_size;
 	size_t	s2_size;
 
+	if (s2 == NULL)
+		return (NULL);
+	if (s1 == NULL)
+	{
+		s1 = ft_strdup("");
+		if (s1 == NULL)
+			return (NULL);
+	}
 	s1_size = ft_strlen(s1);
 	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	dst = (char *)malloc(sizeof(char) * (s1_size + s2_size + 1));
+	if (dst == NULL)
+	{
+		free(s1);
+		return (NULL);
+	}
+	ft_strlcpy(dst, s1, s1_size + 1);
+	free(s1);
+	ft_strlcat(dst, s2, s1_size + s2_size + 1);
+	return (dst);
 }

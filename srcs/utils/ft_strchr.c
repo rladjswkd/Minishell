@@ -1,25 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/28 19:20:31 by jim               #+#    #+#             */
+/*   Updated: 2022/06/28 19:20:31 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+int	ft_strchr(char *s, int c)
 {
-	size_t	s1_size;
-	size_t	s2_size;
+	size_t	idx;
 
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	if (s == NULL)
+		return (-1);
+	idx = 0;
+	while (s[idx])
+	{
+		if (s[idx] == (char)c)
+			return (idx);
+		idx++;
+	}
+	if (s[idx] == (char)c)
+		return (idx);
+	return (-1);
 }

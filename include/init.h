@@ -1,34 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   environment_variable.c                             :+:      :+:    :+:   */
+/*   init.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/29 18:19:06 by jim               #+#    #+#             */
-/*   Updated: 2022/06/21 20:21:06 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/28 19:27:31 by jim               #+#    #+#             */
+/*   Updated: 2022/06/28 21:05:23 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
+#ifndef INIT_H
+# define INIT_H
 
-extern char	**environ;
+# include "env_list.h"
 
-/*
- * test
- * environ은 전역변수를 쓰지말고 main에서 처음에 init한다.
- * linked list에 넣어둔다.
- * 명령어가 들어오면 해당 linked list를 가져온다.
- */
-int	env_cmd(t_env env)
-{
-	int i = 0;
+int	init_value(t_env_list	*env_list, char **envp);
 
-	while(environ[i])
-	{
-		printf("%s\n", environ[i]);
-		i++;
-	}
-	return (0);
-}
+#endif

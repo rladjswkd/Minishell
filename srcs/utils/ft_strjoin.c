@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/18 18:35:18 by jim               #+#    #+#             */
+/*   Updated: 2022/06/18 18:35:27 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	size_t	s1_size;
-	size_t	s2_size;
+	char	*dst;
+	size_t	dstsize;
 
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	dstsize = ft_strlen(s1) + ft_strlen(s2) + 1;
+	dst = (char *)malloc(sizeof(char) * (dstsize));
+	if (!dst)
+		return (0);
+	ft_strlcpy(dst, s1, ft_strlen(s1) + 1);
+	ft_strlcat(dst, s2, dstsize);
+	return (dst);
 }

@@ -1,25 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/06/18 18:32:43 by jim               #+#    #+#             */
+/*   Updated: 2022/06/18 18:33:06 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include <stddef.h>
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+size_t	ft_strlen(const char *s)
 {
-	size_t	s1_size;
-	size_t	s2_size;
+	size_t	idx;
 
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	idx = 0;
+	while (s[idx])
+		idx++;
+	return (idx);
 }

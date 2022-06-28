@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/06/26 19:32:04 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/28 21:26:18 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,8 @@
 	- 결과를 자료구조에 담아야한다.
 */
 
-#include "linked_list.h"
-
-typedef struct s_env
-{
-	linked_list	*key_list;
-	linked_list	*value_list;
-}				t_env;
+#include "env_list.h"
+#include "utils.h"
 
 /*
 	linked로 하면 몇개가 들어올지 신경안써도 되지만
@@ -37,25 +32,33 @@ typedef struct s_env
 	우선은 linked를 활용해본다.
 	불편하면 array list로 변경가능.
 */
-
-int	init(char **envp)
+#include <stdio.h>
+//debug
+int	init_value(t_env_list	*env_list, char **envp)
 {
-	t_env	env;
-	size_t	idx;
+	size_t		idx;
+	size_t		delimiter_idx;
+	t_env_node	*cur_node;
+	char		*key;
+	char		*value;
 
-	// error handling 필요
-	key_list = create_linked_list();
-	if (env->key_list == NULL)
-		return (-1);
-	value_list = create_linked_list();
-	if (env->value_list == NULL)
-		return (-1);
 	idx = 0;
+	cur_node = env_list->header_node;
 	while (envp[idx])
 	{
-		create_linked_node()
+		delimiter_idx = ft_strchr(envp[idx], '=');
+		key = ft_strndup(envp[idx], delimiter_idx);
+		if (key == NULL)
+			return (-1);
+		value = ft_strndup(&(envp[idx][delimiter_idx + 1]), \
+						ft_strlen(envp[idx]) - (delimiter_idx + 1));
+		if (value == NULL)
+			return (-1);
+		cur_node = create_env_node(key, value);
+		if (cur_node == NULL)
+			return (-1);
+		add_back_env_node(env_list, cur_node);
 		idx++;
 	}
-	ft_strnstr();
-
+	return (0);
 }

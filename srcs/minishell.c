@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/06/25 14:42:19 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/28 22:02:55 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
-
+#include "init.h"
 /*
 	- tokenize
 		- 문자와 그렇지 않는것으로 나눈다.
@@ -40,13 +40,31 @@ void	handler(int signum)
 	rl_redisplay();
 }
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
-	int		fd;
+	char		*input;
+	int			fd;
+	t_env_list	*env_list;
+	t_env_node	*cur_node;
 
 	// signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, handler);
+	// signal(SIGINT, handler);
+	size_t	idx = 0;
+	env_list = create_env_list();
+	if (env_list == NULL)
+		return (1);
+	init_value(env_list, envp);
+	// cur_node = env_list->header_node;
+	// while (cur_node)
+	// {
+	// 	printf("cur_node.key : %s\n", cur_node->key);
+	// 	printf("cur_node.value : %s\n", cur_node->value);
+	// 	cur_node = cur_node->next_node;
+	// }
+	// env_cmd(env_list, char **argument);
+	// export_cmd(env_list, char **argument);
+	// unset_cmd(env_cmd(env_list))
+	/*
 	while (1)
 	{
 		// isatty(STDIN)
@@ -56,5 +74,6 @@ int	main(void)
 		preprocess(input);
 		add_history(input);
 	}
+	*/
 	return (0);
 }

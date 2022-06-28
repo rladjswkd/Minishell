@@ -1,25 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2021/06/25 17:37:38 by jim               #+#    #+#             */
+/*   Updated: 2022/06/05 22:25:20 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include <stddef.h>
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
-	size_t	s1_size;
-	size_t	s2_size;
+	size_t	i;
+	size_t	k;
 
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	i = 0;
+	k = 0;
+	while (src[i] != '\0')
+		i++;
+	if (dstsize == 0)
+		return (i);
+	while ((k < dstsize - 1) && src[k])
+	{
+		dst[k] = src[k];
+		k++;
+	}
+	dst[k] = '\0';
+	return (i);
 }

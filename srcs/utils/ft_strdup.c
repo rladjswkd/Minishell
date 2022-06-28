@@ -1,25 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2021/06/29 20:48:23 by jim               #+#    #+#             */
+/*   Updated: 2022/06/05 22:24:51 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
+#include <stdlib.h>
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+char	*ft_strdup(const char *s1)
 {
+	char	*dest;
+	size_t	idx;
 	size_t	s1_size;
-	size_t	s2_size;
 
+	if (s1 == NULL)
+		return (NULL);
 	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	dest = (char *)malloc(sizeof(char) * (s1_size + 1));
+	if (dest == NULL)
+		return (NULL);
+	idx = 0;
+	while (s1[idx])
+	{
+		dest[idx] = s1[idx];
+		idx++;
+	}
+	dest[idx] = 0;
+	return (dest);
 }

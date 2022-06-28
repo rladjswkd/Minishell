@@ -1,25 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:45 by jim              ###   ########seoul.kr  */
+/*   Created: 2021/06/25 17:37:48 by jim               #+#    #+#             */
+/*   Updated: 2021/09/13 17:03:47 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-size_t	max_nonnegative(char const *s1, char const *s2)
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 {
-	size_t	s1_size;
-	size_t	s2_size;
+	size_t			needle_len;
 
-	s1_size = ft_strlen(s1);
-	s2_size = ft_strlen(s2);
-	if (s1_size > s2_size)
-		return (s1_size);
-	return (s2_size);
+	needle_len = ft_strlen(needle);
+	if (needle_len == 0)
+		return ((char *)haystack);
+	while (*haystack && len >= needle_len)
+	{
+		if (!(ft_strncmp(haystack, needle, needle_len)))
+			return ((char *)haystack);
+		haystack++;
+		len--;
+	}
+	return (0);
 }

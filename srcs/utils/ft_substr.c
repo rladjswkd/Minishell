@@ -1,38 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/21 14:27:14 by jim               #+#    #+#             */
-/*   Updated: 2022/06/21 18:24:43 by jim              ###   ########seoul.kr  */
+/*   Created: 2021/06/25 17:37:51 by jim               #+#    #+#             */
+/*   Updated: 2022/06/05 22:25:42 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stddef.h>
 #include "utils.h"
+#include <stdlib.h>
 
-size_t	ft_strlen(char const *s)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	size_t	len;
+	char	*str;
+	size_t	s_len;
+	int		diff;
 
-	len = 0;
-	while (s[len])
-		len++;
-	return (len);
-}
-
-void	ft_putstr_fd(char const *s, int fd)
-{
-	// if (s == NULL)
-	// 	return ;
-	// NULL check 하는게 맞는가?
-	write(fd, s, ft_strlen(s));
-}
-
-void	print_newline_fd(int fd)
-{
-	write(fd, &"\n", 1);
+	s_len = ft_strlen(s);
+	diff = s_len - start;
+	if (diff <= 0)
+		return (ft_strdup(""));
+	else if (diff > 0 && (size_t)diff < len)
+		len = (size_t)diff;
+	str = (char *)malloc(sizeof(char) * (len + 1));
+	if (str == NULL)
+		return (NULL);
+	ft_strlcpy(str, (s + start), len + 1);
+	return (str);
 }
