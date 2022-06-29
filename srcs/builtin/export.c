@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 22:46:45 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/29 11:08:55 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,11 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 		find_key_value_str(arg_list[idx], key, value);
 		found_node = find_export_key(env_list, key);
 		if (found_node != NULL)
+		{
+			if (found_node->value != NULL)
+				free(found_node->value);
 			found_node->value = value;
+		}
 		else
 		{
 			//linked list에서 포인터를 가지고 있으니까 leak 안나는가?
