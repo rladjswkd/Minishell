@@ -57,18 +57,18 @@ int	echo_cmd(char **arg_list)
 	int	idx;
 	int	newline_flag;
 
-	idx = 0;
 	newline_flag = TRUE;
 	if (is_n_option(arg_list[idx]) == TRUE)
 		newline_flag = FALSE;
+	idx = 0;
 	while (arg_list[idx])
 	{
 		ft_putstr_fd(arg_list[idx], STDOUT_FILENO);
 		if (newline_flag == TRUE)
 			print_newline_fd(STDOUT_FILENO);
+		idx++;
 		// ft_putstr_fd(STDOUT_FILENO, arg_list[idx], ft_strlen(arg_list[idx]));
 		// print_newline_fd(STDOUT_FILENO);
-		idx++;
 	}
 	return (0);
 }

@@ -26,7 +26,7 @@
  * 그렇게되면 builtin별로 처리가 달라지므로
  * 모든 builtin 함수에서 통일성 있게 파라미터를 받고 처리는 거기서 한다.
  */
-void	print_current_working_directory_cmd(void)
+void	pwd_cmd(void)
 {
 	char	buf[PATH_MAX];
 	size_t	size;

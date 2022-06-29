@@ -46,7 +46,6 @@ static t_env_node	*find_export_key(t_env_list *env_list, char *key)
 	- 없으면 해당 인자를 key로만 넣고 value를  NULL로 처리힌다.
 	- 종류별 에러는 에러문구를 define을 통해서 처리할수도 있다.
 */
-
 static int	find_key_value_str(char *argv, char *key, char *value)
 {
 	int			delimiter_idx;
@@ -76,6 +75,8 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 	idx = 0;
 	while (arg_list[idx])
 	{
+		if (arg_list == NULL)
+			check_valid(arg_list[idx]);
 		// find_key_value_str return 값을 받아서 error msg 처리할 것인가?
 		find_key_value_str(arg_list[idx], key, value);
 		found_node = find_export_key(env_list, key);
@@ -98,10 +99,25 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
  - = + file스타일의 이름명이 아니면 error인것으로 판단된다.
  isalpha_num과 under_bar까지만 된다.
 */
+static int	is_alpha(char ch)
+{
+	if (ch >= 'a' && ch <= 'z' \
+		|| ch >= 'A' && ch <= 'Z')
+		return (TRUE);
+	return (FALSE);
+}
+
+/*
+	첫번째 문자 말고 나머지에 -같은 기호가 나와도 문제이다.
+	첫번쨰 문자에는 문자와 _까지만 가능하다.
+	gnu bash 참조
+*/
 static int	check_valid(char *argv)
 {
-
-	return (FAIL);
+	if (is_alpha_num(argv[0]) == TRUE \
+		|| argv[0] == '_')
+		return (TRUE);
+	return (FALSE);
 }
 
 int	export_cmd(t_env_list *env_list, char **arg_list)

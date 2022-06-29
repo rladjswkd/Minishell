@@ -10,3 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "env_list.h"
+
+int	unset_cmd(t_env_list *env_list, char **arg_list)
+{
+
+}

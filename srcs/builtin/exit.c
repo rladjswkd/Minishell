@@ -41,10 +41,11 @@ static long long	ft_atol(char *str)
  * exit 1이나 다른 값은 정상처리된다.
  * exit character, string의 경우 error 문구발생
  * builtin별로 인자에 대한 처리가 나뉘므로 그에 따른 예외처리 추가적으로 필요
- *
+ * 인자가 여러개이면 too many argument로 처리한다.
  */
-void	exit_cmd(char *status)
+void	exit_cmd(char **status)
 {
+		
 	printf("exit\n");
 	// if (status <= (__LONG_LONG_MAX__) && status <= INT64_MIN)
 	// 	ft_putstr_fd("numeric argument required", STDERR_FILENO);

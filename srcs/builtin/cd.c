@@ -50,10 +50,13 @@ static size_t	word_cnt(char const **path)
 	return (cnt);
 }
 
-int	change_directory_cmd(char *path)
+int	cd_cmd(char **path)
 {
 	int	ret;
 
+	// 경로가 여러개면 minishell: cd: too many arguments 처리할 것
+	if (word_cnt(path) > 1)
+		print
 	ret = chdir(path);
 	if (ret < 0)
 	{

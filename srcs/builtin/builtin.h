@@ -28,8 +28,8 @@ typedef enum e_sf_flag
 }			t_sf_flag;
 
 // int		change_directory_cmd(char const **path);
-int		change_directory_cmd(const char *path);
-char	*print_current_working_directory_cmd(void);
+int		cd_cmd(const char *path);
+char	*pwd_cmd(void);
 int		echo_cmd(char **arg_list);
 void	exit_cmd(char **status);
 // int		echo_cmd(char **arg_list, char **option);
