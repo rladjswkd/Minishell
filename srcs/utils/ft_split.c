@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/25 17:37:51 by jim               #+#    #+#             */
-/*   Updated: 2022/06/06 21:22:53 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 11:52:16 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,6 @@ static int	ft_alloc_word(char const *s, char c, char **word_list)
 	return (1);
 }
 
-/*
-- delimeter를 배열로 해야한다
-  ' ', '\t'까지 되어야한다.
-*/
 static size_t	ft_word_cnt(char const *s, char c)
 {
 	size_t	word_cnt;
@@ -65,9 +61,6 @@ static size_t	ft_word_cnt(char const *s, char c)
 	}
 	return (word_cnt);
 }
-
-#include <stdio.h>
-// debug
 
 int	free_list(char ***word_list)
 {

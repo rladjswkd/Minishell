@@ -6,14 +6,18 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/29 11:08:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/06/30 17:23:57 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_list.h"
 #include "builtin.h"
 #include "utils.h"
+// debug
+#include <stdio.h>
+#include <stdlib.h>
 
+static int	check_valid(char *argv);
 static void	print_export_list(t_env_list *env_list)
 {
 	t_env_node	*cur_node;
@@ -118,13 +122,13 @@ static int	is_alpha(char ch)
 */
 static int	check_valid(char *argv)
 {
-	if (is_alpha_num(argv[0]) == TRUE \
+	if (is_alpha(argv[0]) == TRUE \
 		|| argv[0] == '_')
 		return (TRUE);
 	return (FALSE);
 }
 
-int	export_cmd(t_env_list *env_list, char **arg_list)
+int	export_cmd(t_env_list *env_list, const char **arg_list)
 {
 	if (env_list == NULL)
 		return (-1); // system 종료해야할 문제

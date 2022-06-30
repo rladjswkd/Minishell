@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:06 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 22:10:07 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:23:54 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * linked list에 넣어둔다.
  * 명령어가 들어오면 해당 linked list를 가져온다.
  */
-int	env_cmd(t_env_list	*env_list, char **arg_list)
+int	env_cmd(t_env_list	*env_list, const char **arg_list)
 {
 	t_env_node	*cur_node;
 

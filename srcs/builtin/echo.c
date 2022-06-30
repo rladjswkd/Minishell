@@ -6,13 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 22:25:57 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:23:26 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <unistd.h>
 #include "builtin.h"
+#include "utils.h"
 
 /*
  * ", ' 같은 부분은 파싱되었다는 가정하에 해당 명령어에 케이스에 따른 예외처리를 진행한다.
@@ -52,7 +53,7 @@ int	is_n_option(char *argv)
 	return (FALSE);
 }
 
-int	echo_cmd(char **arg_list)
+int	echo_cmd(const char **arg_list)
 {
 	int	idx;
 	int	newline_flag;
@@ -65,7 +66,7 @@ int	echo_cmd(char **arg_list)
 	{
 		ft_putstr_fd(arg_list[idx], STDOUT_FILENO);
 		if (newline_flag == TRUE)
-			print_newline_fd(STDOUT_FILENO);
+			write(STDOUT_FILENO, &"\n", 1);
 		idx++;
 		// ft_putstr_fd(STDOUT_FILENO, arg_list[idx], ft_strlen(arg_list[idx]));
 		// print_newline_fd(STDOUT_FILENO);

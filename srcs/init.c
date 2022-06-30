@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 21:26:18 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:02:55 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 
 #include "env_list.h"
 #include "utils.h"
+#include <stdlib.h>
 
 /*
 	linked로 하면 몇개가 들어올지 신경안써도 되지만
@@ -34,6 +35,28 @@
 */
 #include <stdio.h>
 //debug
+
+/*
+	init할때 할당에서 실패한다면 어떻게 종료시킬것인가?
+	error 문구는 어떻게 표현할것인가?
+	표현이 필요한가?
+	이전에 할당된 부분만
+*/
+
+static int	free_key_value(char **key, char **value)
+{
+	free(*key);
+	*key = NULL;
+	free(*value);
+	*value = NULL;
+	return (-1);
+}
+
+
+/*
+ * 추후 줄 줄이기에 들어가야한다.
+ *
+ */
 int	init_value(t_env_list	*env_list, char **envp)
 {
 	size_t		idx;
@@ -53,10 +76,10 @@ int	init_value(t_env_list	*env_list, char **envp)
 		value = ft_strndup(&(envp[idx][delimiter_idx + 1]), \
 						ft_strlen(envp[idx]) - (delimiter_idx + 1));
 		if (value == NULL)
-			return (-1);
+			free_key_value(&key, NULL);
 		cur_node = create_env_node(key, value);
 		if (cur_node == NULL)
-			return (-1);
+			free_key_value(&key, &value);
 		add_back_env_node(env_list, cur_node);
 		idx++;
 	}

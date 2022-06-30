@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:18:58 by jim               #+#    #+#             */
-/*   Updated: 2022/05/29 18:18:59 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:24:07 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_list.h"
 
-int	unset_cmd(t_env_list *env_list, char **arg_list)
+int	unset_cmd(t_env_list *env_list, const char **arg_list)
 {
-
+	return (0);
 }

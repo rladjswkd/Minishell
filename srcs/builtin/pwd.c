@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_current_working_directory.c                  :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/06/26 18:22:17 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:05:02 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 #include <limits.h>
 #include <unistd.h>
+#include <sys/errno.h>
+#include <stdio.h>
+#include <string.h>
 #include "utils.h"
 /*
  * pwd cmd
@@ -25,6 +28,7 @@
  * 아예 안받고 파싱부에서 다 지워버린다?
  * 그렇게되면 builtin별로 처리가 달라지므로
  * 모든 builtin 함수에서 통일성 있게 파라미터를 받고 처리는 거기서 한다.
+ * ast node에 인자가 있다면 그부분은 어떻게 처리할 것인가?
  */
 void	pwd_cmd(void)
 {
@@ -34,12 +38,8 @@ void	pwd_cmd(void)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		ft_putstr_fd(buf, STDOUT_FILENO);
-		print_newline_fd(STDOUT_FILENO);
+		write(STDOUT_FILENO, &"\n", 1);
 	}
 	else
-	{
-		// error handling
-		// ft_putstr_fd(buf, STDERR_FILENO);
-		// print_newline_fd(STDERR_FILENO);
-	}
+		error_handler("pwd", NULL, strerror(errno), errno);
 }

@@ -6,11 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 18:33:37 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 22:25:27 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/06/30 17:10:05 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
+#include <unistd.h>
 
 void	ft_putstr_fd(const char *s, int fd)
 {
