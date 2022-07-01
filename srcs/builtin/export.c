@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:23:57 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/01 11:32:07 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
  - = + file스타일의 이름명이 아니면 error인것으로 판단된다.
  isalpha_num과 under_bar까지만 된다.
 */
-static int	is_alpha(char ch)
+int	ft_is_alpha(char ch)
 {
 	if (ch >= 'a' && ch <= 'z' \
 		|| ch >= 'A' && ch <= 'Z')

@@ -6,17 +6,20 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:13:49 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/01 19:13:01 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 # include <stddef.h>
-# include <stdbool.h>
 # define SHELL_NAME "minishell"
 
-bool	is_whitespace(char const ch);
+
+
+int	    is_whitespace(char const ch);
+int	    ft_isalpha(int ch);
+int	    ft_isnum(int ch);
 
 size_t	ft_strlen(const char *s);
 

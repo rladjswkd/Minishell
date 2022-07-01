@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:15:57 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:25:14 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/01 18:45:23 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 # define BUILTIN_H
 
 # include "env_list.h"
-
+# define LONGLONG_MAX_STR "9223372036854775807"
+# define LONGLONG_MIN_STR "-9223372036854775808"
 typedef enum e_tf_flag
 {
 	FALSE,
