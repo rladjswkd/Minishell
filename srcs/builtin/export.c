@@ -128,15 +128,18 @@ static int	check_valid(char *argv)
 	return (FALSE);
 }
 
-int	export_cmd(t_env_list *env_list, const char **arg_list)
+int	export_cmd(t_env_list *env_list, const char **argument)
 {
 	if (env_list == NULL)
-		return (-1); // system 종료해야할 문제
-	if (arg_list == NULL)
+	{
+		print_error(SHELL_NAME, "env", NULL, "env list is NULL");
+		return (1);
+	}
+	if (argument == NULL)
 		print_export_list(env_list);
 	else
 	{
-		if (add_to_export_list(env_list, arg_list) < 0)
+		if (add_to_export_list(env_list, argument) < 0)
 			return (1);// error_msg();
 		print_export_list(env_list);
 	}

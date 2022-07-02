@@ -11,108 +11,9 @@
 /* ************************************************************************** */
 
 #include <stdlib.h>
-
-# define LONGLONG_MAX_STR "9223372036854775807"
-# define LONGLONG_MIN_STR "-9223372036854775808"
-# define SHELL_NAME "minishell"
 #include <unistd.h>
-// #include "builtin.h"
-// #include "utils.h"
-
-#include <stdio.h>
-/*
-	- long long 넘어가는 것은 어떻게할 것인가?q
-	- 애초에 문자열인 케이스는 어떻게 파악할것인가?
-	- 기존 atol, atoi를 이용해서 확인한다.
-	- exit z 2 3 	
-*/
-/* 
- * positive negative 둘'다 확인해야한다.
- * sign부터 확인하며
- * –9223372036854775808 ~ 9223372036854775807
- * 
- */
-static long long	ft_atol(char *str, int *num_flag);
-size_t	ft_strlen(const char *s);
-
-void	ft_putstr_fd(char *str, int fd)
-{
-	write(fd, str, ft_strlen(str));
-}
-
-void	print_error(char *shell_name, char *cmd, char *argv, char *msg)
-{
-	ft_putstr_fd(shell_name, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	if (cmd != NULL)
-	{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-	}
-	if (argv != NULL)
-	{
-		ft_putstr_fd(argv, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-	}
-	if (msg != NULL)
-		ft_putstr_fd(msg, STDERR_FILENO);
-	write(STDERR_FILENO, &"\n", 1);
-}
-
-/*
-	- exit status
-	char로 캐스팅해서 넘겨주었을때 정상처리되는지 확인
-	exit()함수에서!!
-*/
-void	error_handler(char *cmd, char *argv, char *msg, char exit_status)
-{
-	print_error(SHELL_NAME, cmd, argv, msg);
-	exit(exit_status);
-}
-
-int	is_whitespace(char const ch)
-{
-	if (ch == ' ' || ch == '\t')
-		return (1);
-	return (0);
-}
-
-int	ft_isnum(char ch)
-{
-	if ('9' >= ch && ch >= '0')
-		return (1);
-	return (0);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	idx;
-
-	idx = 0;
-	while (s[idx])
-		idx++;
-	return (idx);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
-{
-	size_t	i;
-	size_t	k;
-
-	i = 0;
-	k = 0;
-	while (src[i] != '\0')
-		i++;
-	if (dstsize == 0)
-		return (i);
-	while ((k < dstsize - 1) && src[k])
-	{
-		dst[k] = src[k];
-		k++;
-	}
-	dst[k] = '\0';
-	return (i);
-}
+#include "builtin.h"
+#include "utils.h"
 
 static int	compare_long_long_max(char *str, long long sign)
 {
@@ -186,33 +87,43 @@ static long long	ft_atol(char *str, int *num_flag)
 		ret = ret * 10 + str[idx] - '0';
 		idx++;
 	}
-	return ((int)ret);
+	return (ret);
 }
-/*
- * exit status는 무엇인가?
- * shell에서 exit 42에서 넘어오는 값을 의미하는가?
- * exit == exit 0 wsl(ubuntu)에서는 바로 종료된다.
- * exit 1이나 다른 값은 정상처리된다.
- * exit character, string의 경우 error 문구발생
- * builtin별로 인자에 대한 처리가 나뉘므로 그에 따른 예외처리 추가적으로 필요
- * long long 으로 
- */
 
-
-void	exit_cmd(char **status)
+static int	is_more_than_one(char **status)
 {
-	int	*num_flag;
+	if (*status != NULL && *(status + 1) != NULL)
+		return (1);
+	return (0);
+}
+
+/*
+ * 고려사항
+ * exit 인자가 없는 경우
+ * 추후 연결리스트 사용 에정
+ * 인자에 대해서 포인터를 받고 사용 이후에는 free시킨다.  dangling 포함.
+ */
+void	exit_cmd(const char **status)
+{
+	int		*num_flag;
+	char	exit_status;
 
 	*num_flag = 1;
-	printf("*status : %s\n", *status);
-	ft_atol(*status, num_flag);
-	if (*num_flag == 0)
-		print_error(SHELL_NAME, "exit", *status, "numeric argument required");
-	printf("num_flag : %d\n", *num_flag);
-}
-
-int main(int argc, char **argv)
-{
-	exit_cmd(&argv[1]);
-	return (0);
+	if (status == NULL)
+		exit_status = (char)0;
+	else if (is_more_than_one(status) >= 2)
+	{
+		print_error(SHELL_NAME, "exit", NULL, "too many arguments");
+		exit_status = (char)1;
+	}
+	else
+	{
+		exit_status = (char)ft_atol(*status, num_flag);
+		if (*num_flag == 0)
+		{
+			print_error(SHELL_NAME, "exit", *status, "numeric argument required");
+			exit_status = (char)255;
+		}
+	}
+	exit(exit_status);
 }
