@@ -6,46 +6,124 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 20:41:26 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/01 21:09:38 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include <stdlib.h>
 #include <unistd.h>
+#include "builtin.h"
 #include "utils.h"
 
-/*
-	- long long 넘어가는 것은 어떻게할 것인가?
-	- 애초에 문자열인 케이스는 어떻게 파악할것인가?
-	- 기존 atol, atoi를 이용해서 확인한다.
-	-
-*/
-static long long	ft_atol(char *str)
+static int	compare_long_long_max(char *str, long long sign)
 {
-	long long	ret;
-	size_t		idx;
+	size_t	boundary_idx;
+	size_t	idx;
+	char	boundary_num[ft_strlen(LONGLONG_MIN_STR) + 1];
 
-	ret = 0;
+	boundary_idx = 0;
+	if (sign > 0)
+		ft_strlcpy(boundary_num, LONGLONG_MAX_STR, \
+					ft_strlen(LONGLONG_MAX_STR) + 1);
+	else
+	{
+		ft_strlcpy(boundary_num, LONGLONG_MIN_STR, \
+					ft_strlen(LONGLONG_MIN_STR) + 1);
+		boundary_idx = 1;
+	}
 	idx = 0;
 	while (str[idx])
 	{
+		if (boundary_num[boundary_idx] < str[idx])
+			return (1);
+		boundary_idx++;
 		idx++;
 	}
 	return (0);
 }
+
+static int is_it_over_long_long(char *str, long long sign)
+{
+	size_t	len;
+	size_t	max_len;
+
+	len = ft_strlen(str);
+	max_len = ft_strlen(LONGLONG_MAX_STR);
+	if (sign < 0)
+	{
+		len += 1;
+		max_len += 1;
+	}
+	if (len > max_len)
+		return (1);
+	else if (len == max_len)
+		return (compare_long_long_max(str, sign));
+	return (0);
+}
+
+static long long	ft_atol(char *str, int *num_flag)
+{
+	long long	ret;
+	long long	sign;
+	size_t		idx;
+
+	ret = 0;
+	idx = 0;
+	sign = 1;
+	while (is_whitespace(str[idx]))
+		idx++;
+	if (str[idx] == '-' || str[idx] == '+')
+		if (str[idx] == '-')
+			sign = -1;
+	if (is_it_over_long_long(&str[idx], sign))
+		*num_flag = 0;
+	while (str[idx] && *num_flag)
+	{
+		if (ft_isnum(str[idx]) == 0)
+		{
+			*num_flag = 0;
+			break ;
+		}
+		ret = ret * 10 + str[idx] - '0';
+		idx++;
+	}
+	return (ret);
+}
+
+static int	is_more_than_one(char **status)
+{
+	if (*status != NULL && *(status + 1) != NULL)
+		return (1);
+	return (0);
+}
+
 /*
- * exit 값이 없으면 0으로 종료된다.
- * exit 인자가 여러개인 경우
- * 첫번째 값이 문자이면 exit(255)로 처리된다.
- * 첫번쨰 값이 숫자이면서 인자가 여러개면 too many argument처리된다.
- * 1개 값만 있고 숫자이면 그대로 들어가서 8bit로 캐스팅된다.
+ * 고려사항
+ * exit 인자가 없는 경우
+ * 추후 연결리스트 사용 에정
+ * 인자에 대해서 포인터를 받고 사용 이후에는 free시킨다.  dangling 포함.
  */
 void	exit_cmd(const char **status)
 {
+	int		*num_flag;
+	char	exit_status;
 
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
-	// if (status <= (__LONG_LONG_MAX__) && status <= INT64_MIN)
-	// 	ft_putstr_fd("numeric argument required", STDERR_FILENO);
-	exit(atoi(*status[0]));
+	*num_flag = 1;
+	if (status == NULL)
+		exit_status = (char)0;
+	else if (is_more_than_one(status) >= 2)
+	{
+		print_error(SHELL_NAME, "exit", NULL, "too many arguments");
+		exit_status = (char)1;
+	}
+	else
+	{
+		exit_status = (char)ft_atol(*status, num_flag);
+		if (*num_flag == 0)
+		{
+			print_error(SHELL_NAME, "exit", *status, "numeric argument required");
+			exit_status = (char)255;
+		}
+	}
+	exit(exit_status);
 }

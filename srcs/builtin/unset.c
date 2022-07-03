@@ -12,7 +12,7 @@
 
 #include "env_list.h"
 
-int	unset_cmd(t_env_list *env_list, const char **arg_list)
+int	unset_cmd(t_env_list *env_list, const char **argument)
 {
 	return (0);
 }

@@ -24,7 +24,7 @@
 */
 // debug
 // int	cd_cmd(char **path, t_env_list *env_list)
-int	cd_cmd(char **path)
+int	cd_cmd(const char **path)
 {
 	int		ret;
 	int		idx;

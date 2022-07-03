@@ -53,18 +53,18 @@ int	is_n_option(char *argv)
 	return (FALSE);
 }
 
-int	echo_cmd(const char **arg_list)
+int	echo_cmd(const char **argument)
 {
 	int	idx;
 	int	newline_flag;
 
 	newline_flag = TRUE;
-	if (is_n_option(arg_list[idx]) == TRUE)
+	if (is_n_option(argument[idx]) == TRUE)
 		newline_flag = FALSE;
 	idx = 0;
-	while (arg_list[idx])
+	while (argument[idx])
 	{
-		ft_putstr_fd(arg_list[idx], STDOUT_FILENO);
+		ft_putstr_fd(argument[idx], STDOUT_FILENO);
 		if (newline_flag == TRUE)
 			write(STDOUT_FILENO, &"\n", 1);
 		idx++;

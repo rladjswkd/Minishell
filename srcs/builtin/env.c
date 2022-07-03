@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "env_list.h"
+#include "utils.h"
+#include "builtin.h"
 
 /*
  * test
@@ -20,14 +22,16 @@
  * linked list에 넣어둔다.
  * 명령어가 들어오면 해당 linked list를 가져온다.
  */
-int	env_cmd(t_env_list	*env_list, const char **arg_list)
+int	env_cmd(t_env_list	*env_list, const char **argument)
 {
 	t_env_node	*cur_node;
 
+	// 넘어오는 인자는 free처리한다.
 	if (env_list == NULL)
-		return (-1); // error처리하여 종료 시켜야한다.
-	if (arg_list != NULL)
-		;//too many argumnets 처리
+	{
+		print_error(SHELL_NAME, "env", NULL, "env list is NULL");
+		exit(1);
+	}
 	cur_node = env_list->header_node;
 	while (cur_node)
 	{
