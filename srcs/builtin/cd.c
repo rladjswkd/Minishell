@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 20:17:58 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 17:39:21 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,49 @@
 #include <sys/errno.h>
 #include <string.h>
 #include "utils.h"
-
+#include "env_list.h"
 /*
 - ~
 - ~-
-- cd
--
+- cd만 입력되면 $HOME으로 이동된다.
+- env_list는 singleton으로 처리한다.
 */
 // debug
 // int	cd_cmd(char **path, t_env_list *env_list)
-int	cd_cmd(const char **path)
+
+static char	*get_home_path(t_env_list *env_list)
+{
+	char		*home_path;
+	t_env_node	*cur_env_node;
+
+	home_path = NULL;
+	cur_env_node = env_list->header_node;
+	while (cur_env_node)
+	{
+		if (ft_strncmp(cur_env_node->key, "HOME", 4) == 0)
+			home_path = cur_env_node->value;
+		cur_env_node = cur_env_node->next_node;
+	}
+	if (home_path == NULL)
+		error_handler("cd", NULL, "HOME not set", 1);
+	return (home_path);
+}
+
+int	cd_cmd(const char **path, t_env_list *env_list)
 {
 	int		ret;
 	int		idx;
-	// char	*path
+	char	*cmd_path;
 
+	cmd_path = &path[0];
+	if (path == NULL)
+		cmd_path = get_home_path(env_list);
 	idx = 0;
-	ret = chdir(path[0]);
+	ret = chdir(cmd_path);
 	if (ret < 0)
 		error_handler("cd", path[0], strerror(errno), 1);
 	return (ret);
 }
-
 
 /*
 */

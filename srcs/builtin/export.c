@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/01 11:32:07 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/03 19:00:58 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	print_export_list(t_env_list *env_list)
 	cur_node = env_list->header_node;
 	while (cur_node)
 	{
-		printf("%s=%s\n", cur_node->key, cur_node->value);
+		printf("declare -x %s=%s\n", cur_node->key, cur_node->value);
 		cur_node = cur_node->next_node;
 	}
 }
@@ -107,14 +107,6 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
  - = + file스타일의 이름명이 아니면 error인것으로 판단된다.
  isalpha_num과 under_bar까지만 된다.
 */
-int	ft_is_alpha(char ch)
-{
-	if (ch >= 'a' && ch <= 'z' \
-		|| ch >= 'A' && ch <= 'Z')
-		return (TRUE);
-	return (FALSE);
-}
-
 /*
 	첫번째 문자 말고 나머지에 -같은 기호가 나와도 문제이다.
 	첫번쨰 문자에는 문자와 _까지만 가능하다.
@@ -122,7 +114,7 @@ int	ft_is_alpha(char ch)
 */
 static int	check_valid(char *argv)
 {
-	if (is_alpha(argv[0]) == TRUE \
+	if (ft_is_alpha(argv[0]) == TRUE \
 		|| argv[0] == '_')
 		return (TRUE);
 	return (FALSE);

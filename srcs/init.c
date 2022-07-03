@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:02:55 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 16:31:35 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,3 +85,8 @@ int	init_value(t_env_list	*env_list, char **envp)
 	}
 	return (0);
 }
+
+/*
+	singleton 예정
+	getter, setter
+*/

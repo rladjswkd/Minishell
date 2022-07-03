@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/01 19:13:01 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/03 17:41:42 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,9 @@
 # include <stddef.h>
 # define SHELL_NAME "minishell"
 
-
-
-int	    is_whitespace(char const ch);
-int	    ft_isalpha(int ch);
-int	    ft_isnum(int ch);
+int		is_whitespace(char const ch);
+int		ft_is_alpha(int ch);
+int		ft_isnum(int ch);
 
 size_t	ft_strlen(const char *s);
 
