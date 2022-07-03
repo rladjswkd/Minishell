@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:23:26 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 23:26:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	is_n_option(char *argv)
 	return (FALSE);
 }
 
-int	echo_cmd(const char **argument)
+int	echo_cmd(char **argument)
 {
 	int	idx;
 	int	newline_flag;

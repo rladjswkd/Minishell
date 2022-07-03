@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 20:28:30 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 23:25:41 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ static int	is_more_than_one(char **status)
  * 추후 연결리스트 사용 에정
  * 인자에 대해서 포인터를 받고 사용 이후에는 free시킨다.  dangling 포함.
  */
-void	exit_cmd(const char **status)
+void	exit_cmd(char **status)
 {
 	int		*num_flag;
 	char	exit_status;

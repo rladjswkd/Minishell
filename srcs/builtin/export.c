@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 19:00:58 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 23:26:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ static int	check_valid(char *argv)
 	return (FALSE);
 }
 
-int	export_cmd(t_env_list *env_list, const char **argument)
+int	export_cmd(t_env_list *env_list, char **argument)
 {
 	if (env_list == NULL)
 	{
