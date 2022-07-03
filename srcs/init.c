@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 16:31:35 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 20:29:37 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ static int	free_key_value(char **key, char **value)
 	*value = NULL;
 	return (-1);
 }
-
 
 /*
  * 추후 줄 줄이기에 들어가야한다.

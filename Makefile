@@ -27,7 +27,8 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_putstr_fd.c	\
 			ft_strncmp.c	\
 			ft_substr.c	\
-			ft_is_alpha.c \
+			ft_is_alpha.c	\
+			ft_is_digit.c	\
 			utils.c	\
 			error.c	\
 	)

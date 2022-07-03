@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/01 21:09:38 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/03 20:28:30 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	compare_long_long_max(char *str, long long sign)
 	return (0);
 }
 
-static int is_it_over_long_long(char *str, long long sign)
+static int	is_it_over_long_long(char *str, long long sign)
 {
 	size_t	len;
 	size_t	max_len;
@@ -79,7 +79,7 @@ static long long	ft_atol(char *str, int *num_flag)
 		*num_flag = 0;
 	while (str[idx] && *num_flag)
 	{
-		if (ft_isnum(str[idx]) == 0)
+		if (ft_is_digit(str[idx]) == 0)
 		{
 			*num_flag = 0;
 			break ;
@@ -121,7 +121,8 @@ void	exit_cmd(const char **status)
 		exit_status = (char)ft_atol(*status, num_flag);
 		if (*num_flag == 0)
 		{
-			print_error(SHELL_NAME, "exit", *status, "numeric argument required");
+			print_error(SHELL_NAME, "exit", *status, \
+						"numeric argument required");
 			exit_status = (char)255;
 		}
 	}

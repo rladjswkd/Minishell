@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:22:17 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 20:35:45 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void	builtin_test(char *input, t_env_list *env_list)
 	else if (ft_strncmp("echo", cmd, ft_strlen(cmd)) == 0)
 		echo_cmd(argv);
 	else if (ft_strncmp("cd", cmd, ft_strlen(cmd)) == 0)
-		cd_cmd(argv);
+		cd_cmd(argv, env_list);
 	else if (ft_strncmp("pwd", cmd, ft_strlen(cmd)) == 0)
 		pwd_cmd();
 	else if (ft_strncmp("env", cmd, ft_strlen(cmd)) == 0)

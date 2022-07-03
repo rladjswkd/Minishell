@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 17:41:42 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/03 20:28:00 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 int		is_whitespace(char const ch);
 int		ft_is_alpha(int ch);
-int		ft_isnum(int ch);
+int		ft_is_digit(int ch);
 
 size_t	ft_strlen(const char *s);
 
