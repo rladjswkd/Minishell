@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 23:26:06 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 10:21:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,28 @@
 	첫번째 argument가 -n으로 시작해서 중간에 다른 문자없이 끝나면 개행제거이다
 */
 
+/*
+-n인동안만 이동하며 만약 끝이 -로 끝나거나 n이 아니라면 전체를 출력해야한다.
+- 처음은 -이어야하며
+- '-'다음은 n 나와야한다. 그렇지 않으면 옵션으로 보지 않고 이 또한 출력해야한다.
+*/
 int	is_n_option(char *argv)
 {
 	size_t	idx;
 
 	idx = 0;
-	if (argv[idx] == '-')
+	if (argv[idx] != '-')
+		return (FALSE);
+	while (argv[idx])
 	{
-		while (argv[idx] == 'n')
+		if (argv[idx] == '-' && argv[idx + 1] == 'n')
+			idx += 2;
+		else if (argv[idx] == 'n')
 			idx++;
-		if (argv[idx] == '\0')
-			return (TRUE);
+		else
+			return (FALSE);
 	}
-	return (FALSE);
+	return (TRUE);
 }
 
 int	echo_cmd(char **argument)
@@ -59,17 +68,17 @@ int	echo_cmd(char **argument)
 	int	newline_flag;
 
 	newline_flag = TRUE;
+	idx = 0;
 	if (is_n_option(argument[idx]) == TRUE)
 		newline_flag = FALSE;
-	idx = 0;
 	while (argument[idx])
 	{
 		ft_putstr_fd(argument[idx], STDOUT_FILENO);
-		if (newline_flag == TRUE)
-			write(STDOUT_FILENO, &"\n", 1);
+		if (argument[idx + 1])
+			ft_putstr_fd(" ", STDOUT_FILENO);
 		idx++;
-		// ft_putstr_fd(STDOUT_FILENO, arg_list[idx], ft_strlen(arg_list[idx]));
-		// print_newline_fd(STDOUT_FILENO);
 	}
+	if (newline_flag == TRUE)
+		ft_putstr_fd("\n", STDOUT_FILENO);
 	return (0);
 }

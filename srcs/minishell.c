@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 23:31:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 11:52:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,9 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	if (init_value(env_list, envp) < 0)
 		return (1);
+	// display_list(env_list);
+	
+	
 	while (1)
 	{
 		// isatty(STDIN)
@@ -106,6 +109,7 @@ int	main(int argc, char **argv, char **envp)
 		// preprocess(input);
 		// add_history(input);
 	}
+	/*	*/
 	/**/
 	return (0);
 }

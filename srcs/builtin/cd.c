@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 00:12:20 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 11:55:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ static char	*get_env_value(t_env_list	*env_list, char *env_key)
 		cmp_len = max_nonnegative(cur_env_node->key, env_key);
 		if (ft_strncmp(cur_env_node->key, env_key, cmp_len) == 0)
 		{
+			printf("env_key in get_env_value(): %s\n", cur_env_node->key);
 			env_value = cur_env_node->value;
 			break ;
 		}
@@ -86,16 +87,15 @@ static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 
 	env_value = NULL;
 	cur_env_node = env_list->header_node;
+	printf("== env_key : %s\n", env_key);
 	while (cur_env_node)
 	{
 		cmp_len = max_nonnegative(cur_env_node->key, env_key);
 		if (ft_strncmp(cur_env_node->key, env_key, cmp_len) == 0)
 		{
-			if (cur_env_node->value)
-				free(cur_env_node->value);
-			printf("env_key in set(): %s\n", env_key);
-			printf("set_value in set(): %s\n", set_value);
+			free(cur_env_node->value);
 			cur_env_node->value = set_value;
+			printf("## cur_env_node->value : %s\n", cur_env_node->value);
 			return (0);
 		}
 		cur_env_node = cur_env_node->next_node;
@@ -127,6 +127,8 @@ int	cd_cmd(char **path, t_env_list *env_list)
 		cmd_path = get_env_value(env_list, "HOME");
 	else
 		cmd_path = *path;
+	printf("be_old_pwd : %s\n", be_old_pwd);
+	printf("cmd_path : %s\n", cmd_path);
 	ret = chdir(cmd_path);
 	if (ret < 0)
 		error_handler("cd", cmd_path, strerror(errno), 1);

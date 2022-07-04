@@ -6,12 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 21:20:40 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/04 11:42:58 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "env_list.h"
+#include "utils.h"
 
 t_env_node	*create_env_node(char *key, char *value)
 {
@@ -55,17 +56,20 @@ int	add_back_env_node(t_env_list *env_list, t_env_node *new_node)
 	return (env_list->list_length);
 }
 
-int	remove_env_node(t_env_list *env_list, t_env_node *cur_node, char *data)
+t_env_node	*get_env_node(t_env_list *env_list, char *key)
 {
-	// t_env_node	cur_node;
-	// t_env_node	prev_node;
+	t_env_node	*cur_node;
+	size_t		cmp_len;
 
-	// if (env_list == NULL || env_node == NULL)
-	// 	return (-1);
-	// cur_node = env_list->header_node;
-	// while (cur_node)
-	// {
-
-	// }
-	return (0);
+	if (env_list == NULL)
+		return (NULL);
+	cur_node = env_list->header_node;
+	while (cur_node)
+	{
+		cmp_len = max_nonnegative(cur_node->key, key);
+		if (ft_strncmp(cur_node->key, key, cmp_len) == 0)
+			break ;
+		cur_node = cur_node->next_node;
+	}
+	return (cur_node);	
 }

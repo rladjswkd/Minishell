@@ -34,6 +34,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 	)
 LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
 			env_list.c	\
+			env_list_remove.c \
 )
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 			cd.c	\

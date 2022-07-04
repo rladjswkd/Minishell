@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 20:29:37 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/04 11:52:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,37 @@ static int	free_key_value(char **key, char **value)
  * 추후 줄 줄이기에 들어가야한다.
  *
  */
+static int split_key_value(char *envp_element, char **key, char **value)
+{
+	int			delimiter_posi;
+
+	delimiter_posi = ft_strchr(envp_element, '=');
+	if (delimiter_posi < 0)
+	{
+		*key = ft_strdup(envp_element);
+		if (*key == NULL)
+			return (-1);
+		*value = ft_strdup("");		
+	}
+	else
+	{
+		*key = ft_strndup(envp_element, delimiter_posi);
+		if (*key == NULL)
+			return (-1);
+		*value = ft_strndup(&(envp_element[delimiter_posi + 1]), \
+						ft_strlen(envp_element) - (delimiter_posi + 1));
+	}
+	if (*value == NULL)
+	{
+		free_key_value(key, NULL);	
+		return (-1);
+	}
+	return (0);
+}
+
 int	init_value(t_env_list	*env_list, char **envp)
 {
 	size_t		idx;
-	size_t		delimiter_idx;
 	t_env_node	*cur_node;
 	char		*key;
 	char		*value;
@@ -68,17 +95,15 @@ int	init_value(t_env_list	*env_list, char **envp)
 	cur_node = env_list->header_node;
 	while (envp[idx])
 	{
-		delimiter_idx = ft_strchr(envp[idx], '=');
-		key = ft_strndup(envp[idx], delimiter_idx);
-		if (key == NULL)
-			return (-1);
-		value = ft_strndup(&(envp[idx][delimiter_idx + 1]), \
-						ft_strlen(envp[idx]) - (delimiter_idx + 1));
-		if (value == NULL)
-			free_key_value(&key, NULL);
+		if (split_key_value(envp[idx], &key, &value) < 0)
+			error_handler(NULL, NULL, "allocation fail", 1);
 		cur_node = create_env_node(key, value);
 		if (cur_node == NULL)
+		{
 			free_key_value(&key, &value);
+			delete_env_list(&env_list);
+			return (1);
+		}
 		add_back_env_node(env_list, cur_node);
 		idx++;
 	}
@@ -89,3 +114,4 @@ int	init_value(t_env_list	*env_list, char **envp)
 	singleton 예정
 	getter, setter
 */
+
