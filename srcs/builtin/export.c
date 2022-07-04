@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 23:26:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 16:34:46 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,11 @@ static int	find_key_value_str(char *argv, char *key, char *value)
 	}
 }
 
+/*
+export a b c=42같은 케이스 처리되게 해야한다.
+기존에 있던 환경변수라면 새로 들어온 값에 value가 있는지 확인한다.
+그렇지 않으면 제거
+*/
 static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 {
 	t_env_node	*new_node;
@@ -82,7 +87,8 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 		if (arg_list == NULL)
 			check_valid(arg_list[idx]);
 		// find_key_value_str return 값을 받아서 error msg 처리할 것인가?
-		find_key_value_str(arg_list[idx], key, value);
+		if (find_key_value_str(arg_list[idx], key, value) == -1)
+			//
 		found_node = find_export_key(env_list, key);
 		if (found_node != NULL)
 		{
@@ -133,7 +139,6 @@ int	export_cmd(t_env_list *env_list, char **argument)
 	{
 		if (add_to_export_list(env_list, argument) < 0)
 			return (1);// error_msg();
-		print_export_list(env_list);
 	}
 	return (0);
 }

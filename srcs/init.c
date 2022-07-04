@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 11:52:11 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 16:27:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int split_key_value(char *envp_element, char **key, char **value)
 		*key = ft_strdup(envp_element);
 		if (*key == NULL)
 			return (-1);
-		*value = ft_strdup("");		
+		*value = NULL;	
 	}
 	else
 	{
@@ -75,12 +75,27 @@ static int split_key_value(char *envp_element, char **key, char **value)
 			return (-1);
 		*value = ft_strndup(&(envp_element[delimiter_posi + 1]), \
 						ft_strlen(envp_element) - (delimiter_posi + 1));
+		if (*value == NULL)
+		{
+			free_key_value(key, NULL);	
+			return (-1);
+		}
 	}
-	if (*value == NULL)
+	return (0);
+}
+
+static int	add_env(t_env_list *env_list, char *key, char *value)
+{
+	t_env_node	*cur_node;
+
+	cur_node = create_env_node(key, value);
+	if (cur_node == NULL)
 	{
-		free_key_value(key, NULL);	
+		free_key_value(&key, &value);
+		delete_env_list(&env_list);
 		return (-1);
 	}
+	add_back_env_node(env_list, cur_node);
 	return (0);
 }
 
@@ -97,16 +112,10 @@ int	init_value(t_env_list	*env_list, char **envp)
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)
 			error_handler(NULL, NULL, "allocation fail", 1);
-		cur_node = create_env_node(key, value);
-		if (cur_node == NULL)
-		{
-			free_key_value(&key, &value);
-			delete_env_list(&env_list);
-			return (1);
-		}
-		add_back_env_node(env_list, cur_node);
+		add_env(env_list, key, value);
 		idx++;
 	}
+	add_env(env_list, "OLDPWD", NULL);
 	return (0);
 }
 
