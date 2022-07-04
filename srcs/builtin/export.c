@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 16:34:46 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/04 20:16:53 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ int	export_cmd(t_env_list *env_list, char **argument)
 		print_error(SHELL_NAME, "env", NULL, "env list is NULL");
 		return (1);
 	}
-	if (argument == NULL)
+	if (*argument == NULL)
 		print_export_list(env_list);
 	else
 	{
