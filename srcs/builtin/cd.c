@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 21:30:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/05 17:38:30 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ static char	*get_home_path(t_env_list *env_list)
 	t_env_node	*cur_env_node;
 	size_t		cmp_len;
 
-	printf("in get home path\n");
 	home_path = NULL;
 	cur_env_node = env_list->header_node;
 	while (cur_env_node)
@@ -66,7 +65,6 @@ static char	*get_env_value(t_env_list	*env_list, char *env_key)
 		cmp_len = max_nonnegative(cur_env_node->key, env_key);
 		if (ft_strncmp(cur_env_node->key, env_key, cmp_len) == 0)
 		{
-			printf("env_key in get_env_value(): %s\n", cur_env_node->key);
 			env_value = cur_env_node->value;
 			break ;
 		}
@@ -88,8 +86,6 @@ static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 
 	env_value = NULL;
 	cur_env_node = env_list->header_node;
-	printf("== env_key in set_path_env() : %s\n", env_key);
-	printf("== set_value in set_path_env(): %s\n", set_value);
 	while (cur_env_node)
 	{
 		cmp_len = max_nonnegative(cur_env_node->key, env_key);
@@ -97,9 +93,7 @@ static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 		{
 			if (cur_env_node->value)
 				free(cur_env_node->value);
-			printf("## set_value : %s\n", set_value);
 			cur_env_node->value = set_value;
-			printf("## cur_env_node->value : %s\n", cur_env_node->value);
 			return (0);
 		}
 		cur_env_node = cur_env_node->next_node;
@@ -110,8 +104,6 @@ static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 static void	update_path_env(t_env_list *env_list, char *be_old_pwd, \
 							char *be_pwd)
 {
-	printf("be_old_pwd : %s\n", be_old_pwd);
-	printf("be_pwd : %s\n", be_pwd);
 	set_path_env(env_list, "OLDPWD", be_old_pwd);
 	set_path_env(env_list, "PWD", be_pwd);
 }
@@ -121,23 +113,25 @@ int	cd_cmd(char **path, t_env_list *env_list)
 	int		ret;
 	char	*cmd_path;
 	char	*be_old_pwd;
-	char	cur_pwd[PATH_MAX];
+	char	path_buf[PATH_MAX];
+	char	*cur_pwd;
 
-	be_old_pwd = get_env_value(env_list, "PWD");	
+	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
+	if (be_old_pwd == NULL)
+		error_handler(NULL, NULL, strerror(errno), errno);
 	if (*path == NULL)
 		cmd_path = get_env_value(env_list, "HOME");
 	else
 		cmd_path = *path;
-	printf("cmd_path : %s\n", cmd_path);
 	ret = chdir(cmd_path);
 	if (ret < 0)
 		error_handler("cd", cmd_path, strerror(errno), errno);
-	else if (getcwd(cur_pwd, sizeof(cur_pwd)) == NULL)
-		error_handler(NULL , NULL, strerror(errno), errno);
-	printf("be_old_pwd in cd_cmd(): %s\n", be_old_pwd);
+	else if (getcwd(path_buf, sizeof(path_buf)) == NULL)
+		error_handler(NULL, NULL, strerror(errno), errno);
+	cur_pwd = ft_strdup(path_buf);
+	if (cur_pwd == NULL)
+		error_handler(NULL, NULL, strerror(errno), errno);
 	update_path_env(env_list, be_old_pwd, cur_pwd);
-	printf("curruent OLDPWD : %s\n",  get_env_value(env_list, "OLDPWD"));
-	printf("curruent pwd : %s\n",  get_env_value(env_list, "PWD"));
 	return (ret);
 }
 

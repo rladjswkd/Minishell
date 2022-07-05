@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 20:16:53 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/05 20:39:56 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int	check_valid(char *argv);
 static void	print_export_list(t_env_list *env_list)
 {
 	t_env_node	*cur_node;
@@ -25,7 +24,10 @@ static void	print_export_list(t_env_list *env_list)
 	cur_node = env_list->header_node;
 	while (cur_node)
 	{
-		printf("declare -x %s=%s\n", cur_node->key, cur_node->value);
+		if (cur_node->value == NULL)
+			printf("declare -x %s\n", cur_node->key);
+		else
+			printf("declare -x %s=%s\n", cur_node->key, cur_node->value);
 		cur_node = cur_node->next_node;
 	}
 }
@@ -57,7 +59,7 @@ static int	find_key_value_str(char *argv, char *key, char *value)
 	delimiter_idx = ft_strchr(argv, '=');
 	key = ft_strndup(argv, delimiter_idx);
 	if (key == NULL)
-		return (-1); //할당에러처리 이곳에서 호출한 다음에 exit()한다. , 자식프로세스에서 하는것이라 종료값($?)을 받을 수 있다.
+		return (-1);
 	value = NULL;
 	if (delimiter_idx >= 0)
 	{
@@ -66,6 +68,7 @@ static int	find_key_value_str(char *argv, char *key, char *value)
 		if (value == NULL)
 			return (-1);
 	}
+	return (0);
 }
 
 /*
@@ -84,9 +87,6 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 	idx = 0;
 	while (arg_list[idx])
 	{
-		if (arg_list == NULL)
-			check_valid(arg_list[idx]);
-		// find_key_value_str return 값을 받아서 error msg 처리할 것인가?
 		if (find_key_value_str(arg_list[idx], key, value) == -1)
 			//
 		found_node = find_export_key(env_list, key);
@@ -118,19 +118,11 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 	첫번쨰 문자에는 문자와 _까지만 가능하다.
 	gnu bash 참조
 */
-static int	check_valid(char *argv)
-{
-	if (ft_is_alpha(argv[0]) == TRUE \
-		|| argv[0] == '_')
-		return (TRUE);
-	return (FALSE);
-}
-
 int	export_cmd(t_env_list *env_list, char **argument)
 {
 	if (env_list == NULL)
 	{
-		print_error(SHELL_NAME, "env", NULL, "env list is NULL");
+		print_error(SHELL_NAME, NULL, NULL, "env list is NULL");
 		return (1);
 	}
 	if (*argument == NULL)

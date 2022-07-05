@@ -1,6 +1,7 @@
 NAME = minishell
-CC = gcc
+CC = cc -g
 #CFLAGS = -Wall -Wextra -Werror
+# CFLAGS = -g
 LDLIBS = -lreadline
 RM = rm -rf
 INCLUDE = include
@@ -52,13 +53,13 @@ LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
-# $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
+	$(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
+# $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS)
-	$(CC) $^ -o $@ $(LDLIBS)
-# $(CC) $(LINKING_FLAGS) $^ -o $@
+	$(CC) $(LINKING_FLAGS) $^ -o $@
+#$(CC) $^ -o $@ $(LDLIBS)
 # $(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)

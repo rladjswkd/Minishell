@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 21:16:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/05 17:18:56 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static void	builtin_test(char *input, t_env_list *env_list)
 
 	word_list = ft_split(input, ' ');
 	if (word_list == NULL)
-		ft_putstr_fd("word list is null", STDERR_FILENO);
+		return ;
 	cmd = word_list[0];
 	argv = &word_list[1];
 	printf("cmd : %s\n*argv : %s\n", cmd, *argv);

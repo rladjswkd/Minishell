@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 23:25:41 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/05 21:23:14 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int	compare_long_long_max(char *str, long long sign)
 {
 	size_t	boundary_idx;
 	size_t	idx;
-	char	boundary_num[ft_strlen(LONGLONG_MIN_STR) + 1];
+	char	boundary_num[21];
 
 	boundary_idx = 0;
 	if (sign > 0)
@@ -90,8 +90,12 @@ static long long	ft_atol(char *str, int *num_flag)
 	return (ret);
 }
 
+#include <stdio.h>
+
 static int	is_more_than_one(char **status)
 {
+	printf("*status : %s\n", *status);
+	printf("*(status + 1) : %s\n", *(status + 1));
 	if (*status != NULL && *(status + 1) != NULL)
 		return (1);
 	return (0);
@@ -102,24 +106,28 @@ static int	is_more_than_one(char **status)
  * exit 인자가 없는 경우
  * 추후 연결리스트 사용 에정
  * 인자에 대해서 포인터를 받고 사용 이후에는 free시킨다.  dangling 포함.
+ * too many arguments의 경우 exit status 1이 나온다 하지만 동작은 하지말아야한다.
+ * exit status를 바꾼다?
  */
+
 void	exit_cmd(char **status)
 {
-	int		*num_flag;
+	int		num_flag;
 	char	exit_status;
 
-	*num_flag = 1;
-	if (status == NULL)
+	num_flag = 1;
+	if (*status == NULL)
 		exit_status = (char)0;
-	else if (is_more_than_one(status) >= 2)
+	else if (is_more_than_one(status))
 	{
 		print_error(SHELL_NAME, "exit", NULL, "too many arguments");
 		exit_status = (char)1;
+		return ;
 	}
 	else
 	{
-		exit_status = (char)ft_atol(*status, num_flag);
-		if (*num_flag == 0)
+		exit_status = (char)ft_atol(*status, &num_flag);
+		if (num_flag == 0)
 		{
 			print_error(SHELL_NAME, "exit", *status, \
 						"numeric argument required");

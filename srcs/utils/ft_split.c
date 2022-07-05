@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/25 17:37:51 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 11:52:16 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/05 17:17:50 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ int	free_list(char ***word_list)
 {
 	size_t			idx;
 
+	if (word_list == NULL || *word_list == NULL)
+		return (0);
 	idx = 0;
 	while ((*word_list)[idx])
 	{
@@ -75,7 +77,7 @@ int	free_list(char ***word_list)
 	}
 	free(*word_list);
 	*word_list = NULL;
-	return (-1);
+	return (0);
 }
 
 char	**ft_split(char const *s, char c)

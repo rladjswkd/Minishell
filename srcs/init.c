@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 21:06:09 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/05 17:01:56 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static int	free_key_value(char **key, char **value)
  * 추후 줄 줄이기에 들어가야한다.
  *
  */
-static int split_key_value(char *envp_element, char **key, char **value)
+static int	split_key_value(char *envp_element, char **key, char **value)
 {
 	int			delimiter_posi;
 
@@ -66,7 +66,7 @@ static int split_key_value(char *envp_element, char **key, char **value)
 		*key = ft_strdup(envp_element);
 		if (*key == NULL)
 			return (-1);
-		*value = NULL;	
+		*value = NULL;
 	}
 	else
 	{
@@ -77,7 +77,7 @@ static int split_key_value(char *envp_element, char **key, char **value)
 						ft_strlen(envp_element) - (delimiter_posi + 1));
 		if (*value == NULL)
 		{
-			free_key_value(key, NULL);	
+			free_key_value(key, NULL);
 			return (-1);
 		}
 	}
@@ -115,7 +115,8 @@ int	init_value(t_env_list	*env_list, char **envp)
 		add_env(env_list, key, value);
 		idx++;
 	}
-	add_env(env_list, "OLDPWD", NULL);
+	if (get_env_node(env_list, "OLDPWD") == NULL)
+		add_env(env_list, "OLDPWD", NULL);
 	return (0);
 }
 
