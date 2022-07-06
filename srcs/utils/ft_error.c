@@ -1,17 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   ft_error.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 15:42:23 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:35:38 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 18:24:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin.h"
 #include "utils.h"
+#include "ft_error.h"
 #include <unistd.h>
 #include <stdlib.h>
 /*
@@ -46,5 +47,5 @@ void	print_error(char *shell_name, char *cmd, char *argv, char *msg)
 void	error_handler(char *cmd, char *argv, char *msg, char exit_status)
 {
 	print_error(SHELL_NAME, cmd, argv, msg);
-	exit(exit_status);
+	*(get_exit_status()) = exit_status;
 }

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:00:07 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 16:48:59 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 #include "utils.h"
 #include "ft_error.h"
 #include <stdlib.h>
+#include <string.h>
+#include <sys/errno.h>
 
 /*
 	linked로 하면 몇개가 들어올지 신경안써도 되지만
@@ -72,7 +74,7 @@ int	init_value(t_env_list	*env_list, char **envp)
 	while (envp[idx])
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)
-			error_handler(NULL, NULL, ALLOC_FAIL, 1);
+			error_handler(NULL, NULL, strerror(errno), 1);
 		add_env(env_list, key, value);
 		idx++;
 	}

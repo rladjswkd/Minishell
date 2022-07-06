@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:00:53 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 19:14:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,8 @@ static long long	ft_atol(char *str, int *num_flag)
 	return (ret);
 }
 
-#include <stdio.h>
-
 static int	is_more_than_one(char **status)
 {
-	printf("*status : %s\n", *status);
-	printf("*(status + 1) : %s\n", *(status + 1));
 	if (*status != NULL && *(status + 1) != NULL)
 		return (1);
 	return (0);

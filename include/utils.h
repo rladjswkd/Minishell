@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 15:30:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 18:22:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ int		split_key_value(char *envp_element, char **key, char **value);
 int	    free_key_value(char **key, char **value);
 
 int		check_valid_name(char *str);
+int	    *get_exit_status();
 
 #endif

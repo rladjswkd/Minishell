@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:21:33 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 19:13:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include "builtin.h"
 #include "utils.h"
+#include "ft_error.h"
 
 /*
  * ", ' 같은 부분은 파싱되었다는 가정하에 해당 명령어에 케이스에 따른 예외처리를 진행한다.
@@ -71,7 +72,10 @@ int	echo_cmd(char **argument)
 	newline_flag = TRUE;
 	idx = 0;
 	if (is_n_option(argument[idx]) == TRUE)
+	{
 		newline_flag = FALSE;
+		*(get_exit_status()) = 1;
+	}
 	while (argument[idx])
 	{
 		ft_putstr_fd(argument[idx], STDOUT_FILENO);

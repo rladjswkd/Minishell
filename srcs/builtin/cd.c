@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 15:56:50 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 18:25:26 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,30 +28,6 @@
 */
 // debug
 // int	cd_cmd(char **path, t_env_list *env_list)
-
-
-static char	*get_home_path(t_env_list *env_list)
-{
-	char		*home_path;
-	t_env_node	*cur_env_node;
-	size_t		cmp_len;
-
-	home_path = NULL;
-	cur_env_node = env_list->header_node;
-	while (cur_env_node)
-	{
-		cmp_len = max_nonnegative(cur_env_node->key, "HOME=");
-		if (ft_strncmp(cur_env_node->key, "HOME=", cmp_len) == 0)
-		{
-			home_path = cur_env_node->value;
-			break ;
-		}
-		cur_env_node = cur_env_node->next_node;
-	}
-	if (home_path == NULL)
-		error_handler("cd", NULL, "HOME not set", 1);
-	return (home_path);
-}
 
 static char	*get_env_value(t_env_list	*env_list, char *env_key)
 {
@@ -109,6 +85,13 @@ static void	update_path_env(t_env_list *env_list, char *be_old_pwd, \
 	set_path_env(env_list, "PWD", be_pwd);
 }
 
+/*
+ - home이 없는경우 error statement가 다르다 25줄에 맞출려다보면 문제가 생기는데 별도로 맞출것인가>
+ - exit status 관련해서도 서로 달라지는 지점이 생긴다.
+   어떤식으로 exit status를 처리할 것이며 통일시킬것인가?
+	에러가 있는 경우이거나 그렇지 않은 경우 모두 일관적인 룰로 처리할 수 있는 방법은 무엇인가
+ - malloc error면 exit해야하는가?
+*/
 int	cd_cmd(char **path, t_env_list *env_list)
 {
 	int		ret;

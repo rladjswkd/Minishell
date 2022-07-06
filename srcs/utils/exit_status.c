@@ -6,12 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 16:06:09 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:06:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/06 19:10:09 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
- * single ton으로 처리
- * getter setter
- * 
- */
+int	*get_exit_status()
+{
+	static int	exit_status;
+
+	return (&exit_status);
+}
