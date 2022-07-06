@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/05 20:40:25 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 15:30:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 int		ft_strchr(char *s, int c);
 
-void	error_handler(char *cmd, char *argv, char *msg, char exit_status);
-void	print_error(char *shell_name, char *cmd, char *argv, char *msg);
 size_t	max_nonnegative(char const *s1, char const *s2);
+int		split_key_value(char *envp_element, char **key, char **value);
+int	    free_key_value(char **key, char **value);
+
 int		check_valid_name(char *str);
 
 #endif

@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/05 20:39:56 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 16:01:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_list.h"
 #include "builtin.h"
 #include "utils.h"
-// debug
+#include "ft_error.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,7 +27,7 @@ static void	print_export_list(t_env_list *env_list)
 		if (cur_node->value == NULL)
 			printf("declare -x %s\n", cur_node->key);
 		else
-			printf("declare -x %s=%s\n", cur_node->key, cur_node->value);
+			printf("declare -x %s=\"%s\"\n", cur_node->key, cur_node->value);
 		cur_node = cur_node->next_node;
 	}
 }
@@ -86,19 +86,24 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 
 	idx = 0;
 	while (arg_list[idx])
-	{
-		if (find_key_value_str(arg_list[idx], key, value) == -1)
-			//
+	{	
+		if (split_key_value(arg_list[idx], &key, &value) == -1)
+			error_handler(NULL, NULL, ALLOC_FAIL, 1);
+		if	(check_valid_name(key) == 0)
+		{
+			print_error(SHELL_NAME, "export", key, NONVALID);
+			idx++;
+			continue ;
+		}
 		found_node = find_export_key(env_list, key);
-		if (found_node != NULL)
+		if (found_node != NULL && value != NULL)
 		{
 			if (found_node->value != NULL)
 				free(found_node->value);
 			found_node->value = value;
 		}
-		else
+		else if (found_node == NULL)
 		{
-			//linked list에서 포인터를 가지고 있으니까 leak 안나는가?
 			new_node = create_env_node(key, value);
 			if (new_node == NULL)
 				return (-1);
@@ -109,15 +114,6 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 	return (0);
 }
 
-/*
- - = + file스타일의 이름명이 아니면 error인것으로 판단된다.
- isalpha_num과 under_bar까지만 된다.
-*/
-/*
-	첫번째 문자 말고 나머지에 -같은 기호가 나와도 문제이다.
-	첫번쨰 문자에는 문자와 _까지만 가능하다.
-	gnu bash 참조
-*/
 int	export_cmd(t_env_list *env_list, char **argument)
 {
 	if (env_list == NULL)
@@ -125,7 +121,7 @@ int	export_cmd(t_env_list *env_list, char **argument)
 		print_error(SHELL_NAME, NULL, NULL, "env list is NULL");
 		return (1);
 	}
-	if (*argument == NULL)
+	else if (*argument == NULL)
 		print_export_list(env_list);
 	else
 	{

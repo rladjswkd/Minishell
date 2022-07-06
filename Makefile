@@ -30,8 +30,9 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_substr.c	\
 			ft_is_alpha.c	\
 			ft_is_digit.c	\
+			ft_error.c	\
+			check_valid_name.c	\
 			utils.c	\
-			error.c	\
 	)
 LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
 			env_list.c	\
@@ -53,13 +54,15 @@ LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
-# $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+
+# $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS)
-	$(CC) $(LINKING_FLAGS) $^ -o $@
-#$(CC) $^ -o $@ $(LDLIBS)
+	$(CC) $^ -o $@ $(LDLIBS)
+
+#$(CC) $(LINKING_FLAGS) $^ -o $@
 # $(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)

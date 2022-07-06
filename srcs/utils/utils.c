@@ -6,11 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/07/05 19:55:25 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 16:04:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
+#include <stdlib.h>
 
 /*
 	gnu bash
@@ -20,33 +21,44 @@
 	and beginning with a letter or underscore.
 	Names are used as shell variable and function names.
 	Also referred to as an identifier.
-
-	bash: export: `2': not a valid identifier
 */
-static int	check_start_of_name(char ch)
+
+
+int	free_key_value(char **key, char **value)
 {
-	if (ft_is_alpha(ch) || ch == '_')
-		return (1);
-	return (0);
+	free(*key);
+	*key = NULL;
+	free(*value);
+	*value = NULL;
+	return (-1);
 }
 
-int	check_valid_name(char *str)
+int	split_key_value(char *envp_element, char **key, char **value)
 {
-	size_t	idx;
+	int			delimiter_posi;
 
-	idx = 0;
-	if (check_start_of_name(str[idx]) == 0)
-		return (0);
-	idx++;
-	while (str[idx])
+	delimiter_posi = ft_strchr(envp_element, '=');
+	if (delimiter_posi < 0)
 	{
-		if (ft_is_alpha(str[idx]) == 0 \
-			|| ft_is_digit(str[idx]) == 0 \
-			|| str[idx] != '_')
-			return (0);
-		idx++;
+		*key = ft_strdup(envp_element);
+		if (*key == NULL)
+			return (-1);
+		*value = NULL;
 	}
-	return (1);
+	else
+	{
+		*key = ft_strndup(envp_element, delimiter_posi);
+		if (*key == NULL)
+			return (-1);
+		*value = ft_strndup(&(envp_element[delimiter_posi + 1]), \
+						ft_strlen(envp_element) - (delimiter_posi + 1));
+		if (*value == NULL)
+		{
+			free_key_value(key, NULL);
+			return (-1);
+		}
+	}
+	return (0);
 }
 
 size_t	max_nonnegative(char const *s1, char const *s2)

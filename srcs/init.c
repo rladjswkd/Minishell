@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/05 17:01:56 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 16:00:07 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 
 #include "env_list.h"
 #include "utils.h"
+#include "ft_error.h"
 #include <stdlib.h>
 
 /*
@@ -43,46 +44,6 @@
 	이전에 할당된 부분만
 */
 
-static int	free_key_value(char **key, char **value)
-{
-	free(*key);
-	*key = NULL;
-	free(*value);
-	*value = NULL;
-	return (-1);
-}
-
-/*
- * 추후 줄 줄이기에 들어가야한다.
- *
- */
-static int	split_key_value(char *envp_element, char **key, char **value)
-{
-	int			delimiter_posi;
-
-	delimiter_posi = ft_strchr(envp_element, '=');
-	if (delimiter_posi < 0)
-	{
-		*key = ft_strdup(envp_element);
-		if (*key == NULL)
-			return (-1);
-		*value = NULL;
-	}
-	else
-	{
-		*key = ft_strndup(envp_element, delimiter_posi);
-		if (*key == NULL)
-			return (-1);
-		*value = ft_strndup(&(envp_element[delimiter_posi + 1]), \
-						ft_strlen(envp_element) - (delimiter_posi + 1));
-		if (*value == NULL)
-		{
-			free_key_value(key, NULL);
-			return (-1);
-		}
-	}
-	return (0);
-}
 
 static int	add_env(t_env_list *env_list, char *key, char *value)
 {
@@ -111,7 +72,7 @@ int	init_value(t_env_list	*env_list, char **envp)
 	while (envp[idx])
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)
-			error_handler(NULL, NULL, "allocation fail", 1);
+			error_handler(NULL, NULL, ALLOC_FAIL, 1);
 		add_env(env_list, key, value);
 		idx++;
 	}

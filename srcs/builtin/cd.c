@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/05 17:38:30 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 15:56:50 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "utils.h"
+#include "ft_error.h"
 #include "env_list.h"
 /*
 - ~

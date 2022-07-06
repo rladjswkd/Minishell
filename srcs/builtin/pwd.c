@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/06/30 17:05:02 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/06 15:57:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "utils.h"
+#include "ft_error.h"
+#include <error.h>
+
 /*
  * pwd cmd
  * size에 어떤값을 넣어줘야하는지 애매, buf 사이즈라고 하지만 0을 주어도 동작한다.
