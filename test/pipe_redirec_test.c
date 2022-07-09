@@ -4,15 +4,15 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stddef.h>
 
 /*
 	echo a > output > b > c > d < e | cat |
-	stdout 
+	stdout
 	- test할 사항
 	- pipe 1개, 2개, n개 일때의 fd 전달
 	- redirec 있을때 케이스
 */
-
 typedef enum e_pipe_type
 {
 	READ_END,
@@ -20,6 +20,21 @@ typedef enum e_pipe_type
 }			t_pipe_type;
 
 typedef int	t_fd;
+
+static size_t	ft_strlen(const char *str)
+{
+	size_t	len;
+
+	len = 0;
+	while (str[len])
+		len++;
+	return (len);
+}
+
+static void	ft_putstr_fd(int fd, const char *str)
+{
+	write(fd, str, ft_strlen(str));
+}
 
 static int	before_pipe(t_fd fd[2], char **argv)
 {
@@ -38,7 +53,6 @@ static int	before_pipe(t_fd fd[2], char **argv)
 		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
 			return (1);
 		close(fd[WRITE_END]);
-		// cmd[1] = argv[0];
 		if (execve("/bin/cat", cmd, NULL) < 0)
 			printf("execve error\n");
 	}
@@ -83,11 +97,6 @@ static int	connect_pipe(int *fd, char **argv)
 	return (0);
 }
 
-static int	*make_pipe(int fd)
-{
-	return (pipe(fd));
-}
-
 /*
 	- make multipipe
 	- 다음에 파이프가 있는지 확인하고서 있으면 연결한다.
@@ -102,14 +111,15 @@ static int	*make_pipe(int fd)
 	이후에 파이프 기호가 있다면
 	pipe()선언한다.
 	fork()를 뜬다.
-	
 */
 
 static int	connect_to_prev(t_fd *pipe_fd)
 {
+	ft_putstr_fd(STDERR_FILENO, "connect_to_prev\n");
 	if (dup2(pipe_fd[READ_END], STDIN_FILENO) < 0)
-		return (0);
-	close(pipe_fd[READ_END]);
+		return (-1);
+	if (close(pipe_fd[READ_END]) < 0)
+		return (-1);
 	return (1);
 }
 
@@ -118,34 +128,43 @@ static int	connect_to_prev(t_fd *pipe_fd)
 */
 static int	connect_to_next(t_fd *pipe_fd)
 {
-	close(pipe_fd[READ_END]);
+	ft_putstr_fd(STDERR_FILENO, "connect_to_next\n");
+	printf("pipe_fd[READ_END] : %d\n", pipe_fd[READ_END]);
+	if (close(pipe_fd[READ_END]) < 0)
+		return (-1);
 	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
-		return (0);
-	close(pipe_fd[WRITE_END]);
-	return (0);
+		return (-1);
+	if (close(pipe_fd[WRITE_END]) < 0)
+		return (-1);
+	printf("pipe_fd[READ_END] after dup2 : %d\n", pipe_fd[READ_END]);
+	return (1);
 }
 
-static int	is_exist_prev_pipe(size_t org_cnt, size_t cnt)
+static int	is_exist_prev_pipe(int org_cnt, int cnt)
 {
 	if (org_cnt > cnt)
 		return (1);
 	return (0);
 }
 
-static int	is_exist_next_pipe(size_t cnt)
+static int	is_exist_next_pipe(int cnt)
 {
 	if (cnt > 0)
 		return (1);
 	return (0);
 }
 
-static int	child_process(int pipe_org_cnt, int pipe_cnt, t_fd *pipe_fd)
+static int	child_process(t_fd *pipe_fd, int pipe_org_cnt, int pipe_cnt)
 {
+	char	*cmd[] = {"ls", "-al", NULL};
+
 	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
 		connect_to_prev(pipe_fd);
 	if (is_exist_next_pipe(pipe_cnt))
-		connect_to_next(pipe_fd); //prev에서 쓰인것과 다른 fd여야한다.
-	return (0);
+		connect_to_next(pipe_fd);
+	if (execve("/bin/ls", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	return (2);
 }
 
 /*
@@ -153,46 +172,56 @@ static int	child_process(int pipe_org_cnt, int pipe_cnt, t_fd *pipe_fd)
 	닫아야할 fd가 달라진다.
 	어떻게 구분해서 넘겨줄것인가
 	조건문을 덕지덕지 나눠서 넣지 않고 할수 있는 방법은 무엇인가?
+	왼쪽에 파이프가 있었다면 
+	close(fd[WRITE_END]);
+	parent process가 child보다 늦게 실행되는가?
 */
-static int	parent_process(int *pipe_fd, pid_t pid, int status)
+static int	parent_process(int *pipe_fd, pid_t pid, int *status, int pipe_org_cnt, int pipe_cnt)
 {
-	// if
-	// close(pipe_fd[]);
-	waitpid(pid, &status, NULL)
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		if (close(pipe_fd[READ_END]) < 0)
+			return (-1);
+	if (is_exist_next_pipe(pipe_cnt))
+		if (close(pipe_fd[WRITE_END]) < 0)
+			return (-1);
+	waitpid(pid, status, 0);
+	return (1);
 }
 
 int main(int argc, char **argv)
 {
-	int		pipe_fd[2];
+	int		pipe_fd[2][2];
 	int		pid;
-	int		status;
-	// char	*cmd[] = {"ls", NULL};
-	size_t	multipipe_cnt;
-	size_t	org_multipipe_cnt;
+	int		*status;
+	int		multipipe_cnt;
+	int		org_multipipe_cnt;
+	int		*pfd;
 
-	org_multipipe_cnt = 2;
-	multipipe_cnt = 2;
-	while (multipipe_cnt)
+	org_multipipe_cnt = 5;
+	multipipe_cnt = org_multipipe_cnt;
+	while (1)
 	{
 		if (is_exist_next_pipe(multipipe_cnt))
-			if (pipe(pipe_fd) < 0)
+		{
+			pfd = pipe_fd[(multipipe_cnt - 1) % 2];
+			if (pipe(pfd) < 0)
 				return (1);
-		// printf("multipipe_cnt : %zu\n", multipipe_cnt);
+			printf("pfd[0] : %d\n", pfd[0]);
+			printf("pfd[1] : %d\n", pfd[1]);
+		}
+		// builtin이면 fork()를 하지 않는다.
+		// 부모 프로세스로 먼저 fork된다는 보장이 있는가?
+		// 생각해보니까 사실 상관없다. fork()시점에서 이미 close(fd[WRITE_END]) 신경 쓸 필요없다. fork()이전에 했는지가 중요하다.
 		pid = fork();
 		if (pid < 0)
 			return (1);
 		else if (pid == 0)
-			child_process(pipe_fd);
+			child_process(pfd, org_multipipe_cnt, multipipe_cnt);
 		else
-			parent_process(pid, ,status);
-		if (pipe_fd == NULL)
-			return (1);
-		before_pipe(pipe_fd, argv);
-		after_pipe(pipe_fd, argv);
-		// connect_pipe(pipe_fd, argv);
-		free(pipe_fd);
+			parent_process(pfd, pid, status, org_multipipe_cnt, multipipe_cnt);
 		multipipe_cnt--;
+		if (multipipe_cnt + 1 <= 0)
+			break ;
 	}
-
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:01:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/09 15:21:29 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 
 	idx = 0;
 	while (arg_list[idx])
-	{	
+	{
 		if (split_key_value(arg_list[idx], &key, &value) == -1)
 			error_handler(NULL, NULL, ALLOC_FAIL, 1);
 		if	(check_valid_name(key) == 0)
@@ -119,14 +119,14 @@ int	export_cmd(t_env_list *env_list, char **argument)
 	if (env_list == NULL)
 	{
 		print_error(SHELL_NAME, NULL, NULL, "env list is NULL");
-		return (1);
+		return (2);
 	}
 	else if (*argument == NULL)
 		print_export_list(env_list);
 	else
 	{
 		if (add_to_export_list(env_list, argument) < 0)
-			return (1);// error_msg();
+			return (2);// error_msg();
 	}
 	return (0);
 }
