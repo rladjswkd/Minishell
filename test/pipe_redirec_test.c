@@ -115,7 +115,6 @@ static int	connect_pipe(int *fd, char **argv)
 
 static int	connect_to_prev(t_fd *pipe_fd)
 {
-	ft_putstr_fd(STDERR_FILENO, "connect_to_prev\n");
 	if (dup2(pipe_fd[READ_END], STDIN_FILENO) < 0)
 		return (-1);
 	if (close(pipe_fd[READ_END]) < 0)
@@ -128,15 +127,12 @@ static int	connect_to_prev(t_fd *pipe_fd)
 */
 static int	connect_to_next(t_fd *pipe_fd)
 {
-	ft_putstr_fd(STDERR_FILENO, "connect_to_next\n");
-	printf("pipe_fd[READ_END] : %d\n", pipe_fd[READ_END]);
 	if (close(pipe_fd[READ_END]) < 0)
 		return (-1);
 	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
 		return (-1);
 	if (close(pipe_fd[WRITE_END]) < 0)
 		return (-1);
-	printf("pipe_fd[READ_END] after dup2 : %d\n", pipe_fd[READ_END]);
 	return (1);
 }
 
@@ -154,19 +150,45 @@ static int	is_exist_next_pipe(int cnt)
 	return (0);
 }
 
-static int	child_process(t_fd *pipe_fd, int pipe_org_cnt, int pipe_cnt)
+static int	child_process(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 {
 	char	*cmd[] = {"ls", "-al", NULL};
 
 	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
-		connect_to_prev(pipe_fd);
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
 	if (is_exist_next_pipe(pipe_cnt))
-		connect_to_next(pipe_fd);
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
 	if (execve("/bin/ls", cmd, NULL) < 0)
 		ft_putstr_fd(STDERR_FILENO, "execve error\n");
 	return (2);
 }
 
+
+static int	child_process_cat(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+{
+	char	*cmd[] = {"cat", NULL};
+
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
+	if (is_exist_next_pipe(pipe_cnt))
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
+	if (execve("/bin/cat", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	return (2);
+}
+
+static int	child_process_pwd(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+{
+	char	*cmd[] = {"pwd", NULL};
+
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
+	if (is_exist_next_pipe(pipe_cnt))
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
+	if (execve("/bin/pwd", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	return (2);
+}
 /*
 	현재가 오른쪽으로 연결하는지 왼쪽으로 연결하는지에 따라서 달라진다.
 	닫아야할 fd가 달라진다.
@@ -176,13 +198,13 @@ static int	child_process(t_fd *pipe_fd, int pipe_org_cnt, int pipe_cnt)
 	close(fd[WRITE_END]);
 	parent process가 child보다 늦게 실행되는가?
 */
-static int	parent_process(int *pipe_fd, pid_t pid, int *status, int pipe_org_cnt, int pipe_cnt)
+static int	parent_process(int pipe_fd[2][2], pid_t pid, int *status, int pipe_org_cnt, int pipe_cnt)
 {
 	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
-		if (close(pipe_fd[READ_END]) < 0)
+		if (close(pipe_fd[pipe_cnt % 2][READ_END]) < 0)
 			return (-1);
 	if (is_exist_next_pipe(pipe_cnt))
-		if (close(pipe_fd[WRITE_END]) < 0)
+		if (close(pipe_fd[(pipe_cnt + 1) % 2][WRITE_END]) < 0)
 			return (-1);
 	waitpid(pid, status, 0);
 	return (1);
@@ -203,7 +225,7 @@ int main(int argc, char **argv)
 	{
 		if (is_exist_next_pipe(multipipe_cnt))
 		{
-			pfd = pipe_fd[(multipipe_cnt - 1) % 2];
+			pfd = pipe_fd[(multipipe_cnt + 1) % 2];
 			if (pipe(pfd) < 0)
 				return (1);
 			printf("pfd[0] : %d\n", pfd[0]);
@@ -216,9 +238,16 @@ int main(int argc, char **argv)
 		if (pid < 0)
 			return (1);
 		else if (pid == 0)
-			child_process(pfd, org_multipipe_cnt, multipipe_cnt);
+		{
+			if (org_multipipe_cnt == multipipe_cnt || multipipe_cnt == 1)
+				child_process(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+			else if (multipipe_cnt == 2)
+				child_process_pwd(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+			else 
+				child_process_cat(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+		}
 		else
-			parent_process(pfd, pid, status, org_multipipe_cnt, multipipe_cnt);
+			parent_process(pipe_fd, pid, status, org_multipipe_cnt, multipipe_cnt);
 		multipipe_cnt--;
 		if (multipipe_cnt + 1 <= 0)
 			break ;
