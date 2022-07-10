@@ -34,61 +34,36 @@ static int	safe_dup(int from, int to)
 	return (1);
 }
 
-static void	input_redirec(int argc, char **argv)
+static void	input_redirec(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
 	ssize_t	read_size;
-	int		idx;
 
-	idx = 1;
-	while (argc > idx)
-	{
-		file_fd = open(argv[idx], O_RDONLY, 0666);
-		safe_dup(file_fd, STDIN_FILENO);
-		idx++;
-	}
-	// printf("file_fd : %d\n", file_fd);
-	read_size = read(STDIN_FILENO, buf, 42);
-	printf("read_size : %zd\nbuf : %s\n", read_size, buf);
+	file_fd = open(file_name, O_RDONLY, 0666);
+	safe_dup(file_fd, STDIN_FILENO);
+	// read_size = read(STDIN_FILENO, buf, 42);
+	// printf("read_size : %zd\nbuf : %s\n", read_size, buf);
 }
 
-static void	output_redirec(int argc, char **argv)
+static void	output_redirec(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
-	ssize_t	read_size;
-	int		idx;
 
-	idx = 1;
-	file_fd = -1;
-	while (argc > idx)
-	{
-		file_fd = open(argv[idx], O_CREAT | O_RDWR | O_TRUNC, 0666);
-		safe_dup(file_fd, STDOUT_FILENO);
-		idx++;
-	}
-	if (file_fd != -1)
-		write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
+	file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0666);
+	safe_dup(file_fd, STDOUT_FILENO);
+	// write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
 }
 
-static void	append_redirec(int argc, char **argv)
+static void	append_redirec(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
-	ssize_t	read_size;
-	int		idx;
 
-	idx = 1;
-	file_fd = -1;
-	while (argc > idx)
-	{
-		file_fd = open(argv[idx], O_CREAT | O_RDWR | O_APPEND, 0666);
-		safe_dup(file_fd, STDOUT_FILENO);
-		idx++;
-	}
-	if (file_fd != -1)
-		write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
+	file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0666);
+	safe_dup(file_fd, STDOUT_FILENO);
+	// write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
 }
 
 int	main(int argc, char **argv)
@@ -97,19 +72,18 @@ int	main(int argc, char **argv)
 	char	buf[42];
 	ssize_t	read_size;
 	int		idx;
+	char	*cmd[] = {"cat", NULL};
 
-	if (argc < 2)
+	if (argc < 4)
 		return (1);
-	idx = 1;
-	file_fd = -1;
-	while (argc > idx)
+	for (int i = 0; i < 42; i++)
 	{
-		file_fd = open(argv[idx], O_CREAT | O_RDWR | O_APPEND, 0666);
-		safe_dup(file_fd, STDOUT_FILENO);
-		idx++;
+		input_redirec(argv[2]);
+		output_redirec(argv[1]);
+		append_redirec(argv[3]);
 	}
-	if (file_fd != -1)
-		write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
+	if (execve("/bin/cat", cmd, NULL) < 0)
+		return (1);
 	/*
 		< input case
 	*/
