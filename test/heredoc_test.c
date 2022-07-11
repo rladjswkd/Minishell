@@ -27,6 +27,7 @@ typedef enum e_file_flag
 	FILE_WRITE,
 	FILE_APPEND,
 	FILE_RDWR,
+	FILE_WRONLY,
 }				t_file_flag;
 
 typedef enum e_flag
@@ -252,8 +253,8 @@ int	file_open(t_file_flag file_flag, char *file_name)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	else if (file_flag == FILE_APPEND)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0644);
-	else if (file_flag == FILE_RDWR)
-		file_fd = open(file_name, O_CREAT | O_RDWR, 0644);
+	else if (file_flag == FILE_WRONLY)
+		file_fd = open(file_name, O_CREAT | O_WRONLY, 0644);
 	return (file_fd);
 }
 
@@ -267,7 +268,7 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == HERE_DOC)
-		file_fd = file_open(FILE_RDWR, file_name);
+		file_fd = file_open(FILE_WRONLY, file_name);
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
 	else
@@ -347,6 +348,7 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 	while (1)
 	{
 		read_str = readline("$>");
+		// printf("read_str : %zu\n", ft_strlen(read_str));
 		if (ft_strncmp(read_str, heredoc_word, \
 			max_nonnegative(read_str, heredoc_word)) == 0)
 		{
@@ -360,7 +362,7 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 			return (-1);
 		}
 		safe_free(&read_str);
-		if (write(tmp_file_fd, with_newline, ft_strlen(read_str)) < 0)
+		if (write(tmp_file_fd, with_newline, ft_strlen(with_newline)) < 0)
 			return (free_and_close(file_name, tmp_file_fd, read_str));
 		safe_free(&with_newline);
 	}
@@ -416,9 +418,9 @@ static int	heredoc_routine(char *heredoc_word)
 	tmp_file_fd = get_tmp_file_fd(file_name);
 	if (tmp_file_fd < 0)
 		return (-1);
-	printf("tmp_file_fd : %d\n", tmp_file_fd);
+	// printf("tmp_file_fd : %d\n", tmp_file_fd);
 	printf("read size : %ld\n", read(tmp_file_fd, buf, 4242));
-	printf("error code : %s\n", strerror(errno));
+	// printf("error code : %s\n", strerror(errno));
 	printf("heredoc : %s\n", buf);
 	close(tmp_file_fd);
 	return (0);
