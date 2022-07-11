@@ -342,6 +342,7 @@ static int	ft_putendl_fd(int fd, char *str)
 static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 {
 	char	*read_str;
+	char	*with_newline;
 
 	while (1)
 	{
@@ -352,10 +353,16 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 			safe_free(&read_str);
 			break ;
 		}
-		if (ft_putendl_fd(tmp_file_fd, read_str) < 0)
-		// if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
-			return (free_and_close(file_name, tmp_file_fd, read_str));
+		with_newline = ft_strjoin(read_str, "\n");
+		if (with_newline == NULL)
+		{
+			safe_free(&read_str);
+			return (-1);
+		}
 		safe_free(&read_str);
+		if (write(tmp_file_fd, with_newline, ft_strlen(read_str)) < 0)
+			return (free_and_close(file_name, tmp_file_fd, read_str));
+		safe_free(&with_newline);
 	}
 	close(tmp_file_fd);
 	return (1);
@@ -399,7 +406,7 @@ static int	heredoc_routine(char *heredoc_word)
 {
 	int		tmp_file_fd;
 	char	*file_name;
-	char	buf[4242];
+	char	buf[4242 + 1];
 
 	tmp_file_fd = create_heredoc_tmpfile(&file_name);
 	if (tmp_file_fd < 0)
