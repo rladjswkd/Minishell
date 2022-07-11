@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/errno.h>
+#include <strings.h>
 
 /*
 	heredoc test
@@ -50,7 +52,94 @@ typedef struct s_execute_info
 	char				*file_name;
 }				t_execute_info;
 
-static size_t	ft_strlen(const char *str)
+size_t	ft_strlen(const char *str);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word);
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned char	c1;
+	unsigned char	c2;
+	size_t			i;
+
+	i = 0;
+	while (i++ < n)
+	{
+		c1 = *s1++;
+		c2 = *s2++;
+		if (c1 != c2)
+		{
+			if (c1 < c2)
+				return (-1);
+			else
+				return (1);
+		}
+		if (!c1)
+			break ;
+	}
+	return (0);
+}
+
+
+size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
+{
+	size_t	i;
+	size_t	j;
+	size_t	org_dstsize;
+
+	i = ft_strlen(dst);
+	j = 0;
+	org_dstsize = i;
+	while (src[j] != '\0' && (org_dstsize + j + 1 < dstsize))
+		dst[i++] = src[j++];
+	if (org_dstsize < dstsize)
+		dst[i] = '\0';
+	while (src[j] != '\0')
+		j++;
+	if (dstsize < org_dstsize)
+		return (j + dstsize);
+	else
+		return (j + org_dstsize);
+}
+
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+{
+	size_t	i;
+	size_t	k;
+
+	i = 0;
+	k = 0;
+	while (src[i] != '\0')
+		i++;
+	if (dstsize == 0)
+		return (i);
+	while ((k < dstsize - 1) && src[k])
+	{
+		dst[k] = src[k];
+		k++;
+	}
+	dst[k] = '\0';
+	return (i);
+}
+
+
+size_t	max_nonnegative(char const *s1, char const *s2)
+{
+	size_t	s1_size;
+	size_t	s2_size;
+
+	s1_size = ft_strlen(s1);
+	s2_size = ft_strlen(s2);
+	if (s1_size > s2_size)
+		return (s1_size);
+	return (s2_size);
+}
+
+
+size_t	ft_strlen(const char *str)
 {
 	size_t	len;
 
@@ -128,6 +217,22 @@ char	*ft_itoa(int n)
 	}
 	return (to_be_s);
 }
+
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*dst;
+	size_t	dstsize;
+
+	dstsize = ft_strlen(s1) + ft_strlen(s2) + 1;
+	dst = (char *)malloc(sizeof(char) * (dstsize));
+	if (!dst)
+		return (0);
+	ft_strlcpy(dst, s1, ft_strlen(s1) + 1);
+	ft_strlcat(dst, s2, dstsize);
+	return (dst);
+}
+
 
 
 static void	safe_free(char	**char_pptr)
@@ -215,6 +320,25 @@ static void	input_to_tmpfile(char *file_name, int tmp_file_fd, char *heredoc_wor
 	close(tmp_file_fd);
 }
 
+static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)
+{
+	unlink(file_name);
+	safe_free(&file_name);
+	safe_free(&read_str);
+	if (close(tmp_file_fd) < 0)
+		return (-1);
+	return (1);
+	//계속 return시킬 것 아니라면 exit한다.
+}
+
+static int	ft_putendl_fd(int fd, char *str)
+{
+	if (write(fd, str, ft_strlen(str) < 0))
+		// || write(fd, &"\n", 1) < 0)
+		return (-1);
+	return (1);
+}
+
 static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 {
 	char	*read_str;
@@ -228,24 +352,26 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 			safe_free(&read_str);
 			break ;
 		}
-		if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
-			exit(1);
+		if (ft_putendl_fd(tmp_file_fd, read_str) < 0)
+		// if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
+			return (free_and_close(file_name, tmp_file_fd, read_str));
 		safe_free(&read_str);
 	}
 	close(tmp_file_fd);
+	return (1);
 }
 
-static int	create_heredoc_tmpfile(char	*file_name)
+static int	create_heredoc_tmpfile(char	**file_name)
 {
 	int		tmp_file_fd;
 
-	file_name = check_tmp_file();
-	if (file_name == NULL)
+	*file_name = check_tmp_file();
+	if (*file_name == NULL)
 		return (-1);
-	tmp_file_fd = redirection(HERE_DOC, file_name);
+	tmp_file_fd = redirection(HERE_DOC, *file_name);
 	if (tmp_file_fd < 0)
 	{
-		safe_free(&file_name);
+		safe_free(file_name);
 		return (-1);
 	}
 	return (tmp_file_fd);
@@ -255,27 +381,40 @@ static int	create_heredoc_tmpfile(char	*file_name)
 	우선입력만 받았으며 임시파일에 저장한 상태이다.
 	임사
 */
-static int	tmp_to_stdin(char *file_name)
+static int	get_tmp_file_fd(char *file_name)
 {
-	int	tmp_file_fd;
+	int	open_fd;
 
-	tmp_file_fd = file_open(FILE_READ, file_name);
-	dup2(tmp_file_fd, STDIN_FILENO);
-	unlink(file_name);//wsl에서는 문제 발생
-	close(tmp_file_fd);
+	open_fd = file_open(FILE_READ, file_name);
+	printf("open_fd : %d\n", open_fd);
+	if (open_fd < 0)
+		return (-1);
+	if (unlink(file_name) < 0)//wsl에서는 문제 발생
+		return (-1);
 	safe_free(&file_name);
+	return (open_fd);
 }
 
-static int	heredoc_rountine(char *heredoc_word)
+static int	heredoc_routine(char *heredoc_word)
 {
 	int		tmp_file_fd;
 	char	*file_name;
+	char	buf[4242];
 
-	tmp_file_fd = create_heredoc_tmpfile(file_name);
+	tmp_file_fd = create_heredoc_tmpfile(&file_name);
 	if (tmp_file_fd < 0)
-		return (tmp_file_fd);
-	get_readline(*file_name, tmp_file_fd, heredoc_word);
-	tmp_to_stdin(file_name);
+		return (-1);
+	if (get_readline(file_name, tmp_file_fd, heredoc_word) < 0)
+		return (1);
+	tmp_file_fd = get_tmp_file_fd(file_name);
+	if (tmp_file_fd < 0)
+		return (-1);
+	printf("tmp_file_fd : %d\n", tmp_file_fd);
+	printf("read size : %ld\n", read(tmp_file_fd, buf, 4242));
+	printf("error code : %s\n", strerror(errno));
+	printf("heredoc : %s\n", buf);
+	close(tmp_file_fd);
+	return (0);
 }
 
 /*
@@ -294,6 +433,6 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (1);
 	heredoc_word = argv[1];
-	heredoc_rountine(heredoc_word);
+	heredoc_routine(heredoc_word);
 	return (0);
 }

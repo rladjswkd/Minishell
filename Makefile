@@ -31,6 +31,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_is_alpha.c	\
 			ft_is_digit.c	\
 			ft_error.c	\
+			exit_status.c \
 			check_valid_name.c	\
 			utils.c	\
 	)
