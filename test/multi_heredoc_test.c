@@ -13,12 +13,16 @@
 	- 
 */
 
-
 typedef struct s_list
 {
 	void			*node;
 	struct s_list	*next;
 }				t_list;
+
+typedef struct s_heredoc_node
+{
+	int		fd;
+}				t_heredoc_node;
 
 typedef enum e_redirection_flag
 {
@@ -415,16 +419,10 @@ static int	heredoc_routine(char *heredoc_word)
 	if (tmp_file_fd < 0)
 		return (-1);
 	if (get_readline(file_name, tmp_file_fd, heredoc_word) < 0)
-		return (1);
+		return (-1);
 	tmp_file_fd = get_tmp_file_fd(file_name);
 	if (tmp_file_fd < 0)
 		return (-1);
-	// printf("tmp_file_fd : %d\n", tmp_file_fd);
-	// ssize_t len = read(tmp_file_fd, buf, 4242);
-	// buf[len] = '\0';
-	// printf("read size : %ld\n", len);
-	// printf("error code : %s\n", strerror(errno));
-	// printf("heredoc : %s", buf);
 	return (tmp_file_fd);
 }
 
@@ -449,60 +447,145 @@ typedef struct s_list
 p 
 */
 
-typedef struct s_heredoc_node
+t_list	*create_list()
 {
-	int		fd;
-}				t_heredoc_node;
+	t_list	*new_list;
 
-int	main(int argc, char **argv)
+	new_list = (t_list *)malloc(sizeof(t_list));
+	if (new_list == NULL)
+		return (NULL);
+	new_list->node = NULL;
+	new_list->next = NULL;
+	return (new_list);
+}
+
+static void	free_node(t_list **node)
 {
-	char			*heredoc_word;
-	int				heredoc_fd;
-	int				idx;
-	t_list			*common_list;
+	free(*node);
+	*node = NULL;
+}
+
+static void	free_list(t_list **list)
+{
+	t_list	*cur_node;
+	t_list	*removed_node;
+
+	if (list == NULL || *list == NULL)
+		return ;
+	cur_node = *list;
+	while (cur_node)
+	{
+		removed_node = cur_node;
+		cur_node = cur_node->next;
+		free_node(&removed_node);
+	}
+}
+
+
+t_list *get_last_node(t_list *list)
+{
+	while (list)
+		list = list->next;
+	return (list);
+}
+
+/*
+	실제사용할때 어떻게 쓰일것으로 예상되는가?
+	어떻게 쓰이게 주는게 에러 발생가능성이 적고 유지보수하기 편리한가?
+*/
+int	heredoc_fd_to_list(t_list *list, int fd)
+{
 	t_list			*cur_node;
 	t_heredoc_node	*heredoc_node;
-	char			buf[4242];
-	ssize_t 		len;
 
-	if (argc < 2)
-		return (1);
-	idx = 1;
-	cur_node = (t_list *)malloc(sizeof(t_list));
-	if (cur_node == NULL)
-		return (ENOMEM);
-	common_list = cur_node;
-	while (idx < argc)
+	if (fd < 0)
 	{
-		heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
-		if (heredoc_node == NULL)
-		{
-			// 할당한것 모두 free
-			return (ENOMEM);
-		}
-		heredoc_node->fd = heredoc_routine(argv[idx]);
-		cur_node->node = (t_heredoc_node *)heredoc_node;
-		cur_node->next = (t_list *)malloc(sizeof(t_list));
-		if (cur_node->next == NULL)
-		{
-			//cur_node, heredoc_node free필요
-			return (ENOMEM);
-		}
-		cur_node = cur_node->next;
-		idx++;
+		free_list(&list);
+		return (-1);
 	}
-	while (common_list)
+	while (list->next)
+		list = list->next;
+	list->next = create_list();
+	cur_node = list->next;
+	if (cur_node == NULL)
 	{
-		heredoc_node = (t_heredoc_node *)common_list->node;
+		free_list(&list);
+		return (-1);
+	}
+	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
+	if (heredoc_node == NULL)
+	{
+		free_list(&list);
+		return (-1);
+	}
+	heredoc_node->fd = fd;
+	cur_node->node = (t_heredoc_node *)heredoc_node;
+	return (0);
+}
+
+static void	print_heredoc_list(t_list *list)
+{
+	ssize_t			len;
+	t_heredoc_node	*heredoc_node;
+	char			buf[4242];
+
+	list = list->next;
+	while (list)
+	{
+		heredoc_node = (t_heredoc_node *)list->node;
+		printf("\n=========================\n");
 		printf("heredoc_node->fd : %d\n", heredoc_node->fd);
 		len = read(heredoc_node->fd, buf, 4242);
 		buf[len] = '\0';
 		printf("read size : %ld\n", len);
 		printf("error code : %s\n", strerror(errno));
 		printf("heredoc : \n%s", buf);
-		printf("=========================\n");
-		common_list = common_list->next;
+		list = list->next;
 	}
+}
 
+
+/*
+- 제약조건
+	- header node가 없다.
+	 	- 중간에 값을 추가하다가 error가 나는 경우 시작위치를 알 수 없다.
+		- 다음 노드로 이을떄 next에 할당해야한다.
+	- 첫 노드로 항상 비워두고 시작노드로 쓴다.
+
+*/
+
+
+/*
+	- 현재 list에 node에 담고자하는 구조체를 캐스팅해서 가리키게한다.
+	- next와  
+*/
+static void	init_list(t_list *list)
+{
+	list->next = NULL;
+	list->node = NULL;
+}
+
+int	main(int argc, char **argv)
+{
+	char			*heredoc_word;
+	int				heredoc_fd;
+	int				idx;
+	t_list			common_list;
+	t_list			*cur_node;
+
+	// printf("common_list : %p\n", &common_list);
+	// printf("common_list.next : %p\n", &(common_list.next));
+	// printf("cur_node : %p\n", cur_node);
+	// init_list(&common_list);
+	if (argc < 2)
+		return (1);
+	idx = 1;
+	while (idx < argc)
+	{
+		if (heredoc_fd_to_list(&common_list, heredoc_routine(argv[idx])) < 0)
+			return (ENOMEM);
+		idx++;
+	}
+	print_heredoc_list(&common_list);
 	return (0);
 }
