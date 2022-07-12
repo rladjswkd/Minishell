@@ -477,20 +477,18 @@ int	main(int argc, char **argv)
 		heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
 		if (heredoc_node == NULL)
 		{
-			free(cur_node);
-			cur_node = NULL;
+			// 할당한것 모두 free
 			return (ENOMEM);
 		}
 		heredoc_node->fd = heredoc_routine(argv[idx]);
 		cur_node->node = (t_heredoc_node *)heredoc_node;
-		cur_node = cur_node->next;
-		cur_node = (t_list *)malloc(sizeof(t_list));
-		if (cur_node == NULL)
+		cur_node->next = (t_list *)malloc(sizeof(t_list));
+		if (cur_node->next == NULL)
 		{
 			//cur_node, heredoc_node free필요
 			return (ENOMEM);
 		}
-		cur_node->next = NULL;
+		cur_node = cur_node->next;
 		idx++;
 	}
 	while (common_list)
@@ -502,6 +500,7 @@ int	main(int argc, char **argv)
 		printf("read size : %ld\n", len);
 		printf("error code : %s\n", strerror(errno));
 		printf("heredoc : \n%s", buf);
+		printf("=========================\n");
 		common_list = common_list->next;
 	}
 
