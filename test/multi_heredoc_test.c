@@ -287,6 +287,7 @@ static char	*check_tmp_file(void)
 	char	*file_name;
 	char	*itoa_num;
 	int		num;
+	int		tmp_fd;
 
 	num = 0;
 	while (1)
@@ -298,8 +299,10 @@ static char	*check_tmp_file(void)
 		safe_free(&itoa_num);
 		if (file_name == NULL)
 			return (NULL);
-		if (file_open(FILE_READ, file_name) < 0)
+		tmp_fd = file_open(FILE_READ, file_name);
+		if (tmp_fd < 0)
 			break ;
+		close(tmp_fd);
 		safe_free(&file_name);
 		num++;
 	}
@@ -481,14 +484,6 @@ static void	free_list(t_list **list)
 	}
 }
 
-
-t_list *get_last_node(t_list *list)
-{
-	while (list)
-		list = list->next;
-	return (list);
-}
-
 /*
 	실제사용할때 어떻게 쓰일것으로 예상되는가?
 	어떻게 쓰이게 주는게 에러 발생가능성이 적고 유지보수하기 편리한가?
@@ -580,12 +575,14 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (1);
 	idx = 1;
-	while (idx < argc)
-	{
-		if (heredoc_fd_to_list(&common_list, heredoc_routine(argv[idx])) < 0)
-			return (ENOMEM);
-		idx++;
-	}
-	print_heredoc_list(&common_list);
+	create_heredoc_tmpfile(&argv[1]);
+	printf("error code : %s\n", strerror(errno));
+	// while (idx < argc)
+	// {
+	// 	if (heredoc_fd_to_list(&common_list, heredoc_routine(argv[idx])) < 0)
+	// 		return (ENOMEM);
+	// 	idx++;
+	// }
+	// print_heredoc_list(&common_list);
 	return (0);
 }
