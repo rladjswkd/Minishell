@@ -7,11 +7,27 @@
 #include <sys/errno.h>
 #include <strings.h>
 
+#include <dirent.h>
+#include <sys/types.h>
+#include <limits.h>
+
 /*
 	heredoc test
 	- readline으로 입력을 받는다.
 	- 
 */
+
+typedef struct s_list
+{
+	void			*node;
+	struct s_list	*next;
+}				t_list;
+
+typedef struct s_heredoc_node
+{
+	int		fd;
+}				t_heredoc_node;
+
 typedef enum e_redirection_flag
 {
 	NONE,
@@ -53,11 +69,33 @@ typedef struct s_execute_info
 	char				*file_name;
 }				t_execute_info;
 
-size_t	ft_strlen(const char *str);
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
+size_t		ft_strlen(const char *str);
+size_t		ft_strlcpy(char *dst, const char *src, size_t dstsize);
+size_t		ft_strlcat(char *dst, const char *src, size_t dstsize);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
+size_t 		max_nonnegative(char const *s1, char const *s2);
 static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word);
+
+
+int	check_tmp_file_name(char *file_name)
+{
+	DIR				*dir_ptr = NULL;
+	struct dirent	*file    = NULL;
+	char			buf[PATH_MAX];
+
+	if (getcwd(buf, sizeof(buf)) == NULL)
+		return (1);
+	if((dir_ptr = opendir(buf)) == NULL)
+		return -1;
+	while((file = readdir(dir_ptr)) != NULL) 
+	{
+		if (ft_strncmp(file_name, file->d_name, \
+						max_nonnegative(file_name, file->d_name)) == 0)
+			return (1);
+	}
+	closedir(dir_ptr);
+	return (0);
+}
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
@@ -83,7 +121,6 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
 	size_t	i;
@@ -105,7 +142,6 @@ size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 		return (j + org_dstsize);
 }
 
-
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
 	size_t	i;
@@ -126,7 +162,6 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 	return (i);
 }
 
-
 size_t	max_nonnegative(char const *s1, char const *s2)
 {
 	size_t	s1_size;
@@ -138,7 +173,6 @@ size_t	max_nonnegative(char const *s1, char const *s2)
 		return (s1_size);
 	return (s2_size);
 }
-
 
 size_t	ft_strlen(const char *str)
 {
@@ -219,7 +253,6 @@ char	*ft_itoa(int n)
 	return (to_be_s);
 }
 
-
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*dst;
@@ -233,8 +266,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	ft_strlcat(dst, s2, dstsize);
 	return (dst);
 }
-
-
 
 static void	safe_free(char	**char_pptr)
 {
@@ -253,8 +284,8 @@ int	file_open(t_file_flag file_flag, char *file_name)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	else if (file_flag == FILE_APPEND)
 		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0644);
-	else if (file_flag == FILE_WRONLY)
-		file_fd = open(file_name, O_CREAT | O_WRONLY, 0644);
+	else if (file_flag == FILE_RDWR)
+		file_fd = open(file_name, O_CREAT | O_RDWR, 0644);
 	return (file_fd);
 }
 
@@ -268,7 +299,7 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == HERE_DOC)
-		file_fd = file_open(FILE_WRONLY, file_name);
+		file_fd = file_open(FILE_RDWR, file_name);
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
 	else
@@ -277,7 +308,7 @@ int	redirection(t_redirection_flag redirection_flag, char *file_name)
 	return (file_fd);
 }
 
-static char	*check_tmp_file(void)
+static char *get_tmp_file_name(void)
 {
 	char	*file_name;
 	char	*itoa_num;
@@ -289,11 +320,11 @@ static char	*check_tmp_file(void)
 		itoa_num = ft_itoa(num);
 		if (itoa_num == NULL)
 			return (NULL);
-		file_name = ft_strjoin(".heredoc_tmpfile_", itoa_num);
+		file_name = ft_strjoin(".heredoc_tmp_file_", itoa_num);
 		safe_free(&itoa_num);
 		if (file_name == NULL)
 			return (NULL);
-		if (file_open(FILE_READ, file_name) < 0)
+		if (check_tmp_file_name(file_name) == 0)
 			break ;
 		safe_free(&file_name);
 		num++;
@@ -301,7 +332,7 @@ static char	*check_tmp_file(void)
 	return (file_name);
 }
 
-static void	input_to_tmpfile(char *file_name, int tmp_file_fd, char *heredoc_word)
+static void	input_to_tmp_file(char *file_name, int tmp_file_fd, char *heredoc_word)
 {
 	char	*read_str;
 
@@ -370,11 +401,11 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 	return (1);
 }
 
-static int	create_heredoc_tmpfile(char	**file_name)
+static int	create_heredoc_tmp_file(char	**file_name)
 {
 	int		tmp_file_fd;
 
-	*file_name = check_tmp_file();
+	*file_name = get_tmp_file_name();
 	if (*file_name == NULL)
 		return (-1);
 	tmp_file_fd = redirection(HERE_DOC, *file_name);
@@ -398,7 +429,7 @@ static int	get_tmp_file_fd(char *file_name)
 	printf("open_fd : %d\n", open_fd);
 	if (open_fd < 0)
 		return (-1);
-	if (unlink(file_name) < 0)//wsl에서는 문제 발생
+	if (unlink(file_name) < 0)
 		return (-1);
 	safe_free(&file_name);
 	return (open_fd);
@@ -410,20 +441,15 @@ static int	heredoc_routine(char *heredoc_word)
 	char	*file_name;
 	char	buf[4242 + 1];
 
-	tmp_file_fd = create_heredoc_tmpfile(&file_name);
+	tmp_file_fd = create_heredoc_tmp_file(&file_name);
 	if (tmp_file_fd < 0)
 		return (-1);
 	if (get_readline(file_name, tmp_file_fd, heredoc_word) < 0)
-		return (1);
+		return (-1);
 	tmp_file_fd = get_tmp_file_fd(file_name);
 	if (tmp_file_fd < 0)
 		return (-1);
-	// printf("tmp_file_fd : %d\n", tmp_file_fd);
-	printf("read size : %ld\n", read(tmp_file_fd, buf, 4242));
-	// printf("error code : %s\n", strerror(errno));
-	printf("heredoc : %s\n", buf);
-	close(tmp_file_fd);
-	return (0);
+	return (tmp_file_fd);
 }
 
 /*
@@ -434,14 +460,145 @@ static int	heredoc_routine(char *heredoc_word)
 	- heredoc word와 일치하는 입력값을 받으면 입력을 더이상 받지 않으며 tmp file fd 또한 close한다.
 */
 
-// 1개의 heredoc만 받는다는 가정
+/*
+	- 여러개의 fd를 연결리스트에 담아서 처리한다.
+		fd를 읽어와서 일괄적으로 출력한다.
+
+typedef struct s_list
+{
+	void			*node;
+	struct s_list	*next;
+}				t_list;
+
+p 
+*/
+
+t_list	*create_list()
+{
+	t_list	*new_list;
+
+	new_list = (t_list *)malloc(sizeof(t_list));
+	if (new_list == NULL)
+		return (NULL);
+	new_list->node = NULL;
+	new_list->next = NULL;
+	return (new_list);
+}
+
+static void	free_node(t_list **node)
+{
+	free(*node);
+	*node = NULL;
+}
+
+static void	free_linked_list(t_list **list)
+{
+	t_list	*cur_node;
+	t_list	*removed_node;
+
+	if (list == NULL || *list == NULL)
+		return ;
+	cur_node = *list;
+	while (cur_node)
+	{
+		removed_node = cur_node;
+		cur_node = cur_node->next;
+		free_node(&removed_node);
+	}
+}
+
+/*
+	실제사용할때 어떻게 쓰일것으로 예상되는가?
+	어떻게 쓰이게 주는게 에러 발생가능성이 적고 유지보수하기 편리한가?
+*/
+int	heredoc_fd_to_list(t_list *list, int fd)
+{
+	t_list			*cur_node;
+	t_heredoc_node	*heredoc_node;
+
+	if (fd < 0)
+	{
+		free_linked_list(&list);
+		return (-1);
+	}
+	while (list->next)
+		list = list->next;
+	list->next = create_list();
+	cur_node = list->next;
+	if (cur_node == NULL)
+	{
+		free_linked_list(&list);
+		return (-1);
+	}
+	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
+	if (heredoc_node == NULL)
+	{
+		free_linked_list(&list);
+		return (-1);
+	}
+	heredoc_node->fd = fd;
+	cur_node->node = (t_heredoc_node *)heredoc_node;
+	return (0);
+}
+
+static void	print_heredoc_list(t_list *list)
+{
+	ssize_t			len;
+	t_heredoc_node	*heredoc_node;
+	char			buf[4242];
+
+	list = list->next;
+	while (list)
+	{
+		heredoc_node = (t_heredoc_node *)list->node;
+		printf("\n=========================\n");
+		printf("heredoc_node->fd : %d\n", heredoc_node->fd);
+		len = read(heredoc_node->fd, buf, 4242);
+		buf[len] = '\0';
+		printf("read size : %ld\n", len);
+		printf("error code : %s\n", strerror(errno));
+		printf("heredoc : \n%s", buf);
+		list = list->next;
+	}
+}
+
+
+/*
+- 제약조건
+	- header node가 없다.
+	 	- 중간에 값을 추가하다가 error가 나는 경우 시작위치를 알 수 없다.
+		- 다음 노드로 이을떄 next에 할당해야한다.
+	- 첫 노드로 항상 비워두고 시작노드로 쓴다.
+
+*/
+
+
+/*
+	- 현재 list에 node에 담고자하는 구조체를 캐스팅해서 가리키게한다.
+	- next와  
+*/
+static void	init_list(t_list *list)
+{
+	list->next = NULL;
+	list->node = NULL;
+}
+
 int	main(int argc, char **argv)
 {
-	char	*heredoc_word;
-
-	if (argc < 2)
+	char			*heredoc_word;
+	int				heredoc_fd;
+	int				idx;
+	t_list			common_list;
+	// create_heredoc_tmp_file(&argv[1]);
+	// printf("error code : %s\n", strerror(errno));
 		return (1);
-	heredoc_word = argv[1];
-	heredoc_routine(heredoc_word);
+	idx = 1;
+	while (idx < argc)
+	{
+		if (heredoc_fd_to_list(&common_list, heredoc_routine(argv[idx])) < 0)
+			return (ENOMEM);
+		idx++;
+	}
+	print_heredoc_list(&common_list);
 	return (0);
 }

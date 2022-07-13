@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 19:31:28 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/13 15:51:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "linked_list.h"
-#include "linked_list_utils.h"
+#include "utils.h"
 #include "token.h"
 
 int	add_back_linked_node(t_LinkedList *pLinkedList, \

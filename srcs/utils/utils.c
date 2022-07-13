@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:04:16 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/13 15:47:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@
 	Also referred to as an identifier.
 */
 
+void	safe_free(char	**char_pptr)
+{
+	free(*char_pptr);
+	*char_pptr = NULL;
+}
 
 int	free_key_value(char **key, char **value)
 {

@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   linked_list_utils.h                                :+:      :+:    :+:   */
+/*   heredoc.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/21 14:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/06/25 16:28:29 by jim              ###   ########seoul.kr  */
+/*   Created: 2022/07/13 15:32:38 by jim               #+#    #+#             */
+/*   Updated: 2022/07/13 16:16:25 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LINKED_LIST_UTILS_H
-# define LINKED_LIST_UTILS_H
+#ifndef HEREDOC_H
+# define HEREDOC_H
 
-# include <stddef.h>
+typedef struct s_heredoc_node
+{
+	int		fd;
+}				t_heredoc_node;
 
-size_t	ft_strlen(const char *s);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-size_t	max_nonnegative(char const *s1, char const *s2);
+int	heredoc_routine(char *heredoc_word);
+int	heredoc_fd_to_list(t_list *list, int fd);
+
+int	create_heredoc_tmp_file(char **file_name);
 
 #endif

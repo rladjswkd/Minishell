@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/02 16:08:56 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/13 15:58:15 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int	dup_from_to(t_fd from, t_fd to)
 // file == 3
 // STDOUT = 1
 /*
-	fd는 같다 하지만 dup2를 쓰면 가리키곳이 달라진다.
+	fd는 같다 하지만 dup2를 쓰면 가리키는 곳이 달라진다.
 */
 int	redirec_out(char *file_name, int *from, int *to, int idx)
 {

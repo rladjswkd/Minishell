@@ -35,68 +35,6 @@ static void	ft_putstr_fd(int fd, const char *str)
 {
 	write(fd, str, ft_strlen(str));
 }
-
-static int	before_pipe(t_fd fd[2], char **argv)
-{
-	int		pid;
-	char	*cmd[] = {"cat", NULL};
-
-	pid = fork();
-	if (pid < 0)
-	{
-		printf("child process error\n");
-		return (1);
-	}
-	else if (pid == 0)
-	{
-		close(fd[READ_END]);
-		if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)
-			return (1);
-		close(fd[WRITE_END]);
-		if (execve("/bin/cat", cmd, NULL) < 0)
-			printf("execve error\n");
-	}
-	else
-	{
-		close(fd[WRITE_END]);
-		waitpid(pid, NULL, 0);
-	}
-	return (0);
-}
-
-static int	after_pipe(t_fd fd[2], char **argv)
-{
-	int		pid;
-	char	*cmd[] = {"cat", NULL};
-
-	pid = fork();
-	if (pid < 0)
-		return (1);
-	else if (pid == 0)
-	{
-		close(fd[WRITE_END]);
-		if (dup2(fd[READ_END], STDIN_FILENO) < 0)
-			return (1);
-		close(fd[READ_END]);
-		if (execve("/bin/cat", cmd, NULL) < 0)
-			printf("execve error\n");
-		return (1);
-	}
-	else
-	{
-		close(fd[READ_END]);
-		waitpid(pid, NULL, 0);
-	}
-	return (0);
-}
-
-static int	connect_pipe(int *fd, char **argv)
-{
-	before_pipe(fd, argv);
-	after_pipe(fd, argv);
-	return (0);
-}
-
 /*
 	- make multipipe
 	- 다음에 파이프가 있는지 확인하고서 있으면 연결한다.
@@ -187,6 +125,7 @@ static int	child_process_pwd(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
 	if (execve("/bin/pwd", cmd, NULL) < 0)
 		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	exit(2);
 	return (2);
 }
 /*
@@ -219,7 +158,7 @@ int main(int argc, char **argv)
 	int		org_multipipe_cnt;
 	int		*pfd;
 
-	org_multipipe_cnt = 5;
+	org_multipipe_cnt = 4;
 	multipipe_cnt = org_multipipe_cnt;
 	while (1)
 	{
@@ -239,7 +178,7 @@ int main(int argc, char **argv)
 			return (1);
 		else if (pid == 0)
 		{
-			if (org_multipipe_cnt == multipipe_cnt || multipipe_cnt == 1)
+			if (org_multipipe_cnt == multipipe_cnt)
 				child_process(pipe_fd, org_multipipe_cnt, multipipe_cnt);
 			else if (multipipe_cnt == 2)
 				child_process_pwd(pipe_fd, org_multipipe_cnt, multipipe_cnt);

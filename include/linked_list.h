@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 19:52:06 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/13 15:49:09 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ typedef struct s_LinkedListNode
 	void				*node;
 }				t_LinkedListNode;
 
+/*
 typedef struct s_parse_node
 {
 	char			*token_val;
 	t_token_type	type;
 }				t_parse_node;
+*/
 
 typedef struct s_LinkedList
 {
@@ -32,8 +34,13 @@ typedef struct s_LinkedList
 	size_t				list_length;
 }				t_LinkedList;
 
+typedef struct s_list
+{
+	void			*node;
+	struct s_list	*next;
+}				t_list;
+
 t_LinkedList		*create_linked_list(void);
-t_env_node			*create_env_node(char *key, char *value);
 t_parse_node		*create_parse_node(char *token_val, t_token_type type);
 t_LinkedListNode	*create_linked_node(char	*str, t_token_type type);
 t_LinkedListNode	*get_linked_node(t_LinkedList *pLinkedList, \
@@ -45,5 +52,7 @@ int					remove_linked_node(t_LinkedList *pLinkedList, \
 int					clear_linked_list(t_LinkedList *pLinkedList);
 int					delete_linked_list(t_LinkedList **PLinkedList);
 int					display_linked_list(t_LinkedList *pLinkedList);
+
+void				free_linked_list(t_list **list);
 
 #endif

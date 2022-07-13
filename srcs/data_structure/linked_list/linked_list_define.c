@@ -6,13 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 19:31:18 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/13 15:52:23 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h> // debug
 #include <stdlib.h>
 #include "linked_list.h"
-#include "linked_list_utils.h"
+#include "utils.h"
 #include "token.h"
 
 t_LinkedList	*create_linked_list(void)
@@ -80,18 +81,13 @@ int	display_linked_list(t_LinkedList *pLinkedList)
 	return (0);
 }
 
-#include <stdio.h>
-
+/*
 int	main(int argc, char **argv)
 {
 	t_LinkedList		*pLinkedList;
 	t_LinkedListNode	*plinked_node;
 	size_t				idx;
-	/*
-		test
-		sentence
-		4242
-	*/
+
 	if (argc < 2)
 		return (1);
 	pLinkedList = create_linked_list();
@@ -122,4 +118,4 @@ int	main(int argc, char **argv)
 	//delete pLinkedList
 	return (0);
 }
-
+*/
