@@ -22,6 +22,15 @@ void	set_signal()
 	// signal(SIGQUIT, SOG);
 }
 
+/*
+
+		{
+			// printf("\033[1A");
+			// printf("\033[10C");
+			printf("exit\n");
+			exit(-1);
+		}
+*/
 int	main(int argc, char **argv, char **envp)
 {
 	char			*str;
@@ -33,13 +42,11 @@ int	main(int argc, char **argv, char **envp)
 	set_signal();
 	while (1)
 	{
-		str = readline("pepsi zero__> ");
+		str = readline("pepsi zero> ");
 		if (str == NULL)
 		{
-			printf("\033[1A");
-			printf("\033[10C");
-			printf(" exit\n");
-			exit(-1);
+			printf("exit\n");
+			break ;
 		}
 		else if (*str == '\0')
 			free(str);
