@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/11 12:27:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/16 21:34:10 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@
 //debug
 #include <stdlib.h>
 
-void	handler(int signum)
-{
-	if (signum != SIGINT)
-		return ;
-	write(STDERR_FILENO, "\n", 1);
-	rl_replace_line("", 1);
-	rl_on_new_line();
-	rl_redisplay();
-}
+// void	handler(int signum)
+// {
+// 	if (signum != SIGINT)
+// 		return ;
+// 	write(STDERR_FILENO, "\n", 1);
+// 	rl_replace_line("", 1);
+// 	rl_on_new_line();
+// 	rl_redisplay();
+// }
 
 // for display, will be removed
 static void	display_list(t_env_list	*env_list)
