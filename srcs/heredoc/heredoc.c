@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 15:55:25 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/18 19:01:38 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ static int	get_tmp_file_fd(char *file_name)
 	int	open_fd;
 
 	open_fd = file_open(FILE_READ, file_name);
-	printf("open_fd : %d\n", open_fd);
 	if (open_fd < 0)
 		return (-1);
 	if (unlink(file_name) < 0)
@@ -74,7 +73,7 @@ int	heredoc_routine(char *heredoc_word)
 {
 	int		tmp_file_fd;
 	char	*file_name;
-	char	buf[4242 + 1];
+	char	buf[4242 + 1]; // should be changed
 
 	tmp_file_fd = create_heredoc_tmp_file(&file_name);
 	if (tmp_file_fd < 0)

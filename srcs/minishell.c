@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/16 21:34:10 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/18 20:51:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@
 #include "init.h"
 #include "utils.h"
 #include "builtin.h"
+#include "execute.h"
 //debug
 #include <stdlib.h>
-
+#include "linked_list.h"
 // void	handler(int signum)
 // {
 // 	if (signum != SIGINT)
@@ -85,6 +86,113 @@ static void	builtin_test(char *input, t_env_list *env_list)
 	input = NULL;
 }
 
+// static t_list	*create_node(char *str)
+// {
+// 	t_list	*new_node;
+
+// 	new_node = (t_list *)malloc(sizeof(t_list));
+// 	if (new_node == NULL)
+// 		return (NULL);
+// 	new_node->node 
+// 	return (new_node);
+// }
+
+static int	add_node(t_list **new_node)
+{
+	*new_node = (t_list *)malloc(sizeof(t_list));
+	if (*new_node == NULL)
+		return (-1);
+	(*new_node)->next = NULL;
+	(*new_node)->node = NULL;
+	return (1);
+}
+
+static t_list	*create_list()
+{
+	t_list	*new_list;
+
+	new_list = (t_list *)malloc(sizeof(t_list));
+	if (new_list == NULL)
+		return (NULL);
+	new_list->next = NULL;
+	new_list->node = NULL;
+	return (new_list);
+}
+
+static t_list	*str_to_list(char *str)
+{
+	t_list		*plist;
+	t_list		*cur_node;
+	t_c_scmd	*scmd_node;
+	char		**arr_list;
+	int			idx;
+
+	plist = create_list();
+	if (plist == NULL)
+		return (NULL);
+	arr_list = ft_split(str, ' ');
+	if (arr_list == NULL)
+	{
+		free(plist);
+		return (NULL);
+	}
+	cur_node = plist;
+	if (add_node(&(cur_node->next)) == -1)
+	{
+		free_list(&arr_list);
+		free_linked_list(&plist);
+		return (NULL);
+	}
+	cur_node = cur_node->next;
+	cur_node->node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
+	if (cur_node->node == NULL)
+	{
+		free_list(&arr_list);
+		free_linked_list(&plist);
+		return (NULL);
+	}
+	scmd_node = cur_node->node;
+	cur_node = scmd_node->args;
+	// cur_node->next = NULL;
+	idx = 0;
+	while (arr_list[idx])
+	{
+		if (add_node(&(cur_node->next)) == -1)
+		{
+			free_list(&arr_list);
+			free_linked_list(&scmd_node->args);
+			free_linked_list(&plist);
+			return (NULL);
+		}
+		((t_c_token *)(cur_node->node))->str = ft_strdup(arr_list[idx]);
+		if (((t_c_token *)(cur_node->node))->str == NULL)
+		{
+			// token의 str list를 지워야한다.
+			free_list(&arr_list);
+			free_linked_list(&scmd_node->args);
+			free_linked_list(&plist);
+			return (NULL);
+		}
+		cur_node = cur_node->next;
+		cur_node->next = NULL;
+		idx++;
+		
+	}
+	
+}
+/*
+	- input str to linked list
+		to using split
+	- execute_process(t_env_list *env_list, t_list *cmd_list)
+*/
+static int	scmd_test(char *input, t_env_list *env_list)
+{
+	t_list	*cmd_list;
+
+	execute_process(env_list, cmd_list);
+}
+
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
@@ -104,7 +212,8 @@ int	main(int argc, char **argv, char **envp)
 	{
 		// isatty(STDIN)
 		input = readline("pepsi zero>");
-		builtin_test(input, env_list);
+		// builtin_test(input, env_list);
+		execute_process(env_list, str_to_list(input));
 		// preprocess(input);
 		// add_history(input);
 	}

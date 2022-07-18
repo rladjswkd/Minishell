@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/07/17 13:14:46 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/18 16:43:20 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 
 typedef struct s_LinkedListNode
 {
-	t_LinkedListNode	*next_node;
-	void				*node;
+	struct s_LinkedListNode	*next_node;
+	void					*node;
 }				t_LinkedListNode;
 
 /*
@@ -46,8 +46,8 @@ typedef struct s_list
 // typedef struct	cm
 
 t_LinkedList		*create_linked_list(void);
-t_parse_node		*create_parse_node(char *token_val, t_token_type type);
-t_LinkedListNode	*create_linked_node(char	*str, t_token_type type);
+// t_parse_node		*create_parse_node(char *token_val, t_token_type type);
+// t_LinkedListNode	*create_linked_node(char	*str, t_token_type type);
 t_LinkedListNode	*get_linked_node(t_LinkedList *pLinkedList, \
 											char *data_str);
 int					add_back_linked_node(t_LinkedList *pLinkedList, \

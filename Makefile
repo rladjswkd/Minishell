@@ -11,6 +11,7 @@ LINKED_LIST_DIR = linked_list
 BUILTIN_DIR = builtin
 UTILS_DIR = utils
 TOKEN_DIR = token
+EXECUTE_DIR = execute
 LINKING_FLAGS = -lreadline -L${HOME}/.brew/opt/readline/lib
 COMFILE_FLAGS = -I${HOME}/.brew/opt/readline/include
 SRCS = $(addprefix $(SRCS_DIR)/, \
@@ -19,8 +20,10 @@ SRCS = $(addprefix $(SRCS_DIR)/, \
 	)
 UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_strndup.c	\
+			ft_strjoin.c	\
 			ft_strdup.c	\
 			ft_strchr.c	\
+			ft_strnstr.c \
 			ft_strlen.c	\
 			ft_split.c	\
 			ft_strlcat.c	\
@@ -38,6 +41,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
 			env_list.c	\
 			env_list_remove.c \
+			plain_linked_list.c \
 	)
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 			cd.c	\
@@ -49,10 +53,16 @@ BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 			unset.c	\
 	)
 
+EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
+		execute.c	\
+		execute_scmd.c \
+)
+
 OBJS = $(SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
+EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
 
 %.o : %.c
 	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
@@ -60,7 +70,7 @@ BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 # $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS)
 	$(CC) $^ -o $@ $(LDLIBS)
 
 #$(CC) $(LINKING_FLAGS) $^ -o $@
@@ -69,7 +79,7 @@ $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS)
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)

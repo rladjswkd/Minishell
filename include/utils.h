@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 15:47:15 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/18 17:49:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 int		ft_strchr(char *s, int c);
+char	*ft_strjoin(char const *s1, char const *s2);
 
 size_t	max_nonnegative(char const *s1, char const *s2);
 int		split_key_value(char *envp_element, char **key, char **value);
