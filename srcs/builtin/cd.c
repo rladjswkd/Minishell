@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 18:25:26 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/16 23:49:45 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,10 @@ static void	update_path_env(t_env_list *env_list, char *be_old_pwd, \
    어떤식으로 exit status를 처리할 것이며 통일시킬것인가?
 	에러가 있는 경우이거나 그렇지 않은 경우 모두 일관적인 룰로 처리할 수 있는 방법은 무엇인가
  - malloc error면 exit해야하는가?
+*/
+/*
+	- lst
+		- data
 */
 int	cd_cmd(char **path, t_env_list *env_list)
 {

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 15:49:09 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/17 13:14:46 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,11 @@ typedef struct s_list
 	void			*node;
 	struct s_list	*next;
 }				t_list;
+
+/*
+	for builtin test
+*/
+// typedef struct	cm
 
 t_LinkedList		*create_linked_list(void);
 t_parse_node		*create_parse_node(char *token_val, t_token_type type);
