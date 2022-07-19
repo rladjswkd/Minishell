@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 17:49:43 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 07:55:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strdup(const char *s1);
 char	*ft_strndup(const char *s1, int len);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);

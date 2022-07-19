@@ -44,8 +44,10 @@
 		- output값에 대한 예상
 
 - 쉽게 해볼수 있는것
-	- builtin자료구조 변경
-	- builtin error case 테스트
+	- execve() readline에서 처리
+	- redirection 처리
+	- pipe 처리
+	- builtin처리
 	- heredoc 처리
 	- exit status
 	- refer code들 참고 및 이해

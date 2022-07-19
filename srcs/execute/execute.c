@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 20:57:30 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 09:11:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int     simple_cmd(t_env_list *env_list, t_list *cmd_list)
 	char    **envp;
 	char	**cmd;
 
-	envp = list_to_array(env_list);
+	envp = env_list_to_array(env_list);
 	if (envp == NULL)
 		return (-1);
 	cmd = list_to_array(cmd_list);
@@ -78,13 +78,11 @@ static void	display_list(t_list	*plist)
 
 int	execute_process(t_env_list *env_list, t_list *cmd_list)
 {
-	// and_or_cmd();
-	// pipeline();
-	// builtin routine
+	
 	if (env_list == NULL || cmd_list == NULL)
 		return (-1);
 	display_list(cmd_list);
-	simple_cmd(env_list, cmd_list);
+	// simple_cmd(env_list, cmd_list);
 	return (1);
 }
 

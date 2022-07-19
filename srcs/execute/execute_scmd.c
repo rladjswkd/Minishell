@@ -6,13 +6,19 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 18:52:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 08:12:57 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
+#include "linked_list.h"
 #include "env_list.h"
 #include "utils.h"
+//debug
+#include <stdlib.h>
+#include <unistd.h>
+
+char	**list_to_array(t_list *plist);
 
 static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)
 {
@@ -25,27 +31,60 @@ static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)
 	return (1);
 }
 
-char	**list_to_array(t_env_list *plist)
+
+char	**list_to_array(t_list *plist)
 {
 	char		**arr_list;
 	int			idx;
 	t_env_node	*cur_node;
 	char		*tmp_str;
 
-	arr_list = (char **)malloc(sizeof(char *) * (plist->list_length + 1));
+	arr_list = NULL;
+	// arr_list = (char **)malloc(sizeof(char *) * (plist->list_length + 1));
+	// if (arr_list == NULL)
+	// 	return (NULL);
+	// idx = 0;
+	// cur_node = plist->header_node;
+	// while (idx < plist->list_length)
+	// {
+	// 	if (safe_strjoin(&tmp_str, cur_node->key, "=", arr_list)
+	// 		|| safe_strjoin(&arr_list[idx], tmp_str, \
+	// 						cur_node->value, arr_list))
+	// 		return (NULL);
+	// 	idx++;
+	// }
+	// arr_list[plist->list_length] = '\0';
+	return (arr_list);
+}
+/**/
+
+char	**env_list_to_array(t_env_list *env_list)
+{
+	char		**arr_list;
+	int			idx;
+	t_env_node	*cur_node;
+	char		*tmp_str;
+
+	arr_list = (char **)malloc(sizeof(char *) * (env_list->list_length + 1));
 	if (arr_list == NULL)
 		return (NULL);
 	idx = 0;
-	cur_node = plist->header_node;
-	while (idx < plist->list_length)
+	cur_node = env_list->header_node;
+	while (idx < env_list->list_length)
 	{
 		if (safe_strjoin(&tmp_str, cur_node->key, "=", arr_list)
 			|| safe_strjoin(&arr_list[idx], tmp_str, \
 							cur_node->value, arr_list))
+		{
+			free(tmp_str);
+			free_list(&arr_list);
 			return (NULL);
+		}
+		free(tmp_str);
+		cur_node = cur_node->next_node;
 		idx++;
 	}
-	arr_list[plist->list_length] = '\0';
+	arr_list[env_list->list_length] = '\0';
 	return (arr_list);
 }
 

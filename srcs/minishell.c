@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 20:51:49 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 09:14:41 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,19 @@
 //debug
 #include <stdlib.h>
 #include "linked_list.h"
-// void	handler(int signum)
-// {
-// 	if (signum != SIGINT)
-// 		return ;
-// 	write(STDERR_FILENO, "\n", 1);
-// 	rl_replace_line("", 1);
-// 	rl_on_new_line();
-// 	rl_redisplay();
-// }
+
+
+/*
+void	handler(int signum)
+{
+	if (signum != SIGINT)
+		return ;
+	write(STDERR_FILENO, "\n", 1);
+	rl_replace_line("", 1);
+	rl_on_new_line();
+	rl_redisplay();
+}
+*/
 
 // for display, will be removed
 static void	display_list(t_env_list	*env_list)
@@ -47,14 +51,7 @@ static void	display_list(t_env_list	*env_list)
 		cur_node = cur_node->next_node;
 	}
 }
-/*
-	- cmd argment순서로 입력
-	- free();
 
-	// const char	*cmd_list = {"exit_cmd", "env_cmd", "export_cmd", "unset_cmd", \
-	// 						"cd_cmd", "pwd_cmd", "echo_cmd"};
-	// int			(*builtin)(char **);
-*/
 static void	builtin_test(char *input, t_env_list *env_list)
 {
 	char		**word_list;
@@ -119,7 +116,38 @@ static t_list	*create_list()
 	return (new_list);
 }
 
-static t_list	*str_to_list(char *str)
+/*
+- 첫 노드는 header로 쓴다. 값을 담지 않는다.
+- pipe 혹은 ()a맏
+*/
+static int	add_parse_list(t_list *plist)
+{
+	t_list		*cur_node;
+	t_c_scmd	*scmd_node;
+	int			idx;
+
+	if (plist == NULL)
+		return (-1);
+	cur_node = plist;
+	// pipe단위로 추가된다.
+	// (t_c_scmd *)와 세트로 다닌다.
+	if (add_node(&(cur_node->next)) == -1)
+	{
+		free_linked_list(&plist);
+		return (NULL);
+	}
+	// 첫번쨰 노드는 header로 둔다.(아무 값도 넣지 않는다.)
+	cur_node = cur_node->next;
+	scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
+	if (scmd_node == NULL)
+	{
+		free_linked_list(&plist);
+		return (NULL);
+	}
+	cur_node->node = scmd_node;
+}
+
+static t_list	*str_to_list(t_list *parse_list, char *str)
 {
 	t_list		*plist;
 	t_list		*cur_node;
@@ -127,30 +155,13 @@ static t_list	*str_to_list(char *str)
 	char		**arr_list;
 	int			idx;
 
-	plist = create_list();
-	if (plist == NULL)
-		return (NULL);
 	arr_list = ft_split(str, ' ');
 	if (arr_list == NULL)
 	{
-		free(plist);
+		free(parse_list);
 		return (NULL);
 	}
-	cur_node = plist;
-	if (add_node(&(cur_node->next)) == -1)
-	{
-		free_list(&arr_list);
-		free_linked_list(&plist);
-		return (NULL);
-	}
-	cur_node = cur_node->next;
-	cur_node->node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
-	if (cur_node->node == NULL)
-	{
-		free_list(&arr_list);
-		free_linked_list(&plist);
-		return (NULL);
-	}
+	
 	scmd_node = cur_node->node;
 	cur_node = scmd_node->args;
 	// cur_node->next = NULL;
@@ -174,7 +185,6 @@ static t_list	*str_to_list(char *str)
 			return (NULL);
 		}
 		cur_node = cur_node->next;
-		cur_node->next = NULL;
 		idx++;
 		
 	}
@@ -187,7 +197,19 @@ static t_list	*str_to_list(char *str)
 */
 static int	scmd_test(char *input, t_env_list *env_list)
 {
+	t_list	*parse_list;
 	t_list	*cmd_list;
+
+	parse_list = create_list();
+	if (parse_list == NULL)
+		return (NULL);
+	add_parse_list(parse_list);
+	if (parse_list == NULL)
+	{
+		delete_env_list(&env_list);
+		free_linked_list(cmd_list);
+		return (-1);
+	}
 
 	execute_process(env_list, cmd_list);
 }
@@ -213,7 +235,8 @@ int	main(int argc, char **argv, char **envp)
 		// isatty(STDIN)
 		input = readline("pepsi zero>");
 		// builtin_test(input, env_list);
-		execute_process(env_list, str_to_list(input));
+		// display_linked_list
+		scmd_test(input, env_list);
 		// preprocess(input);
 		// add_history(input);
 	}

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 20:34:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 08:10:54 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ typedef struct s_token_content
 }	t_c_token;
 
 int		execute_process(t_env_list *env_list, t_list *cmd_list);
-int		execute_cmd(char **envp, char *argv);
-char	**list_to_array(t_env_list *env_list);
+int		execute_cmd(char **envp, char **cmd);
+char	**list_to_array(t_list *env_list);
+char	**env_list_to_array(t_env_list *env_list);
 
 #endif

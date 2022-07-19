@@ -6,11 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 18:35:18 by jim               #+#    #+#             */
-/*   Updated: 2022/06/18 18:35:27 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/19 07:54:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
+#include <stdlib.h>
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
