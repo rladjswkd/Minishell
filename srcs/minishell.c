@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 09:14:41 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 12:40:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	handler(int signum)
 */
 
 // for display, will be removed
-static void	display_list(t_env_list	*env_list)
+static void	display_env_list(t_env_list	*env_list)
 {
 	t_env_node	*cur_node;
 
@@ -94,6 +94,19 @@ static void	builtin_test(char *input, t_env_list *env_list)
 // 	return (new_node);
 // }
 
+
+t_c_token   *create_token()
+{
+    t_c_token    *token_node;
+
+    token_node = (t_c_token *)malloc(sizeof(t_c_token));
+    if (token_node == NULL)
+		return (NULL);
+	token_node->str = NULL;
+	token_node->flags = 0;
+    return (token_node);
+}
+
 static int	add_node(t_list **new_node)
 {
 	*new_node = (t_list *)malloc(sizeof(t_list));
@@ -116,6 +129,18 @@ static t_list	*create_list()
 	return (new_list);
 }
 
+t_c_scmd   *create_t_c_scmd()
+{
+    t_c_scmd    *scmd_node;
+
+    scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
+    if (scmd_node == NULL)
+		return (NULL);
+	scmd_node->redirs = NULL;
+	scmd_node->args = NULL;
+    return (scmd_node);
+}
+
 /*
 - 첫 노드는 header로 쓴다. 값을 담지 않는다.
 - pipe 혹은 ()a맏
@@ -124,6 +149,7 @@ static int	add_parse_list(t_list *plist)
 {
 	t_list		*cur_node;
 	t_c_scmd	*scmd_node;
+	t_c_token	*token;
 	int			idx;
 
 	if (plist == NULL)
@@ -131,27 +157,29 @@ static int	add_parse_list(t_list *plist)
 	cur_node = plist;
 	// pipe단위로 추가된다.
 	// (t_c_scmd *)와 세트로 다닌다.
+	while (cur_node && cur_node->next)
+		cur_node = cur_node->next;
 	if (add_node(&(cur_node->next)) == -1)
 	{
 		free_linked_list(&plist);
-		return (NULL);
+		return (-1);
 	}
 	// 첫번쨰 노드는 header로 둔다.(아무 값도 넣지 않는다.)
 	cur_node = cur_node->next;
-	scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
+	scmd_node = create_t_c_scmd();
 	if (scmd_node == NULL)
 	{
 		free_linked_list(&plist);
-		return (NULL);
+		return (-1);
 	}
 	cur_node->node = scmd_node;
+	return (1);
 }
 
 static t_list	*str_to_list(t_list *parse_list, char *str)
 {
-	t_list		*plist;
+	t_list		*args_list;
 	t_list		*cur_node;
-	t_c_scmd	*scmd_node;
 	char		**arr_list;
 	int			idx;
 
@@ -161,34 +189,61 @@ static t_list	*str_to_list(t_list *parse_list, char *str)
 		free(parse_list);
 		return (NULL);
 	}
-	
-	scmd_node = cur_node->node;
-	cur_node = scmd_node->args;
+	if (add_parse_list(parse_list) < 0)
+	{
+		free(parse_list);
+		return (NULL);
+	}
 	// cur_node->next = NULL;
 	idx = 0;
+	cur_node = create_list();
+	if (cur_node == NULL)
+		return (NULL);
+	((t_c_scmd *)(parse_list->next->node))->args = cur_node;
 	while (arr_list[idx])
 	{
 		if (add_node(&(cur_node->next)) == -1)
 		{
 			free_list(&arr_list);
-			free_linked_list(&scmd_node->args);
-			free_linked_list(&plist);
+			free_linked_list(&parse_list);
 			return (NULL);
+		}
+		cur_node = cur_node->next;
+		cur_node->node = create_token();
+		if (cur_node->node == NULL)
+		{
+			free_list(&arr_list);
+			free_linked_list(&parse_list);
 		}
 		((t_c_token *)(cur_node->node))->str = ft_strdup(arr_list[idx]);
 		if (((t_c_token *)(cur_node->node))->str == NULL)
 		{
 			// token의 str list를 지워야한다.
 			free_list(&arr_list);
-			free_linked_list(&scmd_node->args);
-			free_linked_list(&plist);
+			free_linked_list(&parse_list);
 			return (NULL);
 		}
-		cur_node = cur_node->next;
 		idx++;
 		
 	}
+	args_list = ((t_c_scmd *)(parse_list->next->node))->args;
+	return (args_list);
 	
+}
+
+
+static void	display_list(t_list	*plist)
+{
+	t_list		*cur_node;
+	t_c_token	*token;
+
+	cur_node = plist->next;
+	while (cur_node)
+	{
+		token = (t_c_token *)(cur_node->node);
+		printf("token->str : %s\n", token->str);
+		cur_node = cur_node->next;
+	}
 }
 /*
 	- input str to linked list
@@ -202,15 +257,11 @@ static int	scmd_test(char *input, t_env_list *env_list)
 
 	parse_list = create_list();
 	if (parse_list == NULL)
-		return (NULL);
-	add_parse_list(parse_list);
-	if (parse_list == NULL)
-	{
-		delete_env_list(&env_list);
-		free_linked_list(cmd_list);
 		return (-1);
-	}
-
+	if (add_parse_list(parse_list) < 0)
+		return (-1);
+	cmd_list = str_to_list(parse_list, input);
+	// display_list(cmd_list);
 	execute_process(env_list, cmd_list);
 }
 
@@ -228,8 +279,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	if (init_value(env_list, envp) < 0)
 		return (1);
-	// display_list(env_list);
-
+	// display_env_list(env_list);
 	while (1)
 	{
 		// isatty(STDIN)

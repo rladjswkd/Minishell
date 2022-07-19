@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 11:33:09 by jim               #+#    #+#             */
-/*   Updated: 2022/07/12 11:40:41 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/19 12:35:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static size_t	ft_strlen(const char *str)
 	size_t	len;
 
 	len = 0;
-	while (str[len])
+	while (str && str[len])
 		len++;
 	return (len);
 }
