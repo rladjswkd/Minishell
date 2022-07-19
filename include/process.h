@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   process.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/18 18:32:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 17:44:26 by jim              ###   ########.fr       */
+/*   Created: 2022/07/19 20:32:40 by jim               #+#    #+#             */
+/*   Updated: 2022/07/19 20:41:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
+#ifndef PROCESS_H
+# define PROCESS_H
 
-size_t	ft_strlen(const char *s)
+typedef struct s_process_info
 {
-	size_t	idx;
+	t_pid	pid;
+	int		status;
+}			t_process_info;
 
-	idx = 0;
-	while (s && s[idx])
-		idx++;
-	return (idx);
-}
+#endif

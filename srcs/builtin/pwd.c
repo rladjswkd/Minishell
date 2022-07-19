@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 12:43:13 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 19:17:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
  * 모든 builtin 함수에서 통일성 있게 파라미터를 받고 처리는 거기서 한다.
  * ast node에 인자가 있다면 그부분은 어떻게 처리할 것인가?
  */
-void	pwd_cmd(void)
+int	pwd_cmd(void)
 {
 	char	buf[PATH_MAX];
 	size_t	size;
@@ -46,4 +46,5 @@ void	pwd_cmd(void)
 	}
 	else
 		error_handler("pwd", NULL, strerror(errno), errno);
+	return (errno);
 }

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 12:40:32 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 18:24:50 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,6 @@ static void	builtin_test(char *input, t_env_list *env_list)
 	free(input);
 	input = NULL;
 }
-
-// static t_list	*create_node(char *str)
-// {
-// 	t_list	*new_node;
-
-// 	new_node = (t_list *)malloc(sizeof(t_list));
-// 	if (new_node == NULL)
-// 		return (NULL);
-// 	new_node->node 
-// 	return (new_node);
-// }
-
 
 t_c_token   *create_token()
 {

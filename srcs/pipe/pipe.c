@@ -6,148 +6,185 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 15:58:15 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 20:30:45 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipe.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <sys/errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "pipe.h"
+#include "utils.h"
+
 // t_pipe_info;
 // cat a > b > c
-
-size_t	ft_strlen(char *str)
-{
-	size_t	len;
-
-	len = 0;
-	while (str[len])
-		len++;
-	return (len);
-}
-
-static void	save_free(char **something)
-{
-	free(*something);
-	*something = NULL;
-}
-
-static char	**free_word_list(char **word_list, int idx)
-{
-	while (idx >= 0)
-	{
-		save_free(&word_list[idx]);
-		free(word_list);
-		word_list = NULL;
-		idx--;
-	}
-	return (word_list);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
-{
-	size_t	i;
-	size_t	k;
-
-	i = 0;
-	k = 0;
-	while (src[i] != '\0')
-		i++;
-	if (dstsize == 0)
-		return (i);
-	while ((k < dstsize - 1) && src[k])
-	{
-		dst[k] = src[k];
-		k++;
-	}
-	dst[k] = '\0';
-	return (i);
-}
-
-static char	**alloc_word(int argc, char **argv)
-{
-	char	**word_list;
-	size_t	idx;
-
-	word_list = (char **)malloc(sizeof(char *) * argc);
-	if (word_list == NULL)
-		return (NULL);
-	idx = 1;
-	while (idx < argc)
-	{
-		word_list[idx] = (char *)malloc(sizeof(char) * (ft_strlen(argv[idx]) + 1));
-		if (word_list[idx] == NULL)
-			return (free_word_list(word_list, (int)idx));
-		ft_strlcpy(word_list[idx], argv[idx], ft_strlen(argv[idx]) + 1);
-		idx++;
-	}
-	return (word_list);
-}
-
-int	dup_from_to(t_fd from, t_fd to)
-{
-	if (dup2(from, to) < 0)
-		return (ERROR);
-	return (SUCCESS);
-}
-
-// file == 3
-// STDOUT = 1
 /*
-	fd는 같다 하지만 dup2를 쓰면 가리키는 곳이 달라진다.
+	echo a > output > b > c > d < e | cat |
+	stdout
+	- test할 사항
+	- pipe 1개, 2개, n개 일때의 fd 전달
+	- redirec 있을때 케이스
 */
-int	redirec_out(char *file_name, int *from, int *to, int idx)
+
+
+/*
+	- make multipipe
+	- 다음에 파이프가 있는지 확인하고서 있으면 연결한다.
+	- fork와 파이프 연결은 개별로 바꾼다.
+	- 현재 위치(명령어 블록)기준으로 이전에 파이프가 있었는지, 다음에 파이프가 있는지를 확인하여
+	이전에 파이프가 있었다면
+	dup2(fd[READ_END], STDIN)으로 변경한다.
+	이후에 파이프가 있다면
+	dup2(fd[WRITE_END], STDOUT)으로 변경한다.
+	connect_to_prev
+	connect_to_next
+	이후에 파이프 기호가 있다면
+	pipe()선언한다.
+	fork()를 뜬다.
+*/
+
+static int	connect_to_prev(int *pipe_fd)
 {
-	*from = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (dup2(*from, *to) < 0)
-		return (ERROR);
-	close(*to);
-	return (SUCCESS);
+	if (dup2(pipe_fd[READ_END], STDIN_FILENO) < 0)
+		return (-1);
+	if (close(pipe_fd[READ_END]) < 0)
+		return (-1);
+	return (1);
 }
 
-int	main(int argc, char **argv)
+/*
+이미 닫힌 fd를 close할 경우 error가 발생할 수 있다.
+*/
+static int	connect_to_next(int *pipe_fd)
 {
-	char	**file_list;
-	int		open_fd;
-	size_t	idx;
-	t_fd	as_is;
-	t_fd	to_be;
-	char	buf[42];
+	if (close(pipe_fd[READ_END]) < 0)
+		return (-1);
+	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) < 0)
+		return (-1);
+	if (close(pipe_fd[WRITE_END]) < 0)
+		return (-1);
+	return (1);
+}
 
-	if (argc < 2)
+static int	is_exist_prev_pipe(int org_cnt, int cnt)
+{
+	if (org_cnt > cnt)
 		return (1);
-	file_list = alloc_word(argc, argv);
-	if (file_list == NULL)
-		return(1);
-	as_is = -1;
-	to_be = STDOUT_FILENO;
-	idx = 1;
-	open_fd = open(argv[1], O_RDONLY, 0777);
-	printf("argv[1] : %s\n", argv[1]);
-	printf("open_fd : %d\n", open_fd);
-	dup2(open_fd, STDIN_FILENO);
-	close(open_fd);
-	printf("read size : %zd\n", read(STDIN_FILENO, buf, 42));
-	printf("read from STDIN_FILENO fd  : %s\n", buf);
-	// open(argv[1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	// while (idx < argc)
-	// {
-	// 	redirec_out(file_list[idx], &as_is, &to_be, idx);
-	// 	// to_be
-	// 	idx++;
-	// }
-	// printf("as_is : %d\n", as_is);
-	// printf("to_be : %d\n", to_be);
-	// write(to_be, "test\n", 6);
-	// close(to_be);
 	return (0);
 }
 
+static int	is_exist_next_pipe(int cnt)
+{
+	if (cnt > 0)
+		return (1);
+	return (0);
+}
+
+static int	child_process(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+{
+	char	*cmd[] = {"ls", "-al", NULL};
+
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
+	if (is_exist_next_pipe(pipe_cnt))
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
+	if (execve("/bin/ls", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	return (2);
+}
+
+
+static int	child_process_cat(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+{
+	char	*cmd[] = {"cat", NULL};
+
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
+	if (is_exist_next_pipe(pipe_cnt))
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
+	if (execve("/bin/cat", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	return (2);
+}
+
+static int	child_process_pwd(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+{
+	char	*cmd[] = {"pwd", NULL};
+
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		connect_to_prev(pipe_fd[pipe_cnt % 2]); 
+	if (is_exist_next_pipe(pipe_cnt))
+		connect_to_next(pipe_fd[(pipe_cnt + 1) % 2]);
+	if (execve("/bin/pwd", cmd, NULL) < 0)
+		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	exit(2);
+	return (2);
+}
 /*
-	- 파이프를 열고 이전 명령어 블록에서 다음 명령어 블록으로 이어준다.
-	- 즉, 첫번째 자식의 STDOUT을 pipe[WRITE_END]에 저장한다.
-		두번쨰 자식의 STDINd을 pipe[READ_END]에 저장한다.
+	현재가 오른쪽으로 연결하는지 왼쪽으로 연결하는지에 따라서 달라진다.
+	닫아야할 fd가 달라진다.
+	어떻게 구분해서 넘겨줄것인가
+	조건문을 덕지덕지 나눠서 넣지 않고 할수 있는 방법은 무엇인가?
+	왼쪽에 파이프가 있었다면 
+	close(fd[WRITE_END]);
+	parent process가 child보다 늦게 실행되는가?
 */
+static int	parent_process(int pipe_fd[2][2], pid_t pid, int *status, int pipe_org_cnt, int pipe_cnt)
+{
+	if (is_exist_prev_pipe(pipe_org_cnt, pipe_cnt))
+		if (close(pipe_fd[pipe_cnt % 2][READ_END]) < 0)
+			return (-1);
+	if (is_exist_next_pipe(pipe_cnt))
+		if (close(pipe_fd[(pipe_cnt + 1) % 2][WRITE_END]) < 0)
+			return (-1);
+	waitpid(pid, status, 0);
+	return (1);
+}
+
+int main(int argc, char **argv)
+{
+	int		pipe_fd[2][2];
+	int		pid;
+	int		*status;
+	int		multipipe_cnt;
+	int		org_multipipe_cnt;
+	int		*pfd;
+
+	org_multipipe_cnt = 4;
+	multipipe_cnt = org_multipipe_cnt;
+	while (1)
+	{
+		if (is_exist_next_pipe(multipipe_cnt))
+		{
+			pfd = pipe_fd[(multipipe_cnt + 1) % 2];
+			if (pipe(pfd) < 0)
+				return (1);
+			printf("pfd[0] : %d\n", pfd[0]);
+			printf("pfd[1] : %d\n", pfd[1]);
+		}
+		// builtin이면 fork()를 하지 않는다.
+		// 부모 프로세스로 먼저 fork된다는 보장이 있는가?
+		// 생각해보니까 사실 상관없다. fork()시점에서 이미 close(fd[WRITE_END]) 신경 쓸 필요없다. fork()이전에 했는지가 중요하다.
+		pid = fork();
+		if (pid < 0)
+			return (1);
+		else if (pid == 0)
+		{
+			if (org_multipipe_cnt == multipipe_cnt)
+				child_process(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+			else if (multipipe_cnt == 2)
+				child_process_pwd(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+			else 
+				child_process_cat(pipe_fd, org_multipipe_cnt, multipipe_cnt);
+		}
+		else
+			parent_process(pipe_fd, pid, status, org_multipipe_cnt, multipipe_cnt);
+		multipipe_cnt--;
+		if (multipipe_cnt + 1 <= 0)
+			break ;
+	}
+	return (0);
+}

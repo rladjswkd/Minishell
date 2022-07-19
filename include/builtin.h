@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:15:57 by jim               #+#    #+#             */
-/*   Updated: 2022/07/03 23:28:42 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 19:17:40 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef enum e_sf_flag
 }			t_sf_flag;
 
 int		cd_cmd(char **path, t_env_list *env_list);
-char	*pwd_cmd(void);
+int		pwd_cmd(void);
 int		echo_cmd(char **argument);
 void	exit_cmd(char **status);
 int		env_cmd(t_env_list *env_list, char **argument);

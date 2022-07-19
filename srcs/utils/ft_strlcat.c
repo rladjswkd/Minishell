@@ -9,11 +9,11 @@ size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 	i = ft_strlen(dst);
 	j = 0;
 	org_dstsize = i;
-	while (src[j] != '\0' && (org_dstsize + j + 1 < dstsize))
+	while (src && src[j] != '\0' && (org_dstsize + j + 1 < dstsize))
 		dst[i++] = src[j++];
 	if (org_dstsize < dstsize)
 		dst[i] = '\0';
-	while (src[j] != '\0')
+	while (src && src[j] != '\0')
 		j++;
 	if (dstsize < org_dstsize)
 		return (j + dstsize);

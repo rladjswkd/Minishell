@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 12:33:44 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/19 19:33:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,8 +142,8 @@ int	execute_cmd(char **envp, char **cmd)
 	}
 	execve(cmd[0], cmd, envp);
     // print_err
-	free_list(&cmd);
+	// free_list(&cmd);
 	free_list(&path_list);
-	free_list(&envp);
+	// free_list(&envp);
 	return (0);
 }

@@ -56,6 +56,7 @@ BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
 		execute.c	\
 		execute_scmd.c \
+		execute_builtin.c \
 )
 
 OBJS = $(SRCS:.c=.o)

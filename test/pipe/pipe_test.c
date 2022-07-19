@@ -19,14 +19,14 @@ typedef enum e_pipe_type
 	WRITE_END,
 }			t_pipe_type;
 
-typedef int	t_fd;
+typedef int	int;
 
 static size_t	ft_strlen(const char *str)
 {
 	size_t	len;
 
 	len = 0;
-	while (str[len])
+	while (str && str[len])
 		len++;
 	return (len);
 }
@@ -51,7 +51,7 @@ static void	ft_putstr_fd(int fd, const char *str)
 	fork()를 뜬다.
 */
 
-static int	connect_to_prev(t_fd *pipe_fd)
+static int	connect_to_prev(int *pipe_fd)
 {
 	if (dup2(pipe_fd[READ_END], STDIN_FILENO) < 0)
 		return (-1);
@@ -63,7 +63,7 @@ static int	connect_to_prev(t_fd *pipe_fd)
 /*
 이미 닫힌 fd를 close할 경우 error가 발생할 수 있다.
 */
-static int	connect_to_next(t_fd *pipe_fd)
+static int	connect_to_next(int *pipe_fd)
 {
 	if (close(pipe_fd[READ_END]) < 0)
 		return (-1);
@@ -88,7 +88,7 @@ static int	is_exist_next_pipe(int cnt)
 	return (0);
 }
 
-static int	child_process(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+static int	child_process(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 {
 	char	*cmd[] = {"ls", "-al", NULL};
 
@@ -102,7 +102,7 @@ static int	child_process(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 }
 
 
-static int	child_process_cat(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+static int	child_process_cat(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 {
 	char	*cmd[] = {"cat", NULL};
 
@@ -115,7 +115,7 @@ static int	child_process_cat(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 	return (2);
 }
 
-static int	child_process_pwd(t_fd pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
+static int	child_process_pwd(int pipe_fd[2][2], int pipe_org_cnt, int pipe_cnt)
 {
 	char	*cmd[] = {"pwd", NULL};
 
