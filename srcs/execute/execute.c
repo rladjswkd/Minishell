@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 19:32:59 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/20 20:15:45 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ static int	check_builtin(t_list *cmd_list)
 	return (0);
 }
 
+
 int	simple_cmd(t_env_list *env_list, t_list *cmd_list)
 {
 	char	**envp;
@@ -95,9 +96,6 @@ int	simple_cmd(t_env_list *env_list, t_list *cmd_list)
 		free_list(&envp);
 		return (-1);
 	}
-	// display_array_list(envp);
-	// printf("\n\n");
-	// display_array_list(cmd);
 	pid = fork();
 	if (pid == -1)
 		exit(1);
@@ -124,13 +122,19 @@ static void	display_list(t_list	*plist)
 	}
 }
 
-int	execute_process(t_env_list *env_list, t_list *cmd_list)
+
+/*
+	- 현재 타입을 비교한다.
+	- 
+*/
+int	execute_processing(t_env_list *env_list, t_list *parse_list)
 {
 	
-	if (env_list == NULL || cmd_list == NULL)
+	if (env_list == NULL || parse_list == NULL)
 		return (-1);
-	// display_list(cmd_list);
-	simple_cmd(env_list, cmd_list);
+	// display_list(parse_list);
+	simple_cmd(env_list, parse_list);
+	pipeline_processing();
 	// redir()
 	// pipe()
 	// builtin()

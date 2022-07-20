@@ -25,7 +25,7 @@ static size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-static int	safe_dup(int from, int to)
+static int	safe_dup2(int from, int to)
 {
 	if (dup2(from, to) < 0)
 		return (-1);
@@ -41,7 +41,7 @@ static void	input_redirec(char *file_name)
 	ssize_t	read_size;
 
 	file_fd = open(file_name, O_RDONLY, 0666);
-	safe_dup(file_fd, STDIN_FILENO);
+	safe_dup2(file_fd, STDIN_FILENO);
 	// read_size = read(STDIN_FILENO, buf, 42);
 	// printf("read_size : %zd\nbuf : %s\n", read_size, buf);
 }
@@ -52,7 +52,7 @@ static void	output_redirec(char *file_name)
 	char	buf[42];
 
 	file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0666);
-	safe_dup(file_fd, STDOUT_FILENO);
+	safe_dup2(file_fd, STDOUT_FILENO);
 	// write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
 }
 
@@ -62,7 +62,7 @@ static void	append_redirec(char *file_name)
 	char	buf[42];
 
 	file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0666);
-	safe_dup(file_fd, STDOUT_FILENO);
+	safe_dup2(file_fd, STDOUT_FILENO);
 	// write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
 }
 
