@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 19:17:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/21 15:37:39 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <string.h>
 #include "utils.h"
 #include "ft_error.h"
-#include <error.h>
+#include <errno.h>
 
 /*
  * pwd cmd

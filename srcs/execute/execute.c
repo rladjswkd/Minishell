@@ -6,19 +6,20 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/20 20:15:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/21 18:42:35 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "linked_list.h"
 #include "execute.h"
+#include "lexer.h"
 #include "env_list.h"
 #include "utils.h"
 // debug
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 /*
 	- 자료구조
@@ -46,7 +47,6 @@ typedef struct  s_cmd
 	t_list	*redirs;
 }				t_cmd;
 
-
 static void     display_array_list(char **arr_list)
 {
 	int	idx;
@@ -65,7 +65,7 @@ static int	check_builtin(t_list *cmd_list)
 {
 	char	*cmd;
 
-	cmd = ((t_c_token *)(cmd_list->next->node))->str;
+	cmd = ((t_token *)(cmd_list->next->node))->data;
 	if (ft_strncmp("exit", cmd, max_nonnegative("exit", cmd)) == 0
 		|| ft_strncmp("echo", cmd, max_nonnegative("echo", cmd)) == 0
 		|| ft_strncmp("cd", cmd, max_nonnegative("cd", cmd)) == 0
@@ -77,16 +77,15 @@ static int	check_builtin(t_list *cmd_list)
 	return (0);
 }
 
-
-int	simple_cmd(t_env_list *env_list, t_list *cmd_list)
+int	simple_cmd(t_env_list *env_list, t_list *parse_list)
 {
 	char	**envp;
 	char	**cmd;
 	int		pid;
 	int		status;
 
-	cmd = list_to_array(cmd_list);
-	if (check_builtin(cmd_list))
+	cmd = list_to_array(parse_list);
+	if (check_builtin(parse_list))
 		return (builtin_process(env_list, cmd));
 	envp = env_list_to_array(env_list);
 	if (envp == NULL)
@@ -107,34 +106,47 @@ int	simple_cmd(t_env_list *env_list, t_list *cmd_list)
 	waitpid(pid, &status, 0);
 	return (status);
 }
+/**/
 
 static void	display_list(t_list	*plist)
 {
 	t_list		*cur_node;
-	t_c_token	*token;
+	t_token		*token;
 
 	cur_node = plist->next;
 	while (cur_node)
 	{
-		token = (t_c_token *)(cur_node->node);
-		printf("token->str : %s\n", token->str);
+		token = (t_token *)(cur_node->node);
+		printf("token->str : %s\n", token->data);
 		cur_node = cur_node->next;
 	}
 }
 
-
 /*
 	- 현재 타입을 비교한다.
-	- 
+	- 다단계
+		- t_command (t_command_type 이용)
+			- t_compound ||  t_simple
+			- t_compound
+				- COMPOUND_PIPELINE
+				- COMPOUND_SUBSHELL
+			- t_simple
+				- SIMPLE_NORMAL
 */
 int	execute_processing(t_env_list *env_list, t_list *parse_list)
 {
-	
 	if (env_list == NULL || parse_list == NULL)
 		return (-1);
+	// print_command_content(parse_list->next);
+	if (get_command_type(parse_list) == SIMPLE_NORMAL)
+		simple_cmd(env_list, parse_list);
+	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
+		;
+	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
+		;
 	// display_list(parse_list);
 	simple_cmd(env_list, parse_list);
-	pipeline_processing();
+	// pipeline_processing();
 	// redir()
 	// pipe()
 	// builtin()

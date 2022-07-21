@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 16:48:59 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/21 13:55:43 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@
 	표현이 필요한가?
 	이전에 할당된 부분만
 */
-
 
 static int	add_env(t_env_list *env_list, char *key, char *value)
 {
@@ -87,4 +86,3 @@ int	init_value(t_env_list	*env_list, char **envp)
 	singleton 예정
 	getter, setter
 */
-

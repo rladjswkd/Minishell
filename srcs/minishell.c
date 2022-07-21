@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/20 15:36:23 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/21 17:57:23 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 #include "utils.h"
 #include "builtin.h"
 #include "execute.h"
+#include "lexer.h"
 //debug
 #include <stdlib.h>
 #include "linked_list.h"
-
 
 /*
 void	handler(int signum)
@@ -83,18 +83,6 @@ static void	builtin_test(char *input, t_env_list *env_list)
 	input = NULL;
 }
 
-t_c_token   *create_token()
-{
-    t_c_token    *token_node;
-
-    token_node = (t_c_token *)malloc(sizeof(t_c_token));
-    if (token_node == NULL)
-		return (NULL);
-	token_node->str = NULL;
-	token_node->flags = 0;
-    return (token_node);
-}
-
 static int	add_node(t_list **new_node)
 {
 	*new_node = (t_list *)malloc(sizeof(t_list));
@@ -119,14 +107,14 @@ static t_list	*create_list()
 
 t_c_scmd   *create_t_c_scmd()
 {
-    t_c_scmd    *scmd_node;
+	t_c_scmd    *scmd_node;
 
-    scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
-    if (scmd_node == NULL)
+	scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
+	if (scmd_node == NULL)
 		return (NULL);
 	scmd_node->redirs = NULL;
 	scmd_node->args = NULL;
-    return (scmd_node);
+	return (scmd_node);
 }
 
 /*
@@ -137,7 +125,7 @@ static int	add_parse_list(t_list *plist)
 {
 	t_list		*cur_node;
 	t_c_scmd	*scmd_node;
-	t_c_token	*token;
+	t_token	*token;
 	int			idx;
 
 	if (plist == NULL)
@@ -164,6 +152,7 @@ static int	add_parse_list(t_list *plist)
 	return (1);
 }
 
+/*
 static t_list	*str_to_list(t_list *parse_list, char *str)
 {
 	t_list		*args_list;
@@ -203,8 +192,8 @@ static t_list	*str_to_list(t_list *parse_list, char *str)
 			free_list(&arr_list);
 			free_linked_list(&parse_list);
 		}
-		((t_c_token *)(cur_node->node))->str = ft_strdup(arr_list[idx]);
-		if (((t_c_token *)(cur_node->node))->str == NULL)
+		((t_token *)(cur_node->node))->str = ft_strdup(arr_list[idx]);
+		if (((t_token *)(cur_node->node))->str == NULL)
 		{
 			// token의 str list를 지워야한다.
 			free_list(&arr_list);
@@ -218,18 +207,18 @@ static t_list	*str_to_list(t_list *parse_list, char *str)
 	return (args_list);
 	
 }
-
+*/
 
 static void	display_list(t_list	*plist)
 {
 	t_list		*cur_node;
-	t_c_token	*token;
+	t_token		*token;
 
 	cur_node = plist->next;
 	while (cur_node)
 	{
-		token = (t_c_token *)(cur_node->node);
-		printf("token->str : %s\n", token->str);
+		token = (t_token *)(cur_node->node);
+		printf("token->str : %s\n", token->data);
 		cur_node = cur_node->next;
 	}
 }
@@ -238,6 +227,7 @@ static void	display_list(t_list	*plist)
 		to using split
 	- execute_process(t_env_list *env_list, t_list *cmd_list)
 */
+/*
 static int	scmd_test(char *input, t_env_list *env_list)
 {
 	t_list	*parse_list;
@@ -252,13 +242,15 @@ static int	scmd_test(char *input, t_env_list *env_list)
 	// display_list(cmd_list);
 	execute_process(env_list, cmd_list);
 }
-
+*/
 
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	int			fd;
 	t_env_list	*env_list;
+	t_list		token_header;
+	t_list		parsed_header;
 
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, handler);
@@ -272,11 +264,22 @@ int	main(int argc, char **argv, char **envp)
 	{
 		// isatty(STDIN)
 		input = readline("pepsi zero>");
-		// builtin_test(input, env_list);
+		if (!input[0])
+			continue;
+		if (!lexer(input, &token_header))
+		{
+			printf("%s\n", "syntax error");
+			continue;
+		}
+		// print_token_content(token_header.next, ""); // remove
+		if (!parser(token_header.next, &parsed_header))
+			printf("%s\n", "parser error");
+		execute_processing(env_list, &parsed_header);
+		// builtin_test(input, env_list);$
 		// display_linked_list
-		scmd_test(input, env_list);
+		// scmd_test(parsed_header, env_list);
 		// preprocess(input);
-		// add_history(input);
+		add_history(input);
 	}
 	/*	*/
 	/**/

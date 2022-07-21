@@ -1,3 +1,4 @@
+
 #ifndef LEXER_H
 # define LEXER_H
 # define CHAR_SPACE	' '
@@ -11,40 +12,36 @@
 # define CHAR_RBRACKET	')'
 # define CHAR_AMPERSAND	'&'
 
-typedef	struct	s_list
-{
-	void	*node;
-	struct s_list	*next;
-}	t_list;
+# include "linked_list.h"
 
-typedef struct	s_token
+typedef struct s_token
 {
-	int	types;
+	int		types;
 	char	*data;
-}	t_token;
+}			t_token;
 
-typedef struct  s_simple
+typedef struct s_simple
 {
-	t_list  *args;
-	t_list  *redirs;
-	int     type;
-}	t_simple;
+	t_list	*args;
+	t_list	*redirs;
+	int		type;
+}			t_simple;
 
-typedef struct  s_compound
+typedef struct s_compound
 {
-	t_list  *list;
+	t_list	*list;
 	t_list	*padding;
-	int     type;
-}       t_compound;
+	int		type;
+}			t_compound;
 
-typedef struct	s_command
+typedef struct s_command
 {
 	t_list	*l1;
 	t_list	*l2;
-	int	type;
-}	t_command;
+	int		type;
+}			t_command;
 
-typedef enum	e_token_flag
+typedef enum e_token_flag
 {
 	TOKEN_NORMAL = 1,
 	TOKEN_REDIR = 2,
@@ -60,7 +57,8 @@ typedef enum	e_token_flag
 	TOKEN_WILDCARD = 2048,
 	TOKEN_IGNORE = 4096
 }	t_token_flag;
-typedef enum	e_command_type
+
+typedef enum e_command_type
 {
 	SIMPLE_NORMAL = 1,
 	SIMPLE_PIPE = 2,
@@ -71,5 +69,18 @@ typedef enum	e_command_type
 	COMPOUND_PIPELINE = 64,
 	COMPOUND_SUBSHELL = 128
 }	t_command_type;
+
+int			lexer(char *input, t_list *token_header);
+void		print_token_content(t_list *token_list, char *tab);
+int			parser(t_list *token_list, t_list *parsed_header);
+
+int			create_token(t_list **token_list, char *str, int len, int types);
+
+int			get_simple_type(t_list *parsed);
+t_simple	*get_simple(t_list *parsed);
+int			get_compound_type(t_list *parsed);
+t_compound	*get_compound(t_list *parsed);
+int			get_command_type(t_list *parsed);
+t_command	*get_command(t_list *parsed);
 
 #endif

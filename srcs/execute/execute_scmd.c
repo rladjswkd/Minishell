@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 19:33:32 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/21 18:04:01 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "env_list.h"
 #include "utils.h"
 #include "execute.h"
+#include "lexer.h"
 //debug
 #include <stdlib.h>
 #include <unistd.h>
@@ -32,15 +33,13 @@ static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)
 	return (0);
 }
 
-
 char	**list_to_array(t_list *plist)
 {
 	char		**arr_list;
 	int			idx;
 	int			list_len;
-	t_c_token	*token;
+	t_token		*token;
 	t_list		*cur_node;
-	char		*tmp_str;
 
 	arr_list = NULL;
 	list_len = 0;
@@ -57,12 +56,12 @@ char	**list_to_array(t_list *plist)
 	cur_node = plist->next;
 	while (idx < list_len)
 	{
-		token = (t_c_token *)(cur_node->node);
-		arr_list[idx] = token->str;
+		token = (t_token *)(cur_node->node);
+		arr_list[idx] = token->data;
 		idx++;
 		cur_node = cur_node->next;
 	}
-	arr_list[list_len] = '\0';
+	arr_list[list_len] = NULL;
 	return (arr_list);
 }
 /**/
@@ -93,9 +92,10 @@ char	**env_list_to_array(t_env_list *env_list)
 		cur_node = cur_node->next_node;
 		idx++;
 	}
-	arr_list[env_list->list_length] = '\0';
+	arr_list[env_list->list_length] = NULL;
 	return (arr_list);
 }
+/**/
 
 static char	**find_path_list(char **envp)
 {

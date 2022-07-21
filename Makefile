@@ -11,13 +11,42 @@ LINKED_LIST_DIR = linked_list
 BUILTIN_DIR = builtin
 UTILS_DIR = utils
 TOKEN_DIR = token
+LEXER_DIR = lexer
+PARSER_DIR = parser
 EXECUTE_DIR = execute
 LINKING_FLAGS = -lreadline -L${HOME}/.brew/opt/readline/lib
 COMFILE_FLAGS = -I${HOME}/.brew/opt/readline/include
 SRCS = $(addprefix $(SRCS_DIR)/, \
 			minishell.c	\
 			init.c	\
-	)
+)
+
+LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
+			env_list.c	\
+			env_list_remove.c \
+			plain_linked_list.c \
+)
+
+LEXTER_SRCS = $(addprefix $(SRCS_DIR)/$(LEXER_DIR)/, \
+			lexer.c	\
+)
+
+EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
+		execute.c	\
+		execute_scmd.c \
+		execute_builtin.c \
+)
+
+BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
+			cd.c	\
+			pwd.c	\
+			echo.c	\
+			env.c	\
+			exit.c	\
+			export.c	\
+			unset.c	\
+)
+
 UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_strndup.c	\
 			ft_strjoin.c	\
@@ -37,33 +66,15 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			exit_status.c \
 			check_valid_name.c	\
 			utils.c	\
-	)
-LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
-			env_list.c	\
-			env_list_remove.c \
-			plain_linked_list.c \
-	)
-BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
-			cd.c	\
-			pwd.c	\
-			echo.c	\
-			env.c	\
-			exit.c	\
-			export.c	\
-			unset.c	\
-	)
-
-EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
-		execute.c	\
-		execute_scmd.c \
-		execute_builtin.c \
 )
 
 OBJS = $(SRCS:.c=.o)
-UTIL_OBJS = $(UTIL_SRCS:.c=.o)
-LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
-BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
+LEXTER_OBJS = $(LEXTER_SRCS:.c=.o)
 EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
+BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
+LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
+UTIL_OBJS = $(UTIL_SRCS:.c=.o)
+
 
 %.o : %.c
 	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
@@ -71,7 +82,7 @@ EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
 # $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 	$(CC) $^ -o $@ $(LDLIBS)
 
 #$(CC) $(LINKING_FLAGS) $^ -o $@
@@ -80,7 +91,7 @@ $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS)
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)
