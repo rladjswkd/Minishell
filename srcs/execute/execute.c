@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 18:42:35 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/21 23:42:02 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	check_builtin(t_list *cmd_list)
 {
 	char	*cmd;
 
-	cmd = ((t_token *)(cmd_list->next->node))->data;
+	cmd = ((t_token *)(cmd_list->node))->data;
 	if (ft_strncmp("exit", cmd, max_nonnegative("exit", cmd)) == 0
 		|| ft_strncmp("echo", cmd, max_nonnegative("echo", cmd)) == 0
 		|| ft_strncmp("cd", cmd, max_nonnegative("cd", cmd)) == 0
@@ -84,8 +84,8 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list)
 	int		pid;
 	int		status;
 
-	cmd = list_to_array(parse_list);
-	if (check_builtin(parse_list))
+	cmd = list_to_array(get_simple(parse_list)->args);
+	if (check_builtin(get_simple(parse_list)->args))
 		return (builtin_process(env_list, cmd));
 	envp = env_list_to_array(env_list);
 	if (envp == NULL)
@@ -137,15 +137,16 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list)
 {
 	if (env_list == NULL || parse_list == NULL)
 		return (-1);
-	// print_command_content(parse_list->next);
+	// print_command_content(parse_list);
+	// get_command_type(parse_list);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		simple_cmd(env_list, parse_list);
-	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-		;
-	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
-		;
+	// else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
+	// 	;
+	// else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
+	// 	;
 	// display_list(parse_list);
-	simple_cmd(env_list, parse_list);
+	// simple_cmd(env_list, parse_list); 
 	// pipeline_processing();
 	// redir()
 	// pipe()

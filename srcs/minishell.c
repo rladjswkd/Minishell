@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 17:57:23 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/21 23:42:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ int	main(int argc, char **argv, char **envp)
 		// print_token_content(token_header.next, ""); // remove
 		if (!parser(token_header.next, &parsed_header))
 			printf("%s\n", "parser error");
-		execute_processing(env_list, &parsed_header);
+		execute_processing(env_list, parsed_header.next);
 		// builtin_test(input, env_list);$
 		// display_linked_list
 		// scmd_test(parsed_header, env_list);
