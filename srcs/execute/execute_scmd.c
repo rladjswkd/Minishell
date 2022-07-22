@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 18:04:01 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/22 15:39:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "execute.h"
 #include "lexer.h"
+#include "ft_error.h"
 //debug
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,9 +42,11 @@ char	**list_to_array(t_list *plist)
 	t_token		*token;
 	t_list		*cur_node;
 
+	if (plist == NULL)
+		return (NULL);
 	arr_list = NULL;
 	list_len = 0;
-	cur_node = plist->next;
+	cur_node = plist;
 	while (cur_node)
 	{
 		cur_node = cur_node->next;
@@ -53,7 +56,7 @@ char	**list_to_array(t_list *plist)
 	if (arr_list == NULL)
 		return (NULL);
 	idx = 0;
-	cur_node = plist->next;
+	cur_node = plist;
 	while (idx < list_len)
 	{
 		token = (t_token *)(cur_node->node);
@@ -141,9 +144,11 @@ int	execute_cmd(char **envp, char **cmd)
 		idx++;
 	}
 	execve(cmd[0], cmd, envp);
+	print_error(SHELL_NAME, cmd[0], NULL, "command not found.");
     // print_err
 	// free_list(&cmd);
 	free_list(&path_list);
+	exit(127);
 	// free_list(&envp);
-	return (0);
+	return (127);
 }

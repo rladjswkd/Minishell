@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/16 23:18:44 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/22 14:11:23 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,5 +131,6 @@ void	exit_cmd(char **status)
 			exit_status = (char)255;
 		}
 	}
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_status);
 }

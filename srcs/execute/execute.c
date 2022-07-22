@@ -6,47 +6,30 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 23:42:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/22 21:00:03 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "linked_list.h"
 #include "execute.h"
 #include "lexer.h"
 #include "env_list.h"
 #include "utils.h"
-// debug
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-
-/*
-	- 자료구조
-*/
-
+#include "redirec.h"
 /*
 	- prepair
 		- expansion
 		- wildcard
-	- builtin check
 	- redir
+	- builtin check
 	- execve()
 */
-
 
 /*
-	- builtin check
-	- redirection
-	- execve()
-*/
-
-typedef struct  s_cmd
-{
-	t_list	*args;
-	t_list	*redirs;
-}				t_cmd;
-
 static void     display_array_list(char **arr_list)
 {
 	int	idx;
@@ -61,53 +44,6 @@ static void     display_array_list(char **arr_list)
 	}
 }
 
-static int	check_builtin(t_list *cmd_list)
-{
-	char	*cmd;
-
-	cmd = ((t_token *)(cmd_list->node))->data;
-	if (ft_strncmp("exit", cmd, max_nonnegative("exit", cmd)) == 0
-		|| ft_strncmp("echo", cmd, max_nonnegative("echo", cmd)) == 0
-		|| ft_strncmp("cd", cmd, max_nonnegative("cd", cmd)) == 0
-		|| ft_strncmp("pwd", cmd, max_nonnegative("pwd", cmd)) == 0
-		|| ft_strncmp("env", cmd, max_nonnegative("env", cmd)) == 0
-		|| ft_strncmp("export", cmd, max_nonnegative("export", cmd)) == 0
-		|| ft_strncmp("unset", cmd, max_nonnegative("unset", cmd)) == 0)
-		return (1);
-	return (0);
-}
-
-int	simple_cmd(t_env_list *env_list, t_list *parse_list)
-{
-	char	**envp;
-	char	**cmd;
-	int		pid;
-	int		status;
-
-	cmd = list_to_array(get_simple(parse_list)->args);
-	if (check_builtin(get_simple(parse_list)->args))
-		return (builtin_process(env_list, cmd));
-	envp = env_list_to_array(env_list);
-	if (envp == NULL)
-		return (-1);
-	if (cmd == NULL)
-	{
-		free_list(&envp);
-		return (-1);
-	}
-	pid = fork();
-	if (pid == -1)
-		exit(1);
-	 // 자식프로세스에서도 부모가 heap에 할당한 데이터에 대해서 같은 메모리 공간을 가리키는가?
-	else if (pid == 0)
-		execute_cmd(envp, cmd);
-	free_list(&envp);
-	free_list(&cmd);
-	waitpid(pid, &status, 0);
-	return (status);
-}
-/**/
-
 static void	display_list(t_list	*plist)
 {
 	t_list		*cur_node;
@@ -121,6 +57,64 @@ static void	display_list(t_list	*plist)
 		cur_node = cur_node->next;
 	}
 }
+
+*/
+
+/*
+	- status에 대한 처리가 필요하다.
+*/
+static int	extern_cmd(t_env_list *env_list, t_list *cmd_list)
+{
+	char	**envp;
+	char	**cmd;
+	int		pid;
+	int		status;
+
+	cmd = list_to_array(cmd_list);
+	if (cmd == NULL)
+		return (-1);
+	envp = env_list_to_array(env_list);
+	if (envp == NULL)
+	{
+		free_list(&cmd);
+		return (-1);
+	}
+	pid = fork();
+	if (pid == -1)
+		exit(1);
+	 // 자식프로세스에서도 부모가 heap에 할당한 데이터에 대해서 같은 메모리 공간을 가리키는가?
+	else if (pid == 0)
+		execute_cmd(envp, cmd);
+	free_list(&envp);
+	free_list(&cmd);
+	waitpid(pid, &status, 0);
+	return (status);
+}
+
+/*< a << b >> c >> e << df
+	- 어떤 redir type인지 읽어서 처리한다.
+	- expansion 처리되었다는 가정하에 실행한다.
+*/
+
+
+/*
+	- 
+*/
+int	simple_cmd(t_env_list *env_list, t_list *parse_list)
+{
+	int	status;
+
+	// preperation
+	// wildcard
+	// redir()
+	status = redirection(get_simple(parse_list)->redirs);
+	if (check_builtin(get_simple(parse_list)->args))
+		status = builtin_process(env_list, get_simple(parse_list)->args);
+	else
+		status = extern_cmd(env_list, get_simple(parse_list)->args);
+	return (status);
+}
+/**/
 
 /*
 	- 현재 타입을 비교한다.
@@ -141,18 +135,12 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list)
 	// get_command_type(parse_list);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		simple_cmd(env_list, parse_list);
-	// else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-	// 	;
-	// else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
-	// 	;
+	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
+		;
+	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
+		;
 	// display_list(parse_list);
-	// simple_cmd(env_list, parse_list); 
-	// pipeline_processing();
-	// redir()
-	// pipe()
-	// builtin()
-	// heredoc
-	// (echo a ) | (echo b)
+	// simple_cmd(env_list, parse_list);
 	return (1);
 }
 

@@ -83,4 +83,6 @@ t_compound	*get_compound(t_list *parsed);
 int			get_command_type(t_list *parsed);
 t_command	*get_command(t_list *parsed);
 
+t_token		*get_token(t_list *token_list);
+
 #endif

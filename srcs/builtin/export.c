@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/09 15:21:29 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/22 15:09:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,24 +52,6 @@ static t_env_node	*find_export_key(t_env_list *env_list, char *key)
 	- 없으면 해당 인자를 key로만 넣고 value를  NULL로 처리힌다.
 	- 종류별 에러는 에러문구를 define을 통해서 처리할수도 있다.
 */
-static int	find_key_value_str(char *argv, char *key, char *value)
-{
-	int			delimiter_idx;
-
-	delimiter_idx = ft_strchr(argv, '=');
-	key = ft_strndup(argv, delimiter_idx);
-	if (key == NULL)
-		return (-1);
-	value = NULL;
-	if (delimiter_idx >= 0)
-	{
-		value = ft_strndup(&(argv[delimiter_idx + 1]), \
-					ft_strlen(argv) - (delimiter_idx + 1));
-		if (value == NULL)
-			return (-1);
-	}
-	return (0);
-}
 
 /*
 export a b c=42같은 케이스 처리되게 해야한다.

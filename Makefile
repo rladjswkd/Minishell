@@ -14,6 +14,7 @@ TOKEN_DIR = token
 LEXER_DIR = lexer
 PARSER_DIR = parser
 EXECUTE_DIR = execute
+REDIR_DIR = redir
 LINKING_FLAGS = -lreadline -L${HOME}/.brew/opt/readline/lib
 COMFILE_FLAGS = -I${HOME}/.brew/opt/readline/include
 SRCS = $(addprefix $(SRCS_DIR)/, \
@@ -35,6 +36,11 @@ EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
 		execute.c	\
 		execute_scmd.c \
 		execute_builtin.c \
+)
+
+REDIR_SRCS = $(addprefix $(SRCS_DIR)/$(REDIR_DIR)/, \
+		redirec.c	\
+		redirec_utils.c \
 )
 
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
@@ -71,10 +77,10 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 OBJS = $(SRCS:.c=.o)
 LEXTER_OBJS = $(LEXTER_SRCS:.c=.o)
 EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
+REDIR_OBJS = $(REDIR_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
-
 
 %.o : %.c
 	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
