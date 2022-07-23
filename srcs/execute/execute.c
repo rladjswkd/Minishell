@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 19:58:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 21:24:59 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,13 +146,13 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list)
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		simple_cmd(env_list, parse_list);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-		compound_pipeline_test(get_compound(parse_list)->list);
+		pipeline_processing(env_list, get_compound(parse_list)->list);
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
-		;
+		execute_processing(env_list, get_compound(parse_list)->list);
 	// 꼭 홀수개씩 오는가? 그렇지 않으면 어떻게 되는가?
 	// 짝수개가 들어와도 처리 가능하게 할 수 있는가?
-	if (parse_list->next)
-		execute_processing(env_list, parse_list->next);
+	// if (parse_list->next)
+	// 	execute_processing(env_list, parse_list->next);
 	// display_list(parse_list);
 	// simple_cmd(env_list, parse_list);
 	return (1);

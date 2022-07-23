@@ -6,9 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/20 20:26:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 21:28:45 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef PIPE_H
+# define PIPE_H
+
+#include "linked_list.h"
 
 typedef enum e_pipe_type
 {
@@ -38,3 +43,5 @@ int	connect_to_prev(int fd[2]);
 int	connect_to_next(int fd[2]);
 int	is_exist_prev_pipe(t_list *start_node, t_list *cur_node);
 int	is_exist_next_pipe(t_list *cur_node);
+
+#endif

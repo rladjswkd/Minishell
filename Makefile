@@ -15,6 +15,7 @@ LEXER_DIR = lexer
 PARSER_DIR = parser
 EXECUTE_DIR = execute
 REDIRECT_DIR = redirect
+PIPE_DIR = pipe
 LINKING_FLAGS = -lreadline -L${HOME}/.brew/opt/readline/lib
 COMFILE_FLAGS = -I${HOME}/.brew/opt/readline/include
 SRCS = $(addprefix $(SRCS_DIR)/, \
@@ -41,6 +42,11 @@ EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
 REDIRECT_SRCS = $(addprefix $(SRCS_DIR)/$(REDIRECT_DIR)/, \
 		redirect.c	\
 		redirect_utils.c \
+)
+
+PIPE_SRCS = $(addprefix $(SRCS_DIR)/$(PIPE_DIR)/, \
+		pipe.c	\
+		pipe_utils.c \
 )
 
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
@@ -78,6 +84,7 @@ OBJS = $(SRCS:.c=.o)
 LEXTER_OBJS = $(LEXTER_SRCS:.c=.o)
 EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
 REDIRECT_OBJS = $(REDIRECT_SRCS:.c=.o)
+PIPE_OBJS = $(PIPE_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
@@ -88,7 +95,7 @@ UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 # $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(PIPE_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 	$(CC) $^ -o $@ $(LDLIBS)
 
 #$(CC) $(LINKING_FLAGS) $^ -o $@
@@ -97,7 +104,7 @@ $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(BUILTIN_OBJS) $
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(PIPE_OBJS)  $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)

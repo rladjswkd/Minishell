@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 20:07:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 21:31:19 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@
 #include "process.h"
 #include "ft_error.h"
 
+
+static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
+							t_pipelist_info *pipelist_info);
+
+// parameter수정필요
+static int	parent_process(t_fd_info *fd_info, t_process_info *process_info, \
+						t_list *start_node, t_list *cur_node);
 // t_pipe_info;
 // cat a > b > c
 /*
@@ -133,7 +140,7 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info)
 {
-	t_compound	*compound_list;
+	t_list	*compound_list;
 
 	compound_list = get_compound(pipelist_info->cur_node)->list;
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
@@ -169,6 +176,6 @@ static int	parent_process(t_fd_info *fd_info, t_process_info *process_info, \
 	if (is_exist_next_pipe(cur_node))
 		if (close(fd_info->fd[(fd_info->spin_flag + 1) % 2][WRITE_END]) < 0)
 			return (-1);
-	waitpid(process_info->pid, process_info->status, 0);
+	waitpid(process_info->pid, &(process_info->status), 0);
 	return (1);
 }
