@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 19:01:38 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 09:43:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "heredoc.h"
 #include "utils.h"
 #include "linked_list.h"
-#include "redirec.h"
+#include "redirect.h"
 
 //계속 return시킬 것 아니라면 exit한다.
 static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)

@@ -289,7 +289,7 @@ int	file_open(t_file_flag file_flag, char *file_name)
 	return (file_fd);
 }
 
-int	redirection(t_redirection_flag redirection_flag, char *file_name)
+int	redirect(t_redirection_flag redirection_flag, char *file_name)
 {
 	int	file_fd;
 
@@ -408,7 +408,7 @@ static int	create_heredoc_tmp_file(char	**file_name)
 	*file_name = get_tmp_file_name();
 	if (*file_name == NULL)
 		return (-1);
-	tmp_file_fd = redirection(HERE_DOC, *file_name);
+	tmp_file_fd = redirect(HERE_DOC, *file_name);
 	if (tmp_file_fd < 0)
 	{
 		safe_free(file_name);

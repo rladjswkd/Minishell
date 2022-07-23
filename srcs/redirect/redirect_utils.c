@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirec_utils.c                                    :+:      :+:    :+:   */
+/*   redirect_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 20:49:52 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 12:04:20 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "linked_list.h"
 #include "lexer.h"
-#include "redirec.h"
+#include "redirect.h"
 
 static int	safe_dup2(int from, int to)
 {
@@ -25,7 +25,7 @@ static int	safe_dup2(int from, int to)
 	return (0);
 }
 
-int	input_redirec(char *file_name)
+int	input_redirect(char *file_name)
 {
 	int	file_fd;
 	int	status;
@@ -37,7 +37,7 @@ int	input_redirec(char *file_name)
 	return (status);
 }
 
-int	output_redirec(char *file_name)
+int	output_redirect(char *file_name)
 {
 	int	file_fd;
 	int	status;
@@ -49,7 +49,7 @@ int	output_redirec(char *file_name)
 	return (status);
 }
 
-int	append_redirec(char *file_name)
+int	append_redirect(char *file_name)
 {
 	int	file_fd;
 	int	status;

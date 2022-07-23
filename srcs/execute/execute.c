@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 21:00:03 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 19:58:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "linked_list.h"
+#include "redirect.h"
 #include "execute.h"
 #include "lexer.h"
 #include "env_list.h"
 #include "utils.h"
-#include "redirec.h"
+
 /*
 	- prepair
 		- expansion
@@ -116,6 +117,15 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list)
 }
 /**/
 
+
+static int	compound_pipeline_test(t_list *compound_pipe_list)
+{
+	t_compound	*compoumd;
+	
+	get_compound_type(compound_pipe_list);
+	get_compound(compound_pipe_list);
+}
+
 /*
 	- 현재 타입을 비교한다.
 	- 다단계
@@ -136,11 +146,14 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list)
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		simple_cmd(env_list, parse_list);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-		;
+		compound_pipeline_test(get_compound(parse_list)->list);
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
 		;
+	// 꼭 홀수개씩 오는가? 그렇지 않으면 어떻게 되는가?
+	// 짝수개가 들어와도 처리 가능하게 할 수 있는가?
+	if (parse_list->next)
+		execute_processing(env_list, parse_list->next);
 	// display_list(parse_list);
 	// simple_cmd(env_list, parse_list);
 	return (1);
 }
-

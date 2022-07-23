@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 16:08:27 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 19:01:03 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,37 +52,6 @@ static void	display_env_list(t_env_list	*env_list)
 	}
 }
 
-static void	builtin_test(char *input, t_env_list *env_list)
-{
-	char		**word_list;
-	char		*cmd;
-	char		**argv;
-
-	word_list = ft_split(input, ' ');
-	if (word_list == NULL)
-		return ;
-	cmd = word_list[0];
-	argv = &word_list[1];
-	printf("cmd : %s\n*argv : %s\n", cmd, *argv);
-	if (ft_strncmp("exit", cmd, ft_strlen(cmd)) == 0)
-		exit_cmd(argv);
-	else if (ft_strncmp("echo", cmd, ft_strlen(cmd)) == 0)
-		echo_cmd(argv);
-	else if (ft_strncmp("cd", cmd, ft_strlen(cmd)) == 0)
-		cd_cmd(argv, env_list);
-	else if (ft_strncmp("pwd", cmd, ft_strlen(cmd)) == 0)
-		pwd_cmd();
-	else if (ft_strncmp("env", cmd, ft_strlen(cmd)) == 0)
-		env_cmd(env_list, argv);
-	else if (ft_strncmp("export", cmd, ft_strlen(cmd)) == 0)
-		export_cmd(env_list, argv);
-	else if (ft_strncmp("unset", cmd, ft_strlen(cmd)) == 0)
-		unset_cmd(env_list, argv);
-	free_list(&word_list);
-	free(input);
-	input = NULL;
-}
-
 static int	add_node(t_list **new_node)
 {
 	*new_node = (t_list *)malloc(sizeof(t_list));
@@ -105,183 +74,61 @@ static t_list	*create_list()
 	return (new_list);
 }
 
-t_c_scmd   *create_t_c_scmd()
+static int	preprocess(char *input, t_list *parsed_header)
 {
-	t_c_scmd    *scmd_node;
+	t_list		token_header;
 
-	scmd_node = (t_c_scmd *)malloc(sizeof(t_c_scmd));
-	if (scmd_node == NULL)
-		return (NULL);
-	scmd_node->redirs = NULL;
-	scmd_node->args = NULL;
-	return (scmd_node);
-}
-
-/*
-- 첫 노드는 header로 쓴다. 값을 담지 않는다.
-- pipe 혹은 ()a맏
-*/
-static int	add_parse_list(t_list *plist)
-{
-	t_list		*cur_node;
-	t_c_scmd	*scmd_node;
-	t_token	*token;
-	int			idx;
-
-	if (plist == NULL)
-		return (-1);
-	cur_node = plist;
-	// pipe단위로 추가된다.
-	// (t_c_scmd *)와 세트로 다닌다.
-	while (cur_node && cur_node->next)
-		cur_node = cur_node->next;
-	if (add_node(&(cur_node->next)) == -1)
+	if (!lexer(input, &token_header))
 	{
-		free_linked_list(&plist);
-		return (-1);
+		printf("%s\n", "syntax error");
+		return (1);
 	}
-	// 첫번쨰 노드는 header로 둔다.(아무 값도 넣지 않는다.)
-	cur_node = cur_node->next;
-	scmd_node = create_t_c_scmd();
-	if (scmd_node == NULL)
+	if (!parser(token_header.next, parsed_header))
 	{
-		free_linked_list(&plist);
-		return (-1);
+		printf("%s\n", "parser error");
+		// free(token_header);
+		// free(parsed_header);
+		return (2);
 	}
-	cur_node->node = scmd_node;
-	return (1);
-}
-
-/*
-static t_list	*str_to_list(t_list *parse_list, char *str)
-{
-	t_list		*args_list;
-	t_list		*cur_node;
-	char		**arr_list;
-	int			idx;
-
-	arr_list = ft_split(str, ' ');
-	if (arr_list == NULL)
-	{
-		free(parse_list);
-		return (NULL);
-	}
-	if (add_parse_list(parse_list) < 0)
-	{
-		free(parse_list);
-		return (NULL);
-	}
-	// cur_node->next = NULL;
-	idx = 0;
-	cur_node = create_list();
-	if (cur_node == NULL)
-		return (NULL);
-	((t_c_scmd *)(parse_list->next->node))->args = cur_node;
-	while (arr_list[idx])
-	{
-		if (add_node(&(cur_node->next)) == -1)
-		{
-			free_list(&arr_list);
-			free_linked_list(&parse_list);
-			return (NULL);
-		}
-		cur_node = cur_node->next;
-		cur_node->node = create_token();
-		if (cur_node->node == NULL)
-		{
-			free_list(&arr_list);
-			free_linked_list(&parse_list);
-		}
-		((t_token *)(cur_node->node))->str = ft_strdup(arr_list[idx]);
-		if (((t_token *)(cur_node->node))->str == NULL)
-		{
-			// token의 str list를 지워야한다.
-			free_list(&arr_list);
-			free_linked_list(&parse_list);
-			return (NULL);
-		}
-		idx++;
+	// heredoc_processing();
+	return (0);
 		
-	}
-	args_list = ((t_c_scmd *)(parse_list->next->node))->args;
-	return (args_list);
-	
 }
-*/
 
-static void	display_list(t_list	*plist)
+static int	reset_in_out_fd(int io_backup[2])
 {
-	t_list		*cur_node;
-	t_token		*token;
-
-	cur_node = plist->next;
-	while (cur_node)
-	{
-		token = (t_token *)(cur_node->node);
-		printf("token->str : %s\n", token->data);
-		cur_node = cur_node->next;
-	}
-}
-/*
-	- input str to linked list
-		to using split
-	- execute_process(t_env_list *env_list, t_list *cmd_list)
-*/
-/*
-static int	scmd_test(char *input, t_env_list *env_list)
-{
-	t_list	*parse_list;
-	t_list	*cmd_list;
-
-	parse_list = create_list();
-	if (parse_list == NULL)
+	if (dup2(io_backup[0], STDIN_FILENO) < 0
+		|| dup2(io_backup[1], STDOUT_FILENO) < 0)
 		return (-1);
-	if (add_parse_list(parse_list) < 0)
-		return (-1);
-	cmd_list = str_to_list(parse_list, input);
-	// display_list(cmd_list);
-	execute_process(env_list, cmd_list);
+	return (0);
 }
-*/
 
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
-	int			fd;
 	t_env_list	*env_list;
-	t_list		token_header;
 	t_list		parsed_header;
+	int			io_backup[2];
 
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, handler);
-	env_list = create_env_list();
-	if (env_list == NULL)
+	if (init_value(&env_list, envp, io_backup) < 0)
 		return (1);
-	if (init_value(env_list, envp) < 0)
-		return (1);
-	// display_env_list(env_list);
 	while (1)
 	{
-		// isatty(STDIN)
 		input = readline("pepsi zero>");
+		if (input == NULL)
+			exit(1);
 		if (!input[0])
-			continue;
-		if (!lexer(input, &token_header))
-		{
-			printf("%s\n", "syntax error");
-			continue;
-		}
-		print_token_content(token_header.next, ""); // remove
-		if (!parser(token_header.next, &parsed_header))
-			printf("%s\n", "parser error");
+			continue ;
+		if (preprocess(input, &parsed_header))
+			continue ;
 		execute_processing(env_list, parsed_header.next);
-		// builtin_test(input, env_list);
-		// display_linked_list
-		// scmd_test(parsed_header, env_list);
-		// preprocess(input);
 		add_history(input);
+		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
+		if (reset_in_out_fd(io_backup) < 0)
+			return (1); // free
 	}
-	/*	*/
-	/**/
+	/*	free_init_value*/
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/13 16:16:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 10:29:18 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#include "redirec.h"
+// #include "redirect.h"
 
 int	check_tmp_file_name(char *file_name)
 {

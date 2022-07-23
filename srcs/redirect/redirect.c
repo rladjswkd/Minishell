@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirec.c                                          :+:      :+:    :+:   */
+/*   redirect.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 20:58:26 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 09:36:13 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "linked_list.h"
 #include "lexer.h"
-#include "redirec.h"
+#include "redirect.h"
 #include "utils.h"
 
 
@@ -24,7 +24,7 @@
 	- dup2으로 연결
 */
 
-static t_redirection_flag	get_redirection_flag(t_token *token)
+static int	get_redirection_flag(t_token *token)
 {
 	char	*redir_val;
 
@@ -41,7 +41,7 @@ static t_redirection_flag	get_redirection_flag(t_token *token)
 }
 
 /*
-static int	check_redirec_bound(t_token *token)
+static int	check_redirect_bound(t_token *token)
 {
 	if (token == NULL)
 		return (-1);
@@ -76,35 +76,29 @@ static int	get_redirect_fd(t_redirection_flag redirection_flag, char *file_name)
 }
 
 // bound, 
-static int redir_bound_process(t_list *cur_node)
+static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 {
-	int					fd;
-	t_redirection_flag	redirec_flag;
-	t_token				*token;
-	char				*file_name;
-	int					status;
+	int		redirect_flag;
+	char	*file_name;
+	int		status;
 
 	status = 0;
-	if (cur_node == NULL )
+	if (redirect_node == NULL || data_node == NULL)
 		return (-1);
-	file_name = get_token(cur_node->next)->data;
+	file_name = get_token(data_node)->data;
 	if (file_name == NULL )
 		return (-1);
-	redirec_flag = get_redirection_flag(token);
-	fd = get_redirect_fd(redirec_flag, file_name);
-	if (fd == -1)
-		return (-1);
-	if (redirec_flag == HERE_DOC || redirec_flag == INPUT)
-		status = input_redirec(file_name);
-	else if (redirec_flag == OUTPUT)
-		status = output_redirec(file_name);
-	else if (redirec_flag == APPEND)
-		status = append_redirec(file_name);
+	redirect_flag = get_redirection_flag(get_token(redirect_node));
+	if (redirect_flag == HERE_DOC || redirect_flag == INPUT)
+		status = input_redirect(file_name);
+	else if (redirect_flag == OUTPUT)
+		status = output_redirect(file_name);
+	else if (redirect_flag == APPEND)
+		status = append_redirect(file_name);
 	else
 		status = -1;
 	return (status);
 }
-
 
 /*
 	- expasion으로 합쳐주었다는 가정!
@@ -127,9 +121,9 @@ int	redirection(t_list *redir_list)
 		if (token->types & TOKEN_REDIR && cur_node->next)
 		{
 			// redirec status는 어떻게 처리할 것인가?
-			status = redir_bound_process(cur_node);
+			status = redirect_bound_process(cur_node, cur_node->next);
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
-				return (-1);
+				return (status);
 			cur_node = cur_node->next->next; 
 		}
 		else if (redir_list != cur_node)// expansion에서 합칠것이긴 하지만 혹시 모르므로 REDIR 타입이 아니면 서로 합친다?
@@ -142,3 +136,4 @@ int	redirection(t_list *redir_list)
 	}
 	return (status);
 }
+/**/

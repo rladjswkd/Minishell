@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 13:55:43 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/23 13:15:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 	- 결과를 자료구조에 담아야한다.
 */
 
+#include <unistd.h>
 #include "env_list.h"
 #include "utils.h"
 #include "ft_error.h"
@@ -61,24 +62,29 @@ static int	add_env(t_env_list *env_list, char *key, char *value)
 	return (0);
 }
 
-int	init_value(t_env_list	*env_list, char **envp)
+int	init_value(t_env_list	**env_list, char **envp, int io_backup[2])
 {
 	size_t		idx;
 	t_env_node	*cur_node;
 	char		*key;
 	char		*value;
 
+	*env_list = create_env_list();
+	if (env_list == NULL)
+		return (-1);
 	idx = 0;
-	cur_node = env_list->header_node;
+	cur_node = (*env_list)->header_node;
 	while (envp[idx])
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)
 			error_handler(NULL, NULL, strerror(errno), 1);
-		add_env(env_list, key, value);
+		add_env((*env_list), key, value);
 		idx++;
 	}
-	if (get_env_node(env_list, "OLDPWD") == NULL)
-		add_env(env_list, "OLDPWD", NULL);
+	if (get_env_node((*env_list), "OLDPWD") == NULL)
+		add_env((*env_list), "OLDPWD", NULL);
+	io_backup[0] = dup(0);
+	io_backup[1] = dup(1);
 	return (0);
 }
 

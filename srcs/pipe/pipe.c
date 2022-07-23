@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/20 21:08:07 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/23 20:07:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 #include "env_list.h"
 #include "linked_list.h"
 #include "lexer.h"
+#include "execute.h"
 #include "process.h"
+#include "ft_error.h"
 
 // t_pipe_info;
 // cat a > b > c
@@ -78,13 +80,14 @@ static void	switch_flag(int *flag)
 		*flag = 1;
 }
 
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline)
+int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 {
-	t_list			*cur_node;
-	t_fd_info		fd_info;
-	t_process_info	process_info;
+	t_list				*cur_node;
+	t_pipelist_info		pipelist_info;
+	t_fd_info			fd_info;
+	t_process_info		process_info;
 
-	cur_node = pipeline->next; // 첫번째  node는 header이다.
+	cur_node = pipeline_list; // 첫번째  node는 header이다.
 	fd_info.spin_flag = 1;
 	while (cur_node)
 	{
@@ -94,13 +97,14 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline)
 				return (1);
 			switch_flag(&fd_info.spin_flag);
 		}
+		pipelist_info.start_node = pipeline_list;
+		pipelist_info.cur_node = cur_node;
 		process_info.pid = fork();
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
-			child_process(fd_info.fd, pipeline->next, cur_node, \
-						fd_info.spin_flag);
-		parent_process(&fd_info, &process_info, pipeline->next, cur_node);
+			child_process(env_list, &fd_info, &pipelist_info);
+		parent_process(&fd_info, &process_info, pipeline_list->next, cur_node);
 		cur_node = cur_node->next;
 	}
 	return (0);
@@ -115,19 +119,34 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline)
 	- builtin()
 	- extern_cmd()
 	- exit status
-	- 
 */
-static int	child_process(t_fd_info *fd_info,  t_list *start_node, \
-						t_list *cur_node, int spin_flag)
+/*
+	- pipe 연결
+	- command type확인
+		- compound
+			- pipeline
+			- subshell
+		- simple
+			- simple_cmd를 호출한다.
+	- exit_status
+*/
+static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
+							t_pipelist_info *pipelist_info)
 {
-	char	*cmd[] = {"ls", "-al", NULL};
+	t_compound	*compound_list;
 
-	if (is_exist_prev_pipe(start_node, cur_node))
+	compound_list = get_compound(pipelist_info->cur_node)->list;
+	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]); 
-	if (is_exist_next_pipe(cur_node))
+	if (is_exist_next_pipe(pipelist_info->cur_node))
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
-	if (execve("/bin/ls", cmd, NULL) < 0)
-		ft_putstr_fd(STDERR_FILENO, "execve error\n");
+	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
+		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
+		execute_processing(env_list , compound_list);
+	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
+		simple_cmd(env_list, pipelist_info->cur_node);
+	else
+		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");// error
 	return (2);
 }
 

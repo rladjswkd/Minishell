@@ -34,7 +34,7 @@ static int	safe_dup2(int from, int to)
 	return (1);
 }
 
-static void	input_redirec(char *file_name)
+static void	input_redirect(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
@@ -46,7 +46,7 @@ static void	input_redirec(char *file_name)
 	// printf("read_size : %zd\nbuf : %s\n", read_size, buf);
 }
 
-static void	output_redirec(char *file_name)
+static void	output_redirect(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
@@ -56,7 +56,7 @@ static void	output_redirec(char *file_name)
 	// write(STDOUT_FILENO, &"write to last be opened file\n", ft_strlen("write to last opened file\n"));
 }
 
-static void	append_redirec(char *file_name)
+static void	append_redirect(char *file_name)
 {
 	int		file_fd;
 	char	buf[42];
@@ -78,9 +78,9 @@ int	main(int argc, char **argv)
 		return (1);
 	for (int i = 0; i < 42; i++)
 	{
-		input_redirec(argv[2]);
-		output_redirec(argv[1]);
-		append_redirec(argv[3]);
+		input_redirect(argv[2]);
+		output_redirect(argv[1]);
+		append_redirect(argv[3]);
 	}
 	if (execve("/bin/cat", cmd, NULL) < 0)
 		return (1);
