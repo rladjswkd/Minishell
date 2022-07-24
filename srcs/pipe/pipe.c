@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 21:31:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/24 20:59:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 #include "execute.h"
 #include "process.h"
 #include "ft_error.h"
-
 
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info);
@@ -96,22 +95,25 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 
 	cur_node = pipeline_list; // 첫번째  node는 header이다.
 	fd_info.spin_flag = 1;
+	// pipelist_info.start_node = NULL;
+	pipelist_info.start_node = pipeline_list;
 	while (cur_node)
 	{
 		if (is_exist_next_pipe(cur_node))
 		{
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
-			switch_flag(&fd_info.spin_flag);
 		}
-		pipelist_info.start_node = pipeline_list;
+		// fprintf(stderr, "fd_info.spin_flag : %d\n", fd_info.spin_flag);
 		pipelist_info.cur_node = cur_node;
 		process_info.pid = fork();
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
 			child_process(env_list, &fd_info, &pipelist_info);
-		parent_process(&fd_info, &process_info, pipeline_list->next, cur_node);
+		else
+			parent_process(&fd_info, &process_info, pipeline_list, cur_node);
+		switch_flag(&fd_info.spin_flag);
 		cur_node = cur_node->next;
 	}
 	return (0);
@@ -149,9 +151,12 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-		execute_processing(env_list , compound_list);
+		execute_processing(env_list , compound_list, TRUE);
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
-		simple_cmd(env_list, pipelist_info->cur_node);
+	{
+		ft_putstr_fd("SIMPLE_NORMAL\n", STDERR_FILENO);
+		simple_cmd(env_list, pipelist_info->cur_node, TRUE);
+	}
 	else
 		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");// error
 	return (2);
