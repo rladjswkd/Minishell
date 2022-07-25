@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 14:09:31 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 23:53:59 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,33 +88,29 @@ static void	switch_flag(int *flag)
 
 int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 {
-	t_list				*cur_node;
 	t_pipelist_info		pipelist_info;
 	t_fd_info			fd_info;
 	t_process_info		process_info;
 
-	cur_node = pipeline_list; // 첫번째  node는 header이다.
 	fd_info.spin_flag = 1;
-	// pipelist_info.start_node = NULL;
 	pipelist_info.start_node = pipeline_list;
-	while (cur_node)
+	pipelist_info.cur_node = pipeline_list;
+	while (pipelist_info.cur_node)
 	{
-		if (is_exist_next_pipe(cur_node))
+		if (is_exist_next_pipe(pipelist_info.cur_node ))
 		{
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
 		}
-		// fprintf(stderr, "fd_info.spin_flag : %d\n", fd_info.spin_flag);
-		pipelist_info.cur_node = cur_node;
 		process_info.pid = fork();
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
 			return (child_process(env_list, &fd_info, &pipelist_info));
 		else
-			parent_process(&fd_info, &process_info, pipeline_list, cur_node);
+			parent_process(&fd_info, &process_info, pipeline_list, pipelist_info.cur_node);
 		switch_flag(&fd_info.spin_flag);
-		cur_node = cur_node->next;
+		pipelist_info.cur_node = pipelist_info.cur_node->next;
 	}
 	return (0);
 }

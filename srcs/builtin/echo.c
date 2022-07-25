@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 11:55:37 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 00:19:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int	echo_cmd(char **argument)
 	{
 		newline_flag = FALSE;
 		*(get_exit_status()) = 1;
+		idx++;
 	}
 	while (argument[idx])
 	{
