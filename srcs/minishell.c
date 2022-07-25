@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/24 09:28:27 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 23:30:35 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	while (1)
 	{
-		input = readline("pepsi zero>");
+		input = readline("pepsi zero> ");
 		if (input == NULL)
 			exit(1);
 		if (!input[0])

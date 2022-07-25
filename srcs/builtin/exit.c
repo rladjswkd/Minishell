@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 18:06:09 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 23:43:54 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,8 @@ void	exit_cmd(char **status)
 	char	exit_status;
 
 	num_flag = 1;
-	exit_status = (char)ft_atol(*status, &num_flag);
+	if (*status)
+		exit_status = (char)ft_atol(*status, &num_flag);
 	if (*status == NULL)
 		exit_status = (char)0;
 	else if (num_flag == 0) 
@@ -128,6 +129,7 @@ void	exit_cmd(char **status)
 		exit_status = (char)1;
 		return ;
 	}
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	if (num_flag)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_status);
 }
