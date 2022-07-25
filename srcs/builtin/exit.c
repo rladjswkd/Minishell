@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 14:11:23 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 18:06:09 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,23 +113,20 @@ void	exit_cmd(char **status)
 	char	exit_status;
 
 	num_flag = 1;
+	exit_status = (char)ft_atol(*status, &num_flag);
 	if (*status == NULL)
 		exit_status = (char)0;
+	else if (num_flag == 0) 
+	{
+		print_error(SHELL_NAME, "exit", *status, \
+					"numeric argument required");
+		exit_status = (char)255;
+	}
 	else if (is_more_than_one(status))
 	{
 		print_error(SHELL_NAME, "exit", NULL, "too many arguments");
 		exit_status = (char)1;
 		return ;
-	}
-	else
-	{
-		exit_status = (char)ft_atol(*status, &num_flag);
-		if (num_flag == 0)
-		{
-			print_error(SHELL_NAME, "exit", *status, \
-						"numeric argument required");
-			exit_status = (char)255;
-		}
 	}
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_status);

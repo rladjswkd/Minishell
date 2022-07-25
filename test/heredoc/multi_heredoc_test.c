@@ -33,7 +33,7 @@ typedef enum e_redirection_flag
 	NONE,
 	INPUT,
 	OUTPUT,
-	HERE_DOC,
+	HEREDOC,
 	APPEND,
 }				t_redirection_flag;
 
@@ -298,7 +298,7 @@ int	redirect(t_redirection_flag redirection_flag, char *file_name)
 		file_fd = file_open(FILE_READ, file_name);
 	else if (redirection_flag == OUTPUT)
 		file_fd = file_open(FILE_READ, file_name);
-	else if (redirection_flag == HERE_DOC)
+	else if (redirection_flag == HEREDOC)
 		file_fd = file_open(FILE_RDWR, file_name);
 	else if (redirection_flag == APPEND)
 		file_fd = file_open(FILE_APPEND, file_name);
@@ -408,7 +408,7 @@ static int	create_heredoc_tmp_file(char	**file_name)
 	*file_name = get_tmp_file_name();
 	if (*file_name == NULL)
 		return (-1);
-	tmp_file_fd = redirect(HERE_DOC, *file_name);
+	tmp_file_fd = redirect(HEREDOC, *file_name);
 	if (tmp_file_fd < 0)
 	{
 		safe_free(file_name);

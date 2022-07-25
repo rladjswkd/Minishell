@@ -6,25 +6,23 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 09:43:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 21:00:18 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "heredoc.h"
+#include <fcntl.h>
 #include "utils.h"
-#include "linked_list.h"
-#include "redirect.h"
-
+#include "heredoc.h"
 //계속 return시킬 것 아니라면 exit한다.
+// unlink 실패해도 free해야한다. 어쨌든, -1 return하므로 error 체크하지 않는다.
 static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)
 {
 	unlink(file_name);
 	safe_free(&file_name);
 	safe_free(&read_str);
-	if (close(tmp_file_fd) < 0)
-		return (-1);
-	return (1);
+	close(tmp_file_fd);
+	return (-1);
 }
 
 static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
@@ -35,6 +33,8 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 	while (1)
 	{
 		read_str = readline("$>");
+		if (read_str == NULL)
+			return (-1);
 		if (ft_strncmp(read_str, heredoc_word, \
 			max_nonnegative(read_str, heredoc_word)) == 0)
 		{
@@ -42,12 +42,9 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 			break ;
 		}
 		with_newline = ft_strjoin(read_str, "\n");
-		if (with_newline == NULL)
-		{
-			safe_free(&read_str);
-			return (-1);
-		}
 		safe_free(&read_str);
+		if (with_newline == NULL)
+			return (-1);
 		if (write(tmp_file_fd, with_newline, ft_strlen(with_newline)) < 0)
 			return (free_and_close(file_name, tmp_file_fd, read_str));
 		safe_free(&with_newline);
@@ -60,7 +57,7 @@ static int	get_tmp_file_fd(char *file_name)
 {
 	int	open_fd;
 
-	open_fd = file_open(FILE_READ, file_name);
+	open_fd = open(file_name, O_RDONLY, 0666);
 	if (open_fd < 0)
 		return (-1);
 	if (unlink(file_name) < 0)
@@ -73,7 +70,6 @@ int	heredoc_routine(char *heredoc_word)
 {
 	int		tmp_file_fd;
 	char	*file_name;
-	char	buf[4242 + 1]; // should be changed
 
 	tmp_file_fd = create_heredoc_tmp_file(&file_name);
 	if (tmp_file_fd < 0)
@@ -84,34 +80,4 @@ int	heredoc_routine(char *heredoc_word)
 	if (tmp_file_fd < 0)
 		return (-1);
 	return (tmp_file_fd);
-}
-
-int	heredoc_fd_to_list(t_list *list, int fd)
-{
-	t_list			*cur_node;
-	t_heredoc_node	*heredoc_node;
-
-	if (fd < 0)
-	{
-		free_linked_list(&list);
-		return (-1);
-	}
-	while (list->next)
-		list = list->next;
-	list->next = create_list();
-	cur_node = list->next;
-	if (cur_node == NULL)
-	{
-		free_linked_list(&list);
-		return (-1);
-	}
-	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
-	if (heredoc_node == NULL)
-	{
-		free_linked_list(&list);
-		return (-1);
-	}
-	heredoc_node->fd = fd;
-	cur_node->node = (t_heredoc_node *)heredoc_node;
-	return (0);
 }

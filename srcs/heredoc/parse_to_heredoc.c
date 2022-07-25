@@ -1,22 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_error.h                                         :+:      :+:    :+:   */
+/*   parse_to_heredoc.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/06 15:25:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 16:04:27 by jim              ###   ########.fr       */
+/*   Created: 2022/07/25 21:01:34 by jim               #+#    #+#             */
+/*   Updated: 2022/07/25 21:03:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_ERROR_H
-# define FT_ERROR_H
+#include "linked_list.h"
+#include "lexer.h"
 
-# define NONVALID "not a valid identifier"
-# define ALLOC_FAIL "allocation fail"
-
-void	error_handler(char *cmd, char *argv, char *msg, char exit_status);
-void	print_error(char *shell_name, char *cmd, char *argv, char *msg);
-
-#endif
+int parse_to_heredoc(t_list *parse_list, )
+{
+    
+}

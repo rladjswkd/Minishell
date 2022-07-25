@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 12:18:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 19:31:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "lexer.h"
 #include "ft_error.h"
 //debug
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 

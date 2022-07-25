@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 12:16:48 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 19:31:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "lexer.h"
 #include "env_list.h"
 #include "utils.h"
-
+#include <stdio.h>
 /*
 	- prepair
 		- expansion
@@ -110,10 +110,9 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	int	status;
 
-	// preperation
-	// wildcard
-	// redir()
-	// status = redirection(get_simple(parse_list)->redirs);
+	// preperation()
+	// wildcard()
+	status = redirection(get_simple(parse_list)->redirs, is_child);
 	if (check_builtin(get_simple(parse_list)->args))
 		status = builtin_process(env_list, get_simple(parse_list)->args, is_child);
 	else

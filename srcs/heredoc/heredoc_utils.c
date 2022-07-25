@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 10:29:18 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 21:00:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,25 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <limits.h>
+#include <fcntl.h>
 
-// #include "redirect.h"
+#include "heredoc.h"
+#include "linked_list.h"
 
-int	check_tmp_file_name(char *file_name)
+/* */
+static int	check_tmp_file_name(char *file_name)
 {
-	DIR				*dir_ptr = NULL;
-	struct dirent	*file    = NULL;
+	DIR				*dir_ptr;
+	struct dirent	*file;
 	char			buf[PATH_MAX];
 
 	if (getcwd(buf, sizeof(buf)) == NULL)
 		return (1);
-	if((dir_ptr = opendir(buf)) == NULL)
-		return -1;
-	while((file = readdir(dir_ptr)) != NULL) 
+	dir_ptr = opendir(buf);
+	if(dir_ptr == NULL)
+		return (-1);
+	file = readdir(dir_ptr);
+	while(file != NULL) 
 	{
 		if (ft_strncmp(file_name, file->d_name, \
 						max_nonnegative(file_name, file->d_name)) == 0)
@@ -64,26 +69,6 @@ static char *get_tmp_file_name(void)
 	return (file_name);
 }
 
-static void	input_to_tmp_file(char *file_name, int tmp_file_fd, char *heredoc_word)
-{
-	char	*read_str;
-
-	while (1)
-	{
-		read_str = readline("$>");
-		if (ft_strncmp(read_str, heredoc_word, \
-			max_nonnegative(read_str, heredoc_word)) == 0)
-		{
-			safe_free(&read_str);
-			break ;
-		}
-		if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
-			exit(1);
-		safe_free(&read_str);
-	}
-	close(tmp_file_fd);
-}
-
 int	create_heredoc_tmp_file(char **file_name)
 {
 	int		tmp_file_fd;
@@ -91,11 +76,33 @@ int	create_heredoc_tmp_file(char **file_name)
 	*file_name = get_tmp_file_name();
 	if (*file_name == NULL)
 		return (-1);
-	tmp_file_fd = redirection(HERE_DOC, *file_name);
+	tmp_file_fd = open(file_name, O_CREAT | O_WRONLY, 0666);
 	if (tmp_file_fd < 0)
 	{
 		safe_free(file_name);
 		return (-1);
 	}
 	return (tmp_file_fd);
+}
+
+/* heredoc_fd_to_list 밖에서 null로 초기화해서 줄것. -1 return시 밖에서 free() */
+int	heredoc_fd_to_list(t_list *list, int fd)
+{
+	t_list			*cur_node;
+	t_heredoc_node	*heredoc_node;
+
+	if (fd < 0)
+		return (-1);
+	while (list->next)
+		list = list->next;
+	list->next = create_list();
+	cur_node = list->next;
+	if (cur_node == NULL)
+		return (-1);
+	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
+	if (heredoc_node == NULL)
+		return (-1);
+	heredoc_node->fd = fd;
+	cur_node->node = (t_heredoc_node *)heredoc_node;
+	return (0);
 }
