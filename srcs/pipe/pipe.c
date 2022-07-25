@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/24 20:59:31 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 14:09:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
-			child_process(env_list, &fd_info, &pipelist_info);
+			return (child_process(env_list, &fd_info, &pipelist_info));
 		else
 			parent_process(&fd_info, &process_info, pipeline_list, cur_node);
 		switch_flag(&fd_info.spin_flag);
@@ -143,6 +143,7 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info)
 {
 	t_list	*compound_list;
+	int		status;
 
 	compound_list = get_compound(pipelist_info->cur_node)->list;
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
@@ -151,15 +152,15 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-		execute_processing(env_list , compound_list, TRUE);
+		status = execute_processing(env_list , compound_list, TRUE);
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
-	{
-		ft_putstr_fd("SIMPLE_NORMAL\n", STDERR_FILENO);
-		simple_cmd(env_list, pipelist_info->cur_node, TRUE);
-	}
+		status = simple_cmd(env_list, pipelist_info->cur_node, TRUE);
 	else
+	{
+		status = 2;
 		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");// error
-	return (2);
+	}
+	return (status);
 }
 
 /*

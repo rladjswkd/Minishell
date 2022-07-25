@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 16:10:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 12:44:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "builtin.h"
 #include "utils.h"
 #include "lexer.h"
+#include <stdlib.h>
 //debug
 #include <stdio.h>
 
@@ -36,7 +37,8 @@ int	check_builtin(t_list *cmd_list)
 	return (0);
 }
 
-int builtin_process(t_env_list *env_list, t_list *cmd_list)
+/* 25줄 */
+int builtin_process(t_env_list *env_list, t_list *cmd_list, int is_child)
 {
 	int		status;
 	char	**argv;
@@ -61,5 +63,7 @@ int builtin_process(t_env_list *env_list, t_list *cmd_list)
 		status = export_cmd(env_list, argv);
 	else if (ft_strncmp("unset", *cmd, max_nonnegative("unset", *cmd)) == 0)
 		status = unset_cmd(env_list, argv);
+	if (is_child)
+		exit(status);
     return (status);
 }

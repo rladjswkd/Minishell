@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/24 20:56:04 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 12:16:48 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,9 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 	// preperation
 	// wildcard
 	// redir()
-	status = redirection(get_simple(parse_list)->redirs);
+	// status = redirection(get_simple(parse_list)->redirs);
 	if (check_builtin(get_simple(parse_list)->args))
-		status = builtin_process(env_list, get_simple(parse_list)->args);
+		status = builtin_process(env_list, get_simple(parse_list)->args, is_child);
 	else
 		status = extern_cmd(env_list, get_simple(parse_list)->args, is_child);
 	return (status);

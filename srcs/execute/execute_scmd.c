@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 15:39:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 12:18:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ int	execute_cmd(char **envp, char **cmd)
 	char	**path_list;
 	char	*path_with_slash;
 	size_t	idx;
+	int		status;
 
 	if (preprocess_path(&path_list, envp) == -1)
 		return (-1);
@@ -143,12 +144,8 @@ int	execute_cmd(char **envp, char **cmd)
 		safe_free(&cmd_path);
 		idx++;
 	}
-	execve(cmd[0], cmd, envp);
+	status = execve(cmd[0], cmd, envp);
 	print_error(SHELL_NAME, cmd[0], NULL, "command not found.");
-    // print_err
-	// free_list(&cmd);
 	free_list(&path_list);
-	exit(127);
-	// free_list(&envp);
-	return (127);
+	exit(status);
 }
