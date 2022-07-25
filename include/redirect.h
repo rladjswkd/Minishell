@@ -19,7 +19,7 @@ typedef enum e_redirection_flag
 	NONE,
 	INPUT,
 	OUTPUT,
-	HERE_DOC,
+	HEREDOC,
 	APPEND,
 }				t_redirection_flag;
 
@@ -33,7 +33,7 @@ typedef enum e_file_flag
 }				t_file_flag;
 
 
-int	redirection(t_list *redir_list);
+int	redirection(t_list *redir_list, int is_child);
 int	append_redirect(char *file_name);
 int	output_redirect(char *file_name);
 int	input_redirect(char *file_name);

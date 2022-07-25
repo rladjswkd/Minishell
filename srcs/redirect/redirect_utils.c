@@ -6,15 +6,17 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 12:04:20 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/25 18:06:33 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <unistd.h>
 #include "linked_list.h"
+#include "heredoc.h"
 #include "lexer.h"
 #include "redirect.h"
+#include "ft_error.h"
 
 static int	safe_dup2(int from, int to)
 {
@@ -24,6 +26,22 @@ static int	safe_dup2(int from, int to)
 		return (-1);
 	return (0);
 }
+
+
+/* -ing 
+int	heredoc_redirect(t_list *heredoc_list)
+{
+	int		file_fd;
+	int		status;
+	t_list	*tmp_node;
+
+	file_fd = ((t_heredoc_node *)(heredoc_list->next->node))->fd;
+	tmp_node = heredoc_list->next->node;
+	heredoc_list->next = tmp_node->next;
+	status = safe_dup2(file_fd, STDIN_FILENO);
+	return (status);
+}
+*/
 
 int	input_redirect(char *file_name)
 {

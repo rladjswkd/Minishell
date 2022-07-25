@@ -12,11 +12,14 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include "linked_list.h"
 #include "lexer.h"
 #include "redirect.h"
 #include "utils.h"
-
+#include "ft_error.h"
 
 /*
 	- redirection check
@@ -30,7 +33,7 @@ static int	get_redirection_flag(t_token *token)
 
 	redir_val = token->data;
 	if (token->types & TOKEN_HEREDOC)
-		return (HERE_DOC);
+		return (HEREDOC);
 	else if (ft_strncmp(">>", redir_val, max_nonnegative(">>", redir_val)) == 0)
 		return (APPEND);
 	else if (ft_strncmp("<", redir_val, max_nonnegative("<", redir_val)) == 0)
@@ -55,26 +58,6 @@ static int	check_redirect_bound(t_token *token)
 }
 */
 
-static int	get_redirect_fd(t_redirection_flag redirection_flag, char *file_name)
-{
-	int	file_fd;
-
-	if (file_name == NULL)
-		return (-1);
-	file_fd = -1;
-	if (redirection_flag == INPUT)
-		file_fd = open(file_name, O_RDONLY, 0644);
-	else if (redirection_flag == OUTPUT)
-		file_fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0644);
-	else if (redirection_flag == HERE_DOC)
-		file_fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0644);
-	else if (redirection_flag == APPEND)
-		file_fd = open(file_name, O_CREAT | O_RDWR, 0644);
-	else
-		ft_putstr_fd("unknown redirection_flag.\n", STDERR_FILENO);
-	return (file_fd);
-}
-
 // bound, 
 static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 {
@@ -89,7 +72,8 @@ static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	if (file_name == NULL )
 		return (-1);
 	redirect_flag = get_redirection_flag(get_token(redirect_node));
-	if (redirect_flag == HERE_DOC || redirect_flag == INPUT)
+	// HEREDOC별도처리
+	if (redirect_flag == HEREDOC || redirect_flag == INPUT)
 		status = input_redirect(file_name);
 	else if (redirect_flag == OUTPUT)
 		status = output_redirect(file_name);
@@ -105,12 +89,11 @@ static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	그러므로 짝수개씩 들어오게 된다.
 	그렇지 않다면 이전에 parse 혹은 expansion에서 걸러준다.
 	- 시작이 redirec type을 가지고 있어야만하며, 그 다음은 꼭 인자들이어야한다.
-*/
-int	redirection(t_list *redir_list)
+*/ 
+int	redirection(t_list *redir_list, int is_child)
 {
 	t_list	*cur_node;
 	t_token	*token;
-	int		fd;
 	int		status;
 
 	cur_node = redir_list;
@@ -122,6 +105,12 @@ int	redirection(t_list *redir_list)
 		{
 			// redirec status는 어떻게 처리할 것인가?
 			status = redirect_bound_process(cur_node, cur_node->next);
+			if (status == -1)
+			{
+				print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, strerror(errno));
+				if (is_child)
+					exit(status);
+			}
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
 				return (status);
 			cur_node = cur_node->next->next; 
@@ -130,9 +119,6 @@ int	redirection(t_list *redir_list)
 			cur_node = cur_node->next; // < file_name_ing"add_filename" 이런 형식으로 되어있는 경우를 대비.
 		else
 			return (-1);//error
-		// printf("token->data : %s\n", token->data);
-		// printf("token->types : %d\n", token->types);
-		// cur_node = cur_node->next;
 	}
 	return (status);
 }
