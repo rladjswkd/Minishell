@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 23:43:54 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 19:26:15 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ static int	is_more_than_one(char **status)
  * exit status를 바꾼다?
  */
 
-void	exit_cmd(char **status)
+void	exit_cmd(char **status, int is_child)
 {
 	int		num_flag;
 	char	exit_status;
@@ -129,7 +129,7 @@ void	exit_cmd(char **status)
 		exit_status = (char)1;
 		return ;
 	}
-	if (num_flag)
+	if (num_flag && is_child == FALSE)
 		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_status);
 }

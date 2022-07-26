@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 01:03:56 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 19:26:18 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int builtin_process(t_env_list *env_list, t_list *cmd_list, int is_child)
     status = 0;
     argv = &(cmd[1]);
     if (ft_strncmp("exit", *cmd, max_nonnegative("exit", *cmd)) == 0)
-		exit_cmd(argv); // exit의 경우 고민 필요 
+		exit_cmd(argv, is_child); // exit의 경우 고민 필요 
 	else if (ft_strncmp("echo", *cmd, max_nonnegative("echo", *cmd)) == 0)
 		status = echo_cmd(argv);
 	else if (ft_strncmp("cd", *cmd, max_nonnegative("cd", *cmd)) == 0)
