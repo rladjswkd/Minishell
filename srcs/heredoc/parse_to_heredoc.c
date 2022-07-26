@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:01:34 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 17:15:47 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/26 20:13:09 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,11 @@ int	parse_to_heredoc(t_list *parse_list, t_list *heredoc_list)
 		{
 			redirect_list = get_simple(parse_node)->redirs;
 			heredoc_input_processing(redirect_list, heredoc_list);
+			parse_node = parse_node->next;
 		}
-		parse_node = parse_list->next;
+		else if (get_command_type(parse_node) == COMPOUND_PIPELINE \
+				|| get_command_type(parse_node) == COMPOUND_SUBSHELL)
+			parse_node = get_compound(parse_node)->list;
 	}
 	return (1);
 }

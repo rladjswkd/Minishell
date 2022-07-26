@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 18:48:29 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/26 20:23:58 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,8 @@ int	main(int argc, char **argv, char **envp)
 		heredoc_list.next = NULL;
 		heredoc_list.node = NULL;
 		parse_to_heredoc(parsed_header.next, &heredoc_list);
-		// print_heredoc_list(&heredoc_list);
-		execute_processing(env_list, parsed_header.next, &heredoc_list, FALSE);
+		print_heredoc_list(&heredoc_list);
+		// execute_processing(env_list, parsed_header.next, &heredoc_list, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)
