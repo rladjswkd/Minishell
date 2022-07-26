@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 12:44:29 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 01:03:56 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,6 @@ int builtin_process(t_env_list *env_list, t_list *cmd_list, int is_child)
 		status = unset_cmd(env_list, argv);
 	if (is_child)
 		exit(status);
+	free_list(&cmd); // go to outside
     return (status);
 }

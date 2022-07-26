@@ -6,12 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 21:00:18 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 11:54:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <readline/readline.h>
 #include "utils.h"
 #include "heredoc.h"
 //계속 return시킬 것 아니라면 exit한다.

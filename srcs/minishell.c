@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 23:30:35 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 11:51:44 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include "builtin.h"
 #include "execute.h"
 #include "lexer.h"
+#include "heredoc.h"
 //debug
 #include <stdlib.h>
 #include "linked_list.h"
@@ -108,6 +109,7 @@ int	main(int argc, char **argv, char **envp)
 	char		*input;
 	t_env_list	*env_list;
 	t_list		parsed_header;
+	t_list		heredoc_list;
 	int			io_backup[2];
 
 	// signal(SIGQUIT, SIG_IGN);
@@ -123,6 +125,7 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
+		parse_to_heredoc(parsed_header.next, &heredoc_list);
 		execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.

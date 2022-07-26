@@ -73,7 +73,7 @@ static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 		return (-1);
 	redirect_flag = get_redirection_flag(get_token(redirect_node));
 	// HEREDOC별도처리
-	if (redirect_flag == HEREDOC || redirect_flag == INPUT)
+	if (redirect_flag == INPUT)
 		status = input_redirect(file_name);
 	else if (redirect_flag == OUTPUT)
 		status = output_redirect(file_name);

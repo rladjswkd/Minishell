@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 23:53:59 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 11:40:39 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,10 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-		status = execute_processing(env_list , compound_list, TRUE);
+	{
+		status = execute_processing(env_list , pipelist_info->cur_node, TRUE);
+		exit((char)status);
+	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
 		status = simple_cmd(env_list, pipelist_info->cur_node, TRUE);
 	else

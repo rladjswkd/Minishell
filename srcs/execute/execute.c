@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 19:31:34 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 11:41:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,12 @@
 #include <sys/wait.h>
 #include "linked_list.h"
 #include "redirect.h"
+#include "heredoc.h"
 #include "execute.h"
 #include "lexer.h"
 #include "env_list.h"
 #include "utils.h"
+//debug
 #include <stdio.h>
 /*
 	- prepair
@@ -28,37 +30,6 @@
 	- redir
 	- builtin check
 	- execve()
-*/
-
-/*
-static void     display_array_list(char **arr_list)
-{
-	int	idx;
-
-	if (arr_list == NULL || *arr_list == NULL)
-		return ;
-	idx = 0;
-	while (arr_list[idx])
-	{
-		printf("arr_list[idx] : %s\n", arr_list[idx]);
-		idx++;
-	}
-}
-
-static void	display_list(t_list	*plist)
-{
-	t_list		*cur_node;
-	t_token		*token;
-
-	cur_node = plist->next;
-	while (cur_node)
-	{
-		token = (t_token *)(cur_node->node);
-		printf("token->str : %s\n", token->data);
-		cur_node = cur_node->next;
-	}
-}
-
 */
 
 /*
@@ -96,22 +67,22 @@ static int	extern_cmd(t_env_list *env_list, t_list *cmd_list, int is_child)
 	}
 	return (status);
 }
-
 /*< a << b >> c >> e << df
 	- 어떤 redir type인지 읽어서 처리한다.
 	- expansion 처리되었다는 가정하에 실행한다.
 */
-
 
 /*
 	- 
 */
 int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 {
-	int	status;
+	int		status;
+	// char	**cmd;
 
 	// preperation()
 	// wildcard()
+	// cmd = list_to_array()
 	status = redirection(get_simple(parse_list)->redirs, is_child);
 	if (check_builtin(get_simple(parse_list)->args))
 		status = builtin_process(env_list, get_simple(parse_list)->args, is_child);
@@ -120,15 +91,6 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 	return (status);
 }
 /**/
-
-
-static int	compound_pipeline_test(t_list *compound_pipe_list)
-{
-	t_compound	*compoumd;
-	
-	get_compound_type(compound_pipe_list);
-	get_compound(compound_pipe_list);
-}
 
 /*
 	- 현재 타입을 비교한다.
@@ -141,6 +103,7 @@ static int	compound_pipeline_test(t_list *compound_pipe_list)
 			- t_simple
 				- SIMPLE_NORMAL
 */
+
 int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	if (env_list == NULL || parse_list == NULL)
