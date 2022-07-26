@@ -6,17 +6,19 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 18:06:33 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 19:09:16 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "linked_list.h"
 #include "heredoc.h"
 #include "lexer.h"
 #include "redirect.h"
 #include "ft_error.h"
+
 
 static int	safe_dup2(int from, int to)
 {
@@ -26,7 +28,6 @@ static int	safe_dup2(int from, int to)
 		return (-1);
 	return (0);
 }
-
 
 /* -ing 
 int	heredoc_redirect(t_list *heredoc_list)
@@ -42,6 +43,24 @@ int	heredoc_redirect(t_list *heredoc_list)
 	return (status);
 }
 */
+int	heredoc_redirect(t_list *heredoc_list)
+{
+	t_heredoc_node	*heredoc_node;
+	t_list			*tmp_node;
+	int				heredoc_tmp_file_fd;
+	int				status;
+
+	if (heredoc_list == NULL || heredoc_list->next == NULL)
+		return (-1);
+	heredoc_node = heredoc_list->next->node;
+	heredoc_tmp_file_fd = heredoc_node->fd;
+	tmp_node = heredoc_list->next;
+	if (heredoc_list && heredoc_list->next)
+		heredoc_list->next = heredoc_list->next->next;
+	free(tmp_node);
+	status = safe_dup2(heredoc_tmp_file_fd, STDIN_FILENO);
+	return (status);
+}
 
 int	input_redirect(char *file_name)
 {

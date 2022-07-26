@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:01:34 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 11:01:50 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 17:15:47 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 static int	heredoc_input_processing(t_list *redirect_list, \
 										t_list *heredoc_list)
 {
-	t_list  *redirect_node;
+	t_list	*redirect_node;
 	t_list	*heredoc_word_node;
 
 	redirect_node = redirect_list;
@@ -39,9 +39,9 @@ static int	heredoc_input_processing(t_list *redirect_list, \
 	return (1);
 }
 
-int parse_to_heredoc(t_list *parse_list, t_list *heredoc_list)
+int	parse_to_heredoc(t_list *parse_list, t_list *heredoc_list)
 {
-	t_list  *parse_node;
+	t_list	*parse_node;
 	t_list	*redirect_list;
 
 	parse_node = parse_list;
@@ -54,6 +54,5 @@ int parse_to_heredoc(t_list *parse_list, t_list *heredoc_list)
 		}
 		parse_node = parse_list->next;
 	}
-	
-	
+	return (1);
 }

@@ -33,9 +33,10 @@ typedef enum e_file_flag
 }				t_file_flag;
 
 
-int	redirection(t_list *redir_list, int is_child);
+int	redirection(t_list *redir_list, t_list *heredoc_list, int is_child);
 int	append_redirect(char *file_name);
 int	output_redirect(char *file_name);
 int	input_redirect(char *file_name);
+int	heredoc_redirect(t_list *heredoc_list);
 
 #endif

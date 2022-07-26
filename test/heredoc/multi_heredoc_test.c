@@ -93,6 +93,7 @@ int	check_tmp_file_name(char *file_name)
 						max_nonnegative(file_name, file->d_name)) == 0)
 			return (1);
 	}
+	
 	closedir(dir_ptr);
 	return (0);
 }
@@ -332,34 +333,13 @@ static char *get_tmp_file_name(void)
 	return (file_name);
 }
 
-static void	input_to_tmp_file(char *file_name, int tmp_file_fd, char *heredoc_word)
-{
-	char	*read_str;
-
-	while (1)
-	{
-		read_str = readline("$>");
-		if (ft_strncmp(read_str, heredoc_word, \
-			max_nonnegative(read_str, heredoc_word)) == 0)
-		{
-			safe_free(&read_str);
-			break ;
-		}
-		if (write(tmp_file_fd, read_str, ft_strlen(read_str)) < 0)
-			exit(1);
-		safe_free(&read_str);
-	}
-	close(tmp_file_fd);
-}
-
 static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)
 {
 	unlink(file_name);
 	safe_free(&file_name);
 	safe_free(&read_str);
-	if (close(tmp_file_fd) < 0)
-		return (-1);
-	return (1);
+	close(tmp_file_fd);
+	return (-1);
 	//계속 return시킬 것 아니라면 exit한다.
 }
 
@@ -378,8 +358,9 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 
 	while (1)
 	{
+		printf("error code before readline : %s\n", strerror(errno));
 		read_str = readline("$>");
-		// printf("read_str : %zu\n", ft_strlen(read_str));
+		printf("error code after readline : %s\n", strerror(errno));
 		if (ft_strncmp(read_str, heredoc_word, \
 			max_nonnegative(read_str, heredoc_word)) == 0)
 		{
@@ -393,11 +374,15 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 			return (-1);
 		}
 		safe_free(&read_str);
+		printf("error code before write : %s\n", strerror(errno));
 		if (write(tmp_file_fd, with_newline, ft_strlen(with_newline)) < 0)
 			return (free_and_close(file_name, tmp_file_fd, read_str));
+		printf("error code after write : %s\n", strerror(errno));
 		safe_free(&with_newline);
 	}
+	printf("error code before close(tmp_file_fd) : %s\n", strerror(errno));
 	close(tmp_file_fd);
+	printf("error code after close(tmp_file_fd) : %s\n", strerror(errno));
 	return (1);
 }
 
@@ -425,6 +410,7 @@ static int	get_tmp_file_fd(char *file_name)
 {
 	int	open_fd;
 
+
 	open_fd = file_open(FILE_READ, file_name);
 	printf("open_fd : %d\n", open_fd);
 	if (open_fd < 0)
@@ -441,12 +427,16 @@ static int	heredoc_routine(char *heredoc_word)
 	char	*file_name;
 	char	buf[4242 + 1];
 
+	printf("error code before create_heredoc_tmp_file : %s\n", strerror(errno));
 	tmp_file_fd = create_heredoc_tmp_file(&file_name);
+	printf("error code after create_heredoc_tmp_file : %s\n", strerror(errno));
 	if (tmp_file_fd < 0)
 		return (-1);
 	if (get_readline(file_name, tmp_file_fd, heredoc_word) < 0)
 		return (-1);
+	printf("error code after get_readline(): %s\n", strerror(errno));
 	tmp_file_fd = get_tmp_file_fd(file_name);
+	printf("error code after get_tmp_file_fd: %s\n", strerror(errno));
 	if (tmp_file_fd < 0)
 		return (-1);
 	return (tmp_file_fd);
@@ -552,6 +542,7 @@ static void	print_heredoc_list(t_list *list)
 	{
 		heredoc_node = (t_heredoc_node *)list->node;
 		printf("\n=========================\n");
+		printf("error code : %s\n", strerror(errno));
 		printf("heredoc_node->fd : %d\n", heredoc_node->fd);
 		len = read(heredoc_node->fd, buf, 4242);
 		buf[len] = '\0';
@@ -562,7 +553,6 @@ static void	print_heredoc_list(t_list *list)
 	}
 }
 
-
 /*
 - 제약조건
 	- header node가 없다.
@@ -571,7 +561,6 @@ static void	print_heredoc_list(t_list *list)
 	- 첫 노드로 항상 비워두고 시작노드로 쓴다.
 
 */
-
 
 /*
 	- 현재 list에 node에 담고자하는 구조체를 캐스팅해서 가리키게한다.
@@ -590,8 +579,8 @@ int	main(int argc, char **argv)
 	int				idx;
 	t_list			common_list;
 	// create_heredoc_tmp_file(&argv[1]);
-	// printf("error code : %s\n", strerror(errno));
-		return (1);
+	printf("error code : %s\n", strerror(errno));
+		// return (1);
 	idx = 1;
 	while (idx < argc)
 	{

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 11:57:18 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 17:21:04 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,21 @@ static int	check_tmp_file_name(char *file_name)
 	if (getcwd(buf, sizeof(buf)) == NULL)
 		return (1);
 	dir_ptr = opendir(buf);
-	if(dir_ptr == NULL)
+	if (dir_ptr == NULL)
 		return (-1);
 	file = readdir(dir_ptr);
-	while(file != NULL) 
+	while (file != NULL)
 	{
 		if (ft_strncmp(file_name, file->d_name, \
 						max_nonnegative(file_name, file->d_name)) == 0)
 			return (1);
+		file = readdir(dir_ptr);
 	}
 	closedir(dir_ptr);
 	return (0);
 }
 
-static char *get_tmp_file_name(void)
+static char	*get_tmp_file_name(void)
 {
 	char	*file_name;
 	char	*itoa_num;
@@ -102,7 +103,7 @@ int	heredoc_fd_to_list(t_list *list, int fd)
 		return (-1);
 	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
 	if (heredoc_node == NULL)
-		return (-1);
+		return (-1); // heredoc_list free!!!
 	heredoc_node->fd = fd;
 	cur_node->node = (t_heredoc_node *)heredoc_node;
 	return (0);

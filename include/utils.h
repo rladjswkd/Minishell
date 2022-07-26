@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/19 07:55:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 14:58:02 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int		ft_is_alpha(int ch);
 int		ft_is_digit(int ch);
 
 size_t	ft_strlen(const char *s);
+char	*ft_itoa(int n);
 
 void	ft_putstr_fd(const char *s, int fd);
 void	print_newline_fd(int fd);
@@ -39,10 +40,10 @@ char	*ft_strjoin(char const *s1, char const *s2);
 
 size_t	max_nonnegative(char const *s1, char const *s2);
 int		split_key_value(char *envp_element, char **key, char **value);
-int	    free_key_value(char **key, char **value);
+int     free_key_value(char **key, char **value);
 
 int		check_valid_name(char *str);
-int	    *get_exit_status();
+int     *get_exit_status();
 void	safe_free(char	**char_pptr);
 
 #endif

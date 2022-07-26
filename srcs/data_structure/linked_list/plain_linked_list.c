@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 19:52:27 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 17:55:03 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,16 @@ void	free_linked_list(t_list **list)
 		free_sub_node(&removed_node);
 		cur_node = cur_node->next;
 	}
+}
+
+t_list	*create_list(void)
+{
+	t_list	*new_list;
+
+	new_list = (t_list *)malloc(sizeof(t_list));
+	if (new_list == NULL)
+		return (NULL);
+	new_list->next = NULL;
+	new_list->node = NULL;
+	return (new_list);
 }

@@ -6,13 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 11:54:29 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/26 18:22:16 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdio.h>  // readline이전에 stdio를 include해야한다 왜?
 #include <readline/readline.h>
 #include "utils.h"
 #include "heredoc.h"

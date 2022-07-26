@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/07/21 15:34:41 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/26 14:56:15 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,6 @@ int					delete_linked_list(t_LinkedList **PLinkedList);
 int					display_linked_list(t_LinkedList *pLinkedList);
 
 void				free_linked_list(t_list **list);
+t_list				*create_list(void);
 
 #endif

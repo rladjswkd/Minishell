@@ -15,6 +15,7 @@
 #include <sys/errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include "heredoc.h"
 #include "linked_list.h"
 #include "lexer.h"
 #include "redirect.h"
@@ -43,23 +44,8 @@ static int	get_redirection_flag(t_token *token)
 	return (-1);
 }
 
-/*
-static int	check_redirect_bound(t_token *token)
-{
-	if (token == NULL)
-		return (-1);
-	if (token->types & TOKEN_HEREDOC
-		|| ft_strncmp("<" ,token->data , max_nonnegative("<" , token->data)))
-		return (INBOUND);
-	else if (ft_strncmp(">>" ,token->data , max_nonnegative(">>" , token->data))
-		|| ft_strncmp(">" ,token->data , max_nonnegative(">" , token->data)))
-		return (OUTBOUND);
-	return (-1);
-}
-*/
-
-// bound, 
-static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
+static int	redirect_bound_process(t_list *redirect_node, t_list *data_node, \
+									t_list *heredoc_list)
 {
 	int		redirect_flag;
 	char	*file_name;
@@ -72,8 +58,9 @@ static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	if (file_name == NULL )
 		return (-1);
 	redirect_flag = get_redirection_flag(get_token(redirect_node));
-	// HEREDOC별도처리
-	if (redirect_flag == INPUT)
+	if (redirect_flag == HEREDOC)
+		status = heredoc_redirect(heredoc_list);
+	else if (redirect_flag == INPUT)
 		status = input_redirect(file_name);
 	else if (redirect_flag == OUTPUT)
 		status = output_redirect(file_name);
@@ -90,7 +77,7 @@ static int redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	그렇지 않다면 이전에 parse 혹은 expansion에서 걸러준다.
 	- 시작이 redirec type을 가지고 있어야만하며, 그 다음은 꼭 인자들이어야한다.
 */ 
-int	redirection(t_list *redir_list, int is_child)
+int	redirection(t_list *redir_list, t_list *heredoc_list, int is_child)
 {
 	t_list	*cur_node;
 	t_token	*token;
@@ -104,7 +91,7 @@ int	redirection(t_list *redir_list, int is_child)
 		if (token->types & TOKEN_REDIR && cur_node->next)
 		{
 			// redirec status는 어떻게 처리할 것인가?
-			status = redirect_bound_process(cur_node, cur_node->next);
+			status = redirect_bound_process(cur_node, cur_node->next, heredoc_list);
 			if (status == -1)
 			{
 				print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, strerror(errno));

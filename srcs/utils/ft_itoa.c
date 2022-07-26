@@ -6,16 +6,16 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 16:38:03 by jim               #+#    #+#             */
-/*   Updated: 2022/06/14 16:54:40 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/26 14:57:33 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "utils.h"
+#include <stdlib.h>
 
 size_t	count_digits(int n)
 {
-	size_t	expo;
+	size_t	expo;		
 
 	expo = 0;
 	if (n < 0)
