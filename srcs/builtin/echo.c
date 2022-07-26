@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 19:16:26 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/26 20:17:48 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,13 @@ int	echo_cmd(char **argument)
 
 	newline_flag = TRUE;
 	idx = 0;
-	while (is_n_option(argument[idx]) == TRUE)
+	while (argument && argument[idx] && is_n_option(argument[idx]) == TRUE)
 	{
 		newline_flag = FALSE;
 		*(get_exit_status()) = 1;
 		idx++;
 	}
-	while (argument[idx])
+	while (argument && argument[idx])
 	{
 		ft_putstr_fd(argument[idx], STDOUT_FILENO);
 		if (argument[idx + 1])
