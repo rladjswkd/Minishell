@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 18:45:50 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/27 13:32:55 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *heredoc_list);
 
 // parameter수정필요
-static int	parent_process(t_fd_info *fd_info, t_process_info *process_info, \
-						t_list *start_node, t_list *cur_node);
+static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
+							t_list *cur_node);
 // t_pipe_info;
 // cat a > b > c
 /*
@@ -86,11 +86,29 @@ static void	switch_flag(int *flag)
 		*flag = 1;
 }
 
+t_process_info_node	*get_process_info_node(t_process_info_list *process_info_list)
+{
+	t_process_info_node	*process_info_node;
+
+	if (process_info_list == NULL || process_info_list->pid_list == NULL
+		|| process_info_list->pid_list->next == NULL)
+		return (NULL);
+	while (process_info_list->pid_list)
+		process_info_list->pid_list = process_info_list->pid_list->next;
+	process_info_node = process_info_list->pid_list->node;
+	return (process_info_node);
+}
+
+static int	wait_processing(t_process_info_list *process_info_list)
+{
+	process_info_list
+}
+
 int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *heredoc_list)
 {
-	t_pipelist_info		pipelist_info;
-	t_fd_info			fd_info;
-	t_process_info		process_info;
+	t_pipelist_info			pipelist_info;
+	t_fd_info				fd_info;
+	t_process_info_list		process_info_list;
 
 	fd_info.spin_flag = 1;
 	pipelist_info.start_node = pipeline_list;
@@ -98,20 +116,18 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *he
 	while (pipelist_info.cur_node)
 	{
 		if (is_exist_next_pipe(pipelist_info.cur_node ))
-		{
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
-		}
-		process_info.pid = fork();
-		if (process_info.pid < 0)
+		get_process_info_node(&process_info_list)-> pid = fork();
+		if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid < 0)
 			return (-1);
-		else if (process_info.pid == 0)
+		else if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid == 0)
 			return (child_process(env_list, &fd_info, &pipelist_info, heredoc_list));
-		else
-			parent_process(&fd_info, &process_info, pipeline_list, pipelist_info.cur_node);
-		switch_flag(&fd_info.spin_flag);
+		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
+		switch_flag(&fd_info.spin_flag);
 	}
+	wait_processing(&process_info_list);
 	return (0);
 }
 
@@ -174,8 +190,8 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	parent process가 child보다 늦게 실행되는가?
 */
 //int fd[2][2], int spin_flag
-static int	parent_process(t_fd_info *fd_info, t_process_info *process_info, \
-						t_list *start_node, t_list *cur_node)
+static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
+							t_list *cur_node)
 {
 	if (is_exist_prev_pipe(start_node, cur_node))
 		if (close(fd_info->fd[fd_info->spin_flag % 2][READ_END]) < 0)
@@ -183,6 +199,5 @@ static int	parent_process(t_fd_info *fd_info, t_process_info *process_info, \
 	if (is_exist_next_pipe(cur_node))
 		if (close(fd_info->fd[(fd_info->spin_flag + 1) % 2][WRITE_END]) < 0)
 			return (-1);
-	waitpid(process_info->pid, &(process_info->status), 0);
 	return (1);
 }

@@ -98,7 +98,7 @@ LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $< -o $@
+	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
 # $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
@@ -106,7 +106,7 @@ UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
-	$(CC) $(LINKING_FLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(LDLIBS)
 
 # $(CC) $(LINKING_FLAGS) $^ -o $@
 # $(CC) $^ -o $@ $(LDLIBS)
