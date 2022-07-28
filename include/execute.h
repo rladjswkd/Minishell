@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 18:43:29 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 16:07:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@
 #include "linked_list.h"
 #include "env_list.h"
 
-int		execute_processing(t_env_list *env_list, t_list *parse_list, \
-							t_list *heredoc_list, int is_child);
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *heredoc_list);
+int		execute_processing(t_env_list *env_list, t_list *parse_list, int is_child);
+int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list);
 int		execute_cmd(char **envp, char **cmd);
-int		simple_cmd(t_env_list *env_list, t_list *parse_list, t_list *heredoc_list, int is_child);
+int		simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child);
 
 char	**list_to_array(t_list *env_list);
 char	**env_list_to_array(t_env_list *env_list);

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/27 12:48:53 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 16:11:41 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,33 +94,11 @@ static int	reset_in_out_fd(int io_backup[2])
 	return (0);
 }
 
-static void	print_heredoc_list(t_list *list)
-{
-	ssize_t			len;
-	t_heredoc_node	*heredoc_node;
-	char			buf[4242];
-
-	list = list->next;
-	while (list)
-	{
-		heredoc_node = (t_heredoc_node *)list->node;
-		printf("\n=========================\n");
-		printf("heredoc_node->fd : %d\n", heredoc_node->fd);
-		len = read(heredoc_node->fd, buf, 4242);
-		buf[len] = '\0';
-		printf("read size : %ld\n", len);
-		printf("error code : %s\n", strerror(errno));
-		printf("heredoc : \n%s", buf);
-		list = list->next;
-	}
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_env_list	*env_list;
 	t_list		parsed_header;
-	t_list		heredoc_list;
 	int			io_backup[2];
 
 	// signal(SIGQUIT, SIG_IGN);
@@ -137,11 +115,9 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		heredoc_list.next = NULL;
-		heredoc_list.node = NULL;
-		parse_to_heredoc(parsed_header.next, &heredoc_list);
-		// print_heredoc_list(&heredoc_list);
-		execute_processing(env_list, parsed_header.next, &heredoc_list, FALSE);
+		if (parse_to_heredoc(parsed_header.next) < 0)
+			continue ;
+		execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)

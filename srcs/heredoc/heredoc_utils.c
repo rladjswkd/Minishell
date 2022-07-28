@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 17:21:04 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 16:18:01 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int	heredoc_fd_to_list(t_list *list, int fd)
 		return (-1);
 	heredoc_node = (t_heredoc_node *)malloc(sizeof(t_heredoc_node));
 	if (heredoc_node == NULL)
-		return (-1); // heredoc_list free!!!
+		return (-1); 
 	heredoc_node->fd = fd;
 	cur_node->node = (t_heredoc_node *)heredoc_node;
 	return (0);

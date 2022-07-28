@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 19:09:16 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 16:23:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,36 +29,13 @@ static int	safe_dup2(int from, int to)
 	return (0);
 }
 
-/* -ing 
-int	heredoc_redirect(t_list *heredoc_list)
+int	heredoc_redirect(t_token *token)
 {
-	int		file_fd;
-	int		status;
-	t_list	*tmp_node;
+	int	status;
 
-	file_fd = ((t_heredoc_node *)(heredoc_list->next->node))->fd;
-	tmp_node = heredoc_list->next->node;
-	heredoc_list->next = tmp_node->next;
-	status = safe_dup2(file_fd, STDIN_FILENO);
-	return (status);
-}
-*/
-int	heredoc_redirect(t_list *heredoc_list)
-{
-	t_heredoc_node	*heredoc_node;
-	t_list			*tmp_node;
-	int				heredoc_tmp_file_fd;
-	int				status;
-
-	if (heredoc_list == NULL || heredoc_list->next == NULL)
+	if (token == NULL || token->heredoc_fd < 0)
 		return (-1);
-	heredoc_node = heredoc_list->next->node;
-	heredoc_tmp_file_fd = heredoc_node->fd;
-	tmp_node = heredoc_list->next;
-	if (heredoc_list && heredoc_list->next)
-		heredoc_list->next = heredoc_list->next->next;
-	free(tmp_node);
-	status = safe_dup2(heredoc_tmp_file_fd, STDIN_FILENO);
+	status = safe_dup2(token->heredoc_fd, STDIN_FILENO);
 	return (status);
 }
 

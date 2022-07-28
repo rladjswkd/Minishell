@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/27 13:32:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 16:09:02 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "ft_error.h"
 
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info, t_list *heredoc_list);
+							t_pipelist_info *pipelist_info);
 
 // parameter수정필요
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
@@ -99,16 +99,18 @@ t_process_info_node	*get_process_info_node(t_process_info_list *process_info_lis
 	return (process_info_node);
 }
 
-static int	wait_processing(t_process_info_list *process_info_list)
-{
-	process_info_list
-}
+// static int	wait_processing(t_process_info_list *process_info_list)
+// {
+// 	process_info_list
+// }
 
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *heredoc_list)
+int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 {
 	t_pipelist_info			pipelist_info;
 	t_fd_info				fd_info;
 	t_process_info_list		process_info_list;
+	int pid;
+	int status;
 
 	fd_info.spin_flag = 1;
 	pipelist_info.start_node = pipeline_list;
@@ -118,16 +120,22 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *he
 		if (is_exist_next_pipe(pipelist_info.cur_node ))
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
-		get_process_info_node(&process_info_list)-> pid = fork();
-		if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid < 0)
+		// get_process_info_node(&process_info_list)->pid = fork();
+		pid = fork();
+		// if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid < 0)
+		if (pid < 0)
 			return (-1);
-		else if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid == 0)
-			return (child_process(env_list, &fd_info, &pipelist_info, heredoc_list));
+		else if (pid == 0)
+			return (child_process(env_list, &fd_info, &pipelist_info));
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
 	}
-	wait_processing(&process_info_list);
+	// wait_processing(&process_info_list);
+	// waitpid(-1, NULL, 0);
+	// 마지막 상태만 기록하면 되므로 get_status로 처리한다?
+	while (wait(&status) != -1)
+		*(get_exit_status()) = status;
 	return (0);
 }
 
@@ -152,8 +160,7 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *he
 	- exit_status
 */
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info, \
-							t_list *heredoc_list)
+							t_pipelist_info *pipelist_info)
 {
 	t_list	*compound_list;
 	int		status;
@@ -166,12 +173,11 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
 	{
-		status = execute_processing(env_list , pipelist_info->cur_node, \
-									heredoc_list,TRUE);
+		status = execute_processing(env_list , pipelist_info->cur_node, TRUE);
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
-		status = simple_cmd(env_list, pipelist_info->cur_node, heredoc_list, TRUE);
+		status = simple_cmd(env_list, pipelist_info->cur_node, TRUE);
 	else
 	{
 		status = 2;

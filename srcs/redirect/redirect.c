@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 20:03:13 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 16:34:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,7 @@ static int	get_redirection_flag(t_token *token)
 	return (-1);
 }
 
-static int	redirect_bound_process(t_list *redirect_node, t_list *data_node, \
-									t_list *heredoc_list)
+static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 {
 	int		redirect_flag;
 	char	*file_name;
@@ -59,7 +58,7 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node, \
 		return (-1);
 	redirect_flag = get_redirection_flag(get_token(redirect_node));
 	if (redirect_flag == HEREDOC)
-		status = heredoc_redirect(heredoc_list);
+		status = heredoc_redirect(get_token(data_node));
 	else if (redirect_flag == INPUT)
 		status = input_redirect(file_name);
 	else if (redirect_flag == OUTPUT)
@@ -77,7 +76,7 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node, \
 	그렇지 않다면 이전에 parse 혹은 expansion에서 걸러준다.
 	- 시작이 redirec type을 가지고 있어야만하며, 그 다음은 꼭 인자들이어야한다.
 */ 
-int	redirection(t_list *redir_list, t_list *heredoc_list, int is_child)
+int	redirection(t_list *redir_list, int is_child)
 {
 	t_list	*cur_node;
 	t_token	*token;
@@ -91,7 +90,7 @@ int	redirection(t_list *redir_list, t_list *heredoc_list, int is_child)
 		if (token->types & TOKEN_REDIR && cur_node->next)
 		{
 			// redirec status는 어떻게 처리할 것인가?
-			status = redirect_bound_process(cur_node, cur_node->next, heredoc_list);
+			status = redirect_bound_process(cur_node, cur_node->next);
 			if (status == -1)
 			{
 				print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, strerror(errno));

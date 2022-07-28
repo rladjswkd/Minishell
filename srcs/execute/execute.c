@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 18:43:42 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 16:07:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static int	extern_cmd(t_env_list *env_list, t_list *cmd_list, int is_child)
 /*
 	- 
 */
-int	simple_cmd(t_env_list *env_list, t_list *parse_list, t_list *heredoc_list, int is_child)
+int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	int		status;
 	// char	**cmd;
@@ -83,7 +83,7 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, t_list *heredoc_list, i
 	// preperation()
 	// wildcard()
 	// cmd = list_to_array()
-	status = redirection(get_simple(parse_list)->redirs, heredoc_list, is_child);
+	status = redirection(get_simple(parse_list)->redirs, is_child);
 	if (check_builtin(get_simple(parse_list)->args))
 		status = builtin_process(env_list, get_simple(parse_list)->args, is_child);
 	else
@@ -104,18 +104,18 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, t_list *heredoc_list, i
 				- SIMPLE_NORMAL
 */
 
-int	execute_processing(t_env_list *env_list, t_list *parse_list, t_list *heredoc_list, int is_child)
+int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	if (env_list == NULL || parse_list == NULL)
 		return (-1);
 	// print_command_content(parse_list);
 	// get_command_type(parse_list);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
-		simple_cmd(env_list, parse_list, heredoc_list, is_child);
+		simple_cmd(env_list, parse_list, is_child);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-		pipeline_processing(env_list, get_compound(parse_list)->list, heredoc_list);
+		pipeline_processing(env_list, get_compound(parse_list)->list);
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
-		execute_processing(env_list, get_compound(parse_list)->list, heredoc_list, is_child);
+		execute_processing(env_list, get_compound(parse_list)->list, is_child);
 	// 꼭 홀수개씩 오는가? 그렇지 않으면 어떻게 되는가?
 	// 짝수개가 들어와도 처리 가능하게 할 수 있는가?
 	// if (parse_list->next)
