@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 16:34:29 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 23:27:42 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,15 +79,13 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 int	redirection(t_list *redir_list, int is_child)
 {
 	t_list	*cur_node;
-	t_token	*token;
 	int		status;
 
 	cur_node = redir_list;
 	status = 0;
 	while (cur_node)
 	{
-		token = get_token(cur_node);
-		if (token->types & TOKEN_REDIR && cur_node->next)
+		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
 		{
 			// redirec status는 어떻게 처리할 것인가?
 			status = redirect_bound_process(cur_node, cur_node->next);

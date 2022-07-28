@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:01:34 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 17:36:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 23:42:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,6 @@ static int	heredoc_input_processing(t_list **redirect_list)
 	t_list	*redirect_node;
 	t_list	*heredoc_word_node;
 	int		heredoc_fd;
-	// test
-	int    read_size;
-	char   buf[1152];
 
 	redirect_node = *redirect_list;
 	while (redirect_node && redirect_node->next)
