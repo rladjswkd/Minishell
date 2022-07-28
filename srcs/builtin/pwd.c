@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/07/25 11:50:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 19:26:54 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,8 @@ int	pwd_cmd(void)
 	{
 		ft_putstr_fd(buf, STDOUT_FILENO);
 		ft_putstr_fd("\n", 1);
-		*(get_exit_status()) = 0;
 	}
 	else
-		error_handler("pwd", NULL, strerror(errno), errno);
-	return (errno);
+		return (error_handler("pwd", NULL, strerror(errno), errno));
+	return (0);
 }

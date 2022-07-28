@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 20:17:48 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 19:24:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ int	echo_cmd(char **argument)
 	while (argument && argument[idx] && is_n_option(argument[idx]) == TRUE)
 	{
 		newline_flag = FALSE;
-		*(get_exit_status()) = 1;
 		idx++;
 	}
 	while (argument && argument[idx])

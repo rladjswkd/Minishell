@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/16 23:49:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 19:26:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,12 +113,12 @@ int	cd_cmd(char **path, t_env_list *env_list)
 		cmd_path = *path;
 	ret = chdir(cmd_path);
 	if (ret < 0)
-		error_handler("cd", cmd_path, strerror(errno), errno);
+		return (error_handler("cd", cmd_path, strerror(errno), errno));
 	else if (getcwd(path_buf, sizeof(path_buf)) == NULL)
-		error_handler(NULL, NULL, strerror(errno), errno);
+		return (error_handler(NULL, NULL, strerror(errno), errno));
 	cur_pwd = ft_strdup(path_buf);
 	if (cur_pwd == NULL)
-		error_handler(NULL, NULL, strerror(errno), errno);
+		return (error_handler(NULL, NULL, strerror(errno), errno));
 	update_path_env(env_list, be_old_pwd, cur_pwd);
 	return (ret);
 }

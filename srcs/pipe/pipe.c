@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 16:09:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 18:16:40 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,19 +86,6 @@ static void	switch_flag(int *flag)
 		*flag = 1;
 }
 
-t_process_info_node	*get_process_info_node(t_process_info_list *process_info_list)
-{
-	t_process_info_node	*process_info_node;
-
-	if (process_info_list == NULL || process_info_list->pid_list == NULL
-		|| process_info_list->pid_list->next == NULL)
-		return (NULL);
-	while (process_info_list->pid_list)
-		process_info_list->pid_list = process_info_list->pid_list->next;
-	process_info_node = process_info_list->pid_list->node;
-	return (process_info_node);
-}
-
 // static int	wait_processing(t_process_info_list *process_info_list)
 // {
 // 	process_info_list
@@ -106,11 +93,9 @@ t_process_info_node	*get_process_info_node(t_process_info_list *process_info_lis
 
 int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 {
-	t_pipelist_info			pipelist_info;
-	t_fd_info				fd_info;
-	t_process_info_list		process_info_list;
-	int pid;
-	int status;
+	t_pipelist_info		pipelist_info;
+	t_fd_info			fd_info;
+	t_process_info		process_info;
 
 	fd_info.spin_flag = 1;
 	pipelist_info.start_node = pipeline_list;
@@ -120,12 +105,10 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 		if (is_exist_next_pipe(pipelist_info.cur_node ))
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
-		// get_process_info_node(&process_info_list)->pid = fork();
-		pid = fork();
-		// if (((t_process_info_node *)(process_info_list.pid_list->next->node))->pid < 0)
-		if (pid < 0)
+		process_info.pid = fork();
+		if (process_info.pid < 0)
 			return (-1);
-		else if (pid == 0)
+		else if (process_info.pid == 0)
 			return (child_process(env_list, &fd_info, &pipelist_info));
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
@@ -134,9 +117,9 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 	// wait_processing(&process_info_list);
 	// waitpid(-1, NULL, 0);
 	// 마지막 상태만 기록하면 되므로 get_status로 처리한다?
-	while (wait(&status) != -1)
-		*(get_exit_status()) = status;
-	return (0);
+	while (wait(&process_info.status) != -1)
+		*(get_exit_status()) = process_info.status;
+	return (*get_exit_status());
 }
 
 

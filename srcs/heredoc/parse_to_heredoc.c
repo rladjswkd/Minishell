@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:01:34 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 16:33:21 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 17:36:55 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,18 @@
 #include "lexer.h"
 #include "redirect.h"
 #include "heredoc.h"
+//debug
+#include <stdio.h>
+#include <unistd.h>
 
 static int	heredoc_input_processing(t_list **redirect_list)
 {
 	t_list	*redirect_node;
 	t_list	*heredoc_word_node;
 	int		heredoc_fd;
+	// test
+	int    read_size;
+	char   buf[1152];
 
 	redirect_node = *redirect_list;
 	while (redirect_node && redirect_node->next)
@@ -32,6 +38,31 @@ static int	heredoc_input_processing(t_list **redirect_list)
 			if (heredoc_fd < 0)
 				return (-1);
 			get_token(heredoc_word_node)->heredoc_fd = heredoc_fd;
+		}
+		redirect_node = redirect_node->next->next;
+	}
+	if (redirect_node)
+		return (-1);
+	return (1);
+}
+
+static int	test_heredoc_fd(t_list **redirect_list)
+{
+	t_list	*redirect_node;
+	t_list	*heredoc_word_node;
+	// test
+	int    read_size;
+	char   buf[1152];
+
+	redirect_node = *redirect_list;
+	while (redirect_node && redirect_node->next)
+	{
+		if (get_token(redirect_node)->types & TOKEN_HEREDOC)
+		{
+			heredoc_word_node = redirect_node->next;
+			// get_token(heredoc_word_node)->heredoc_fd = heredoc_fd;
+			read(get_token(heredoc_word_node)->heredoc_fd, buf, 1152);
+			printf("buf in test_heredoc_hd() : %s\n", buf);
 		}
 		redirect_node = redirect_node->next->next;
 	}

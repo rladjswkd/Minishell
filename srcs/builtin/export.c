@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/22 15:09:11 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 19:28:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,16 +99,13 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 int	export_cmd(t_env_list *env_list, char **argument)
 {
 	if (env_list == NULL)
-	{
-		print_error(SHELL_NAME, NULL, NULL, "env list is NULL");
-		return (2);
-	}
+		error_handler("export", NULL, "env list is NULL", 2);
 	else if (*argument == NULL)
 		print_export_list(env_list);
 	else
 	{
 		if (add_to_export_list(env_list, argument) < 0)
-			return (2);// error_msg();
+			error_handler("export", NULL, "fail to add env list", 2);
 	}
 	return (0);
 }

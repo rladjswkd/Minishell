@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:06 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 15:56:55 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 19:27:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	env_cmd(t_env_list	*env_list, char **argument)
 	t_env_node	*cur_node;
 
 	if (env_list == NULL)
-		error_handler("env", NULL, "env list is NULL", 1);
+		return (error_handler("env", NULL, "env list is NULL", 2));
 	cur_node = env_list->header_node;
 	while (cur_node)
 	{

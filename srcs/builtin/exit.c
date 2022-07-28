@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 19:26:15 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/28 19:21:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void	exit_cmd(char **status, int is_child)
 	if (*status)
 		exit_status = (char)ft_atol(*status, &num_flag);
 	if (*status == NULL)
-		exit_status = (char)0;
+		exit_status = (char)*get_exit_status();
 	else if (num_flag == 0) 
 	{
 		print_error(SHELL_NAME, "exit", *status, \

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 15:42:23 by jim               #+#    #+#             */
-/*   Updated: 2022/07/06 19:42:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/28 19:25:19 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ void	print_error(char *shell_name, char *cmd, char *argv, char *msg)
 	ft_putstr_fd("\n", STDERR_FILENO);
 }
 
-void	error_handler(char *cmd, char *argv, char *msg, char exit_status)
+int	error_handler(char *cmd, char *argv, char *msg, char exit_status)
 {
 	print_error(SHELL_NAME, cmd, argv, msg);
-	*(get_exit_status()) = exit_status;
+	return (exit_status);
 }
