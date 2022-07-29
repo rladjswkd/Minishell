@@ -48,7 +48,6 @@ REDIRECT_SRCS = $(addprefix $(SRCS_DIR)/$(REDIRECT_DIR)/, \
 HEREDOC_SRCS = $(addprefix $(SRCS_DIR)/$(HEREDOC_DIR)/, \
 		heredoc.c	\
 		heredoc_utils.c \
-		parse_to_heredoc.c \
 ) 
 
 PIPE_SRCS = $(addprefix $(SRCS_DIR)/$(PIPE_DIR)/, \

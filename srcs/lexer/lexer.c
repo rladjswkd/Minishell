@@ -5,6 +5,7 @@
 #include <errno.h> // errno codes
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "heredoc.h"
 void	free_compound(t_list *);
 void	free_command(t_list *);
 void	print_token_content(t_list *, char *); //remove
@@ -80,7 +81,7 @@ int	extract_quote(char *str, int *types)
 		len++;
 	if (!(*str))
 		return (-1);
-	if (str[len] && !is_delimiter(&(str[len])))
+	if (*(str + 1) && !is_delimiter(str + 1))
 		*types |= TOKEN_CONCAT;
 	return (len + 1);
 }
@@ -386,13 +387,23 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 {
 	t_simple	*simple;
 	t_list		*next;
+	int			heredoc_fd;
 
 	while (find_simple_type(*list) & SIMPLE_NORMAL)
 	{
 		simple = get_simple(parsed);
 		next = (*list)->next;
 		if (get_token_type(*list) & (TOKEN_REDIR | TOKEN_REDIRARG))
+		{
+			if (get_token_type(*list) & TOKEN_HEREDOC)
+			{
+				heredoc_fd = heredoc_routine(get_token((*list)->next)->data);
+				if (heredoc_fd < 0)
+					return ;
+				get_token((*list)->next)->heredoc_fd = heredoc_fd;
+			}
 			append_token(&(simple->redirs), *list);
+		}
 		else
 			append_token(&(simple->args), *list);
 		(*list)->next = 0;
