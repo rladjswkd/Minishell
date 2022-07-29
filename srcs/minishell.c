@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 17:40:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/29 11:47:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,30 +41,6 @@ void	handler(int signum)
 }
 */
 
-// for display, will be removed
-static void	display_env_list(t_env_list	*env_list)
-{
-	t_env_node	*cur_node;
-
-	cur_node = env_list->header_node;
-	while (cur_node)
-	{
-		printf("cur_node.key : %s\n", cur_node->key);
-		printf("cur_node.value : %s\n", cur_node->value);
-		cur_node = cur_node->next_node;
-	}
-}
-
-static int	add_node(t_list **new_node)
-{
-	*new_node = (t_list *)malloc(sizeof(t_list));
-	if (*new_node == NULL)
-		return (-1);
-	(*new_node)->next = NULL;
-	(*new_node)->node = NULL;
-	return (1);
-}
-
 static int	preprocess(char *input, t_list *parsed_header)
 {
 	t_list		token_header;
@@ -83,7 +59,20 @@ static int	preprocess(char *input, t_list *parsed_header)
 	}
 	// heredoc_processing();
 	return (0);
-		
+}
+
+// for display, will be removed
+static void	display_env_list(t_env_list	*env_list)
+{
+	t_env_node	*cur_node;
+
+	cur_node = env_list->header_node;
+	while (cur_node)
+	{
+		printf("cur_node.key : %s\n", cur_node->key);
+		printf("cur_node.value : %s\n", cur_node->value);
+		cur_node = cur_node->next_node;
+	}
 }
 
 static int	reset_in_out_fd(int io_backup[2])
@@ -93,8 +82,6 @@ static int	reset_in_out_fd(int io_backup[2])
 		return (-1);
 	return (0);
 }
-
-
 
 static int	test_heredoc_fd(t_list **redirect_list)
 {
@@ -144,8 +131,6 @@ int test_read_herdoc(t_list *parse_list)
 	return (1);
 }
 
-
-
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
@@ -170,7 +155,8 @@ int	main(int argc, char **argv, char **envp)
 		if (parse_to_heredoc(parsed_header.next) < 0)
 			continue ;
 		// test_read_herdoc(parsed_header.next);
-		execute_processing(env_list, parsed_header.next, FALSE);
+		print_command_content(parsed_header.next);
+		// execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)

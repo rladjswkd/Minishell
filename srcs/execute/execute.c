@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 20:56:04 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/29 11:39:38 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	int		status;
 
-	// expansion(parse_list);
+	expansion(parse_list);
 	// wildcard(parse_list);
 	status = redirection(get_simple(parse_list)->redirs, is_child);
 	if (check_builtin(get_simple(parse_list)->args))
@@ -118,10 +118,7 @@ int	simple_cmd(t_env_list *env_list, t_list *parse_list, int is_child)
 			- t_simple
 				- SIMPLE_NORMAL
 */
-static int	update_exit_status(int status)
-{
-	*(get_exit_status()) = status;
-}
+
 
 static int check_execute_operator(t_list *parse_list)
 {

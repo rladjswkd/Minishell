@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 14:58:02 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 11:39:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,11 @@ char	*ft_strjoin(char const *s1, char const *s2);
 
 size_t	max_nonnegative(char const *s1, char const *s2);
 int		split_key_value(char *envp_element, char **key, char **value);
-int     free_key_value(char **key, char **value);
+int		free_key_value(char **key, char **value);
 
 int		check_valid_name(char *str);
-int     *get_exit_status();
+int		*get_exit_status();
+int		update_exit_status(int status);
 void	safe_free(char	**char_pptr);
 
 #endif
