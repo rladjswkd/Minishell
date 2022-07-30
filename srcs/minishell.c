@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/29 13:34:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/30 20:40:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,12 +152,8 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		// redirect_expansion();
-		// if (parse_to_heredoc(parsed_header.next) < 0)
-		// 	continue ;
-		// test_read_herdoc(parsed_header.next);
-		// print_command_content(parsed_header.next);
-		execute_processing(env_list, parsed_header.next, FALSE);
+		print_command_content(parsed_header.next);
+		// execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)

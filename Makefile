@@ -35,24 +35,26 @@ LEXTER_SRCS = $(addprefix $(SRCS_DIR)/$(LEXER_DIR)/, \
 )
 
 EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
-		execute.c	\
-		execute_scmd.c \
-		execute_builtin.c \
+			execute.c	\
+			execute_scmd.c \
+			execute_builtin.c \
+			expansion.c \
+			dollar_expansion.c \
 )
 
 REDIRECT_SRCS = $(addprefix $(SRCS_DIR)/$(REDIRECT_DIR)/, \
-		redirect.c	\
-		redirect_utils.c \
+			redirect.c	\
+			redirect_utils.c \
 )
 
 HEREDOC_SRCS = $(addprefix $(SRCS_DIR)/$(HEREDOC_DIR)/, \
-		heredoc.c	\
-		heredoc_utils.c \
+			heredoc.c	\
+			heredoc_utils.c \
 ) 
 
 PIPE_SRCS = $(addprefix $(SRCS_DIR)/$(PIPE_DIR)/, \
-		pipe.c	\
-		pipe_utils.c \
+			pipe.c	\
+			pipe_utils.c \
 )
 
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
@@ -82,7 +84,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_is_digit.c	\
 			ft_error.c	\
 			exit_status.c \
-			check_valid_name.c	\
+			check_valid_variable.c	\
 			utils.c	\
 )
 

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:18:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:32:27 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/30 18:44:35 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	unset_cmd(t_env_list *env_list, char **argument)
 	idx = 0;
 	while (argument[idx])
 	{
-		if (check_valid_name(argument[idx]) == 0)
+		if (check_valid_variable(argument[idx]) == 0)
 			return (error_handler("unset", argument[idx], NONVALID, 1));
 		remove_env_node(env_list, argument[idx]);
 		idx++;

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 18:16:40 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/30 17:38:53 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "lexer.h"
 #include "execute.h"
 #include "process.h"
+#include "exit.h"
 #include "ft_error.h"
 
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \

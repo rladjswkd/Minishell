@@ -1,32 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit_status.c                                      :+:      :+:    :+:   */
+/*   expansion.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/06 16:06:09 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 17:35:03 by jim              ###   ########.fr       */
+/*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
+/*   Updated: 2022/07/30 17:25:03 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef EXPANSION_H
+# define EXPANSION_H
 
 #include "linked_list.h"
 #include "env_list.h"
 
-int	*get_exit_status()
+typedef enum e_dollar_expansion_flag
 {
-	static int	exit_status;
+	VARIABLE,
+	NORMAL,
+}			t_dollar_expansion_flag;
 
-	return (&exit_status);
-}
-
-int	update_exit_status(int status, t_env_list *env_list, t_list *parse_list)
+typedef enum e_check_dollar_expansion_flag
 {
-	if (status < 0)
-	{
-		delete_env_list(&env_list);
-		// delete_list(&parse_list)
-		status = 2;
-	}
-	*(get_exit_status()) = status;
-}
+	NOT_CHANGED,
+	CHANGED,
+}			t_check_dollar_expansion_flag;
+
+typedef struct s_sub_str_info
+{
+	size_t	len;
+	char	*start_of_word;
+}				t_sub_str_info;
+
+int	dollar_sign_conversion(t_env_list *env_list, t_token *token);
+
+#endif

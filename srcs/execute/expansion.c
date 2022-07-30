@@ -1,0 +1,173 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
+/*   Updated: 2022/07/30 21:43:17 by jim              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "linked_list.h"
+#include "env_list.h"
+#include "lexer.h"
+#include "expansion.h"
+
+
+/*
+	-simple cmd에서만 실행됨
+	- redirs, args에서 읽어와서 $, "", ''로 된 것들을 변환하고 하나의 node로 붙인다.
+	- "", '' 어떤식으로 되어있는지 확인 필요
+	- $$ 어떻게 해석할 것인가?
+	- "", '' concat이 있는 동안에는 이어붙인다.
+		이어 붙이는데 쓰인 node는 free한다.
+		현재노드는 free된 노드의 다음 node로 연결한다.
+		더 이상 concat이 없을때까지 이어붙인다.
+		그리고 type에 concat을 지운다.
+		1101을 ->1001로 만드는법 
+		해당 부분만 빼고 나머지는 1로 만든다음에 & 연산한다.
+		-> ~(TOKEN_CONCAT) & ORG
+		
+*/
+static int	is_dollar_sign_conversion(t_token *token)
+{
+	if (token->types & TOKEN_NORMAL 
+		|| token->types & TOKEN_DQUOTE)
+		return (1);
+	return (0);
+}
+
+static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
+{
+	t_list	*cur_node;
+
+	if (env_list == NULL || list == NULL)
+		return (-1);
+	cur_node = list;
+	// expasion만 진행
+	while (cur_node)
+	{
+		// $가 붙어있는 경우 변환한다.
+		if (is_dollar_sign_conversion(get_token(cur_node)))
+			if (dollar_sign_conversion(env_list, get_token(cur_node)) < 0)
+				(-1);
+		cur_node = cur_node->next;
+	}
+}
+
+// 42"a" 5 ->42a 5로 붙어야한다.
+static int	get_alloc_size_in_condition(t_list *list)
+{
+	t_list	*cur_node;
+	int		alloc_size;
+
+	cur_node = list;
+	alloc_size = 0;
+	alloc_size += ft_strlen(get_token(cur_node)->data);
+	while (cur_node && cur_node->next \
+			&& get_token(cur_node)->types & TOKEN_CONCAT)
+	{
+		alloc_size += ft_strlen(get_token(cur_node->next)->data);
+		cur_node = cur_node->next;
+	}
+	return (alloc_size);
+}
+
+static void	free_node(t_list **node)
+{
+	safe_free(get_token(*node)->data);
+	free(*node);
+	*node = NULL;
+}
+
+/*
+ - next node, TOKEN_CONCAT 조건이 있어야하는게 헛점이 될수도 있다.
+ - next node가 없는 경우
+ - next node가 있지만 현재 노드 type이 TOKEN_CONCAT 아닌 경우
+*/
+static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
+{
+	t_list	*cur_node;
+	t_list	*tmp_node;
+	char	*to_be_str;
+
+	cur_node = list;
+	ft_strlcat(dst, get_token(cur_node)->data, dstsize);
+	dstsize -= ft_strlen(get_token(cur_node)->data);
+	tmp_node = cur_node;
+	cur_node = cur_node->next;
+	cur_node->next = cur_node->next->next;
+	free_node(&tmp_node);
+	while (cur_node && cur_node->next \
+			&& get_token(cur_node)->types & TOKEN_CONCAT)
+	{
+		ft_strlcat(dst, get_token(cur_node->next)->data, dstsize);
+		dstsize -= ft_strlen(get_token(cur_node->next)->data);
+		cur_node = cur_node->next;
+	}
+}
+
+static int	concat_list_in_condition(t_list *list)
+{
+	t_list	*cur_node;
+	t_list	*next_node;
+	int		alloc_size;
+	char	*to_be_str;
+
+	cur_node = list;
+	next_node = cur_node->next;
+	while (cur_node && next_node \
+			&& get_token(cur_node)->types & TOKEN_CONCAT)
+	{
+		alloc_size = get_alloc_size_in_condition(cur_node) + 1;
+		to_be_str = (char *)malloc(sizeof(char) * alloc_size);
+		if (to_be_str == NULL)
+			return (-1);
+		concat_list_data_in_condition(cur_node, to_be_str, alloc_size);
+		cur_node = next_node;
+		next_node = next_node->next;
+	}
+}
+
+static int	do_expansion(t_env_list *env_list, t_list *list)
+{
+	t_list	*cur_node;
+
+	if (env_list == NULL || list == NULL)
+		return (-1);
+	if (expand_dollar_sign_in_every_node(env_list, list))
+		return (-1);
+	// CONCAT 조건에 해당하는 node들 이어붙인다.
+	cur_node = list;
+	while (cur_node)
+	{
+		if (get_token(cur_node)->types & TOKEN_CONCAT
+			&& cur_node->next)
+			concat_list_in_condition(list);
+		cur_node = cur_node->next;
+	}
+	/* 
+		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
+		
+	*/
+	// if (get_token(cur_node)->types & TOKEN_CONCAT
+	// 		&& cur_node->next)
+	// 	{
+	// 		concat_node_in_condition(&list);
+	// 		continue ;
+	// 	}
+	// 	cur_node = cur_node->next;
+}
+
+int	expansion(t_env_list *env_list, t_simple *scmd_list)
+{
+	if (env_list == NULL || scmd_list == NULL)
+		return (-1);
+	if (do_expansion(env_list, scmd_list->redirs) < 0)
+		return (-1);
+	if (do_expansion(env_list, scmd_list->args) < 0)
+		return (-1);
+	return (0);
+}

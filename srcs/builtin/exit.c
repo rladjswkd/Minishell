@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:21:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/30 17:38:18 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include "builtin.h"
 #include "utils.h"
+#include "exit.h"
 #include "ft_error.h"
 
 static int	compare_long_long_max(char *str, long long sign)
