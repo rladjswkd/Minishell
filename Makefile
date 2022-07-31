@@ -14,6 +14,7 @@ TOKEN_DIR = token
 LEXER_DIR = lexer
 PARSER_DIR = parser
 EXECUTE_DIR = execute
+EXPANSION_DIR = expansion
 REDIRECT_DIR = redirect
 HEREDOC_DIR = heredoc
 PIPE_DIR = pipe
@@ -38,8 +39,6 @@ EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
 			execute.c	\
 			execute_scmd.c \
 			execute_builtin.c \
-			expansion.c \
-			dollar_expansion.c \
 )
 
 REDIRECT_SRCS = $(addprefix $(SRCS_DIR)/$(REDIRECT_DIR)/, \
@@ -56,6 +55,13 @@ PIPE_SRCS = $(addprefix $(SRCS_DIR)/$(PIPE_DIR)/, \
 			pipe.c	\
 			pipe_utils.c \
 )
+
+EXPANSION_SRCS = $(addprefix $(SRCS_DIR)/$(EXPANSION_DIR)/, \
+			expansion.c	\
+			dollar_expansion.c	\
+			expansion_utils.c	\
+			wildcard.c	\
+) 
 
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 			cd.c	\
@@ -94,6 +100,7 @@ EXECUTE_OBJS = $(EXECUTE_SRCS:.c=.o)
 REDIRECT_OBJS = $(REDIRECT_SRCS:.c=.o)
 HEREDOC_OBJS = $(HEREDOC_SRCS:.c=.o)
 PIPE_OBJS = $(PIPE_SRCS:.c=.o)
+EXPANSION_OBJS = $(EXPANSION_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
@@ -106,7 +113,7 @@ UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 # $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 	$(CC) $^ -o $@ $(LDLIBS)
 
 # $(CC) $(LINKING_FLAGS) $^ -o $@
@@ -116,7 +123,7 @@ $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS)  $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)

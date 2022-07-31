@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:35:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 10:23:52 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	check_builtin(t_list *cmd_list)
 	char	*cmd;
 
 	if (cmd_list == NULL)
-		return (-1);
+		return (0);
 	cmd = ((t_token *)(cmd_list->node))->data;
 	if (ft_strncmp("exit", cmd, max_nonnegative("exit", cmd)) == 0
 		|| ft_strncmp("echo", cmd, max_nonnegative("echo", cmd)) == 0

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 17:38:53 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 10:34:51 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,8 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
-		status = simple_cmd(env_list, pipelist_info->cur_node, TRUE);
+		status = simple_cmd(env_list, \
+							get_simple(pipelist_info->cur_node), TRUE);
 	else
 	{
 		status = 2;

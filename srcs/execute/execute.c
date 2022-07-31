@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 20:45:34 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 10:28:40 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ static int	extern_cmd(t_env_list *env_list, t_list *cmd_list, int is_child)
 	int		pid;
 	int		status;
 
+	if (cmd_list == NULL)
+		return (0);
 	cmd = list_to_array(cmd_list);
 	if (cmd == NULL)
 		return (-1);
@@ -52,7 +54,7 @@ static int	extern_cmd(t_env_list *env_list, t_list *cmd_list, int is_child)
 		free_list(&cmd);
 		return (-1);
 	}
-	if (is_child)
+	if (is_child) // 이미 fork 되어서 execve 실패해도 exit으로 종료되어서 메모리 반환에는 문제없겠지만 일관성이 문제
 		status = execute_cmd(envp, cmd);
 	else
 	{

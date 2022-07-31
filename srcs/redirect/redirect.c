@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 23:27:42 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 10:23:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int	redirection(t_list *redir_list, int is_child)
 	t_list	*cur_node;
 	int		status;
 
+	if (redir_list == NULL)
+		return (0);
 	cur_node = redir_list;
 	status = 0;
 	while (cur_node)

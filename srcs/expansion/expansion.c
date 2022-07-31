@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 21:43:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 11:15:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "env_list.h"
 #include "lexer.h"
 #include "expansion.h"
-
+#include "utils.h"
+#include <stdlib.h>
 
 /*
 	-simple cmd에서만 실행됨
@@ -55,6 +56,14 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
 				(-1);
 		cur_node = cur_node->next;
 	}
+	// $로 변환했는데도 비어있다면 해당 노드를 날린다.
+}
+
+void	free_node(t_list **node)
+{
+	safe_free(&(get_token(*node)->data));
+	free(*node);
+	*node = NULL;
 }
 
 // 42"a" 5 ->42a 5로 붙어야한다.
@@ -75,38 +84,35 @@ static int	get_alloc_size_in_condition(t_list *list)
 	return (alloc_size);
 }
 
-static void	free_node(t_list **node)
-{
-	safe_free(get_token(*node)->data);
-	free(*node);
-	*node = NULL;
-}
-
 /*
  - next node, TOKEN_CONCAT 조건이 있어야하는게 헛점이 될수도 있다.
  - next node가 없는 경우
  - next node가 있지만 현재 노드 type이 TOKEN_CONCAT 아닌 경우
+ - 병합했을떄 ""만 남는다면? $ab $cd expasion에 해당하는 값이 없어서 빈값만 있을 수 있다.
+	이 부분은 dollar expasion에서 처리한다.
 */
 static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
 {
 	t_list	*cur_node;
-	t_list	*tmp_node;
+	t_list	*next_node;
 	char	*to_be_str;
 
 	cur_node = list;
-	ft_strlcat(dst, get_token(cur_node)->data, dstsize);
-	dstsize -= ft_strlen(get_token(cur_node)->data);
-	tmp_node = cur_node;
-	cur_node = cur_node->next;
-	cur_node->next = cur_node->next->next;
-	free_node(&tmp_node);
-	while (cur_node && cur_node->next \
+	next_node = cur_node->next;
+	ft_strlcpy(dst, get_token(cur_node)->data, dstsize);
+	// dstsize -= ft_strlen(get_token(cur_node)->data);
+	safe_free(&(get_token(cur_node)->data));
+	while (cur_node && next_node \
 			&& get_token(cur_node)->types & TOKEN_CONCAT)
 	{
-		ft_strlcat(dst, get_token(cur_node->next)->data, dstsize);
-		dstsize -= ft_strlen(get_token(cur_node->next)->data);
-		cur_node = cur_node->next;
+		ft_strlcat(dst, get_token(next_node)->data, dstsize);
+		// dstsize -= ft_strlen(get_token(next_node)->data);
+		get_token(cur_node)->types = get_token(next_node)->types;
+		cur_node->next = next_node->next;
+		free_node(&next_node);
+		next_node = cur_node->next;
 	}
+	get_token(cur_node)->data = dst; // dst가 "" 될 수 있는 경우가 있는가?
 }
 
 static int	concat_list_in_condition(t_list *list)
@@ -118,17 +124,14 @@ static int	concat_list_in_condition(t_list *list)
 
 	cur_node = list;
 	next_node = cur_node->next;
-	while (cur_node && next_node \
-			&& get_token(cur_node)->types & TOKEN_CONCAT)
-	{
-		alloc_size = get_alloc_size_in_condition(cur_node) + 1;
-		to_be_str = (char *)malloc(sizeof(char) * alloc_size);
-		if (to_be_str == NULL)
-			return (-1);
-		concat_list_data_in_condition(cur_node, to_be_str, alloc_size);
-		cur_node = next_node;
-		next_node = next_node->next;
-	}
+
+	alloc_size = get_alloc_size_in_condition(cur_node) + 1;
+	to_be_str = (char *)malloc(sizeof(char) * alloc_size);
+	if (to_be_str == NULL)
+		return (-1);
+	concat_list_data_in_condition(cur_node, to_be_str, alloc_size);
+	cur_node = next_node;
+	next_node = next_node->next;
 }
 
 static int	do_expansion(t_env_list *env_list, t_list *list)
@@ -136,16 +139,16 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 	t_list	*cur_node;
 
 	if (env_list == NULL || list == NULL)
-		return (-1);
-	if (expand_dollar_sign_in_every_node(env_list, list))
-		return (-1);
+		return (0);
+	// if (expand_dollar_sign_in_every_node(env_list, list))
+	// 	return (-1);
 	// CONCAT 조건에 해당하는 node들 이어붙인다.
 	cur_node = list;
 	while (cur_node)
 	{
 		if (get_token(cur_node)->types & TOKEN_CONCAT
 			&& cur_node->next)
-			concat_list_in_condition(list);
+			concat_list_in_condition(cur_node);
 		cur_node = cur_node->next;
 	}
 	/* 
