@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 11:15:04 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 11:22:42 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,11 @@ static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
 	cur_node = list;
 	next_node = cur_node->next;
 	ft_strlcpy(dst, get_token(cur_node)->data, dstsize);
-	// dstsize -= ft_strlen(get_token(cur_node)->data);
 	safe_free(&(get_token(cur_node)->data));
 	while (cur_node && next_node \
 			&& get_token(cur_node)->types & TOKEN_CONCAT)
 	{
 		ft_strlcat(dst, get_token(next_node)->data, dstsize);
-		// dstsize -= ft_strlen(get_token(next_node)->data);
 		get_token(cur_node)->types = get_token(next_node)->types;
 		cur_node->next = next_node->next;
 		free_node(&next_node);
@@ -117,21 +115,14 @@ static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
 
 static int	concat_list_in_condition(t_list *list)
 {
-	t_list	*cur_node;
-	t_list	*next_node;
 	int		alloc_size;
 	char	*to_be_str;
 
-	cur_node = list;
-	next_node = cur_node->next;
-
-	alloc_size = get_alloc_size_in_condition(cur_node) + 1;
+	alloc_size = get_alloc_size_in_condition(list) + 1;
 	to_be_str = (char *)malloc(sizeof(char) * alloc_size);
 	if (to_be_str == NULL)
 		return (-1);
-	concat_list_data_in_condition(cur_node, to_be_str, alloc_size);
-	cur_node = next_node;
-	next_node = next_node->next;
+	concat_list_data_in_condition(list, to_be_str, alloc_size);
 }
 
 static int	do_expansion(t_env_list *env_list, t_list *list)
@@ -140,9 +131,11 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 
 	if (env_list == NULL || list == NULL)
 		return (0);
-	// if (expand_dollar_sign_in_every_node(env_list, list))
-	// 	return (-1);
-	// CONCAT 조건에 해당하는 node들 이어붙인다.
+	if (expand_dollar_sign_in_every_node(env_list, list))
+		return (-1);
+	/* 
+		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
+	*/
 	cur_node = list;
 	while (cur_node)
 	{
@@ -151,17 +144,6 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 			concat_list_in_condition(cur_node);
 		cur_node = cur_node->next;
 	}
-	/* 
-		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
-		
-	*/
-	// if (get_token(cur_node)->types & TOKEN_CONCAT
-	// 		&& cur_node->next)
-	// 	{
-	// 		concat_node_in_condition(&list);
-	// 		continue ;
-	// 	}
-	// 	cur_node = cur_node->next;
 }
 
 int	expansion(t_env_list *env_list, t_simple *scmd_list)

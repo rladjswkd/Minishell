@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 21:25:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 12:04:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 	variable의 마지막 위치를 반환한다.
 */
 
-static int	change_dollar_expansion_flag(int **dollar_expansion_flag)
+static void	change_dollar_expansion_flag(int **dollar_expansion_flag)
 {
 	if (**dollar_expansion_flag == NORMAL)
 		**dollar_expansion_flag = VARIABLE;
@@ -78,14 +78,14 @@ static int	check_dollar_expansion_flag(int flag, char ch, int len)
 				 1, $ab, \34, $ab_42, %42
 */
 
-static void	reset_str_to_list_var(t_list *tmp_expansion_list, \
+static void	reset_expansion_str_split_var(t_list *tmp_expansion_list, \
 									int *dollar_expansion_flag, \
 									t_sub_str_info	*sub_str_info, \
-									char *as_is_str)
+									int idx)
 {
 	get_token(tmp_expansion_list->next)->types = *dollar_expansion_flag;
 	change_dollar_expansion_flag(&dollar_expansion_flag);
-	sub_str_info->start_of_word = as_is_str; // 제대로 될것인가?
+	sub_str_info->start_idx = (size_t)idx; // 제대로 될것인가?
 	sub_str_info->len = 0;;
 }
 
@@ -93,7 +93,7 @@ static void	reset_str_to_list_var(t_list *tmp_expansion_list, \
 as_is_str
 sub_str_info->start_of_word = as_is_str; 제대로 되는지 확ㅇ니
 */
-static void	init_str_to_list_var(char *as_is_str, int *idx, \
+static void	init_expansion_str_split_var(const char *as_is_str, int *idx, \
 								t_sub_str_info *sub_str_info, \
 								int *dollar_expansion_flag)
 {
@@ -102,26 +102,35 @@ static void	init_str_to_list_var(char *as_is_str, int *idx, \
 		*dollar_expansion_flag = VARIABLE;
 	*idx = 0;
 	sub_str_info->len = 0;
-	sub_str_info->start_of_word = as_is_str;
+	sub_str_info->start_idx = 0;
 }
 
 /*
 static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 						char *as_is_str, int dollar_expansion_flag)
 {
+	if (dollar_expansion_flag == VARIABLE
+		&& as_is_str[idx] == '?')
+	{
+		sub_str_info.len++;
+		idx++;
+	}
 	tmp_expansion_list->next = (t_list *)malloc(sizeof(t_list));
 	if (tmp_expansion_list->next == NULL)
 		return (-1); // free tmp_expansion_list
 	get_token(tmp_expansion_list->next)->data = \
-			ft_substr(as_is_str, sub_str_info.start_of_word, sub_str_info.len);
+	ft_substr(as_is_str, sub_str_info.start_of_word, sub_str_info.len);
 	if (get_token(tmp_expansion_list->next)->data == NULL)
 		return (-1); // free tmp_expansion_list, also data.
-	reset_str_to_list_var(tmp_expansion_list, &dollar_expansion_flag, \
+	reset_expansion_str_split_var(tmp_expansion_list, \
+							&dollar_expansion_flag, \
 							&sub_str_info, &(as_is_str[idx]));
+	tmp_expansion_list = tmp_expansion_list->next;
 }
 */
 
-int	str_to_list(t_token *token, t_list *tmp_expansion_list)
+// expansion_str_split
+int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 {
 	const char		*as_is_str;
 	int				idx;
@@ -129,7 +138,7 @@ int	str_to_list(t_token *token, t_list *tmp_expansion_list)
 	int				dollar_expansion_flag;
 
 	as_is_str = (const char	*)token->data;
-	init_str_to_list_var(as_is_str, &idx, &sub_str_info, &dollar_expansion_flag);
+	init_expansion_str_split_var(as_is_str, &idx, &sub_str_info, &dollar_expansion_flag);
 	while (as_is_str[idx])
 	{
 		// alloc_node(tmp_expansion_list, )// 지역변수로 처리될것인가?
@@ -147,11 +156,12 @@ int	str_to_list(t_token *token, t_list *tmp_expansion_list)
 			if (tmp_expansion_list->next == NULL)
 				return (-1); // free tmp_expansion_list
 			get_token(tmp_expansion_list->next)->data = \
-			ft_substr(as_is_str, sub_str_info.start_of_word, sub_str_info.len);
+			ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
 			if (get_token(tmp_expansion_list->next)->data == NULL)
 				return (-1); // free tmp_expansion_list, also data.
-			reset_str_to_list_var(tmp_expansion_list, &dollar_expansion_flag, \
-									&sub_str_info, &(as_is_str[idx]));
+			reset_expansion_str_split_var(tmp_expansion_list, \
+									&dollar_expansion_flag, \
+									&sub_str_info, idx);
 			tmp_expansion_list = tmp_expansion_list->next;
 		}
 		sub_str_info.len++;
@@ -165,7 +175,7 @@ int	str_to_list(t_token *token, t_list *tmp_expansion_list)
 	
 */
 static char	*convesion_using_env(t_env_list *env_list, char *str)
-{
+{ 
 	t_env_node	*env_node;
 
 	env_node = env_list->header_node;
@@ -236,7 +246,7 @@ static int  conversion(t_env_list *env_list, t_token *token)
 	if (as_is_str[1] == '?')
 		to_be_str = ft_itoa(*get_exit_status());
 	else // env list에 있는것을 이용해서 변환한다.
-		to_be_str = convesion_using_env(env_list, as_is_str[1]);
+		to_be_str = convesion_using_env(env_list, &(as_is_str[1]));
 	if (to_be_str == NULL)
 		return (-1);
 	free(token->data);
@@ -261,7 +271,8 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 
 	if (env_list == NULL || token == NULL)
 		return (-1);
-	if (str_to_list(token, &tmp_expansion_list) < 0)
+	// expansion_str_split
+	if (expansion_str_split(token, &tmp_expansion_list) < 0)
 		return (-1);
 	cur_node = tmp_expansion_list.next;
 	while (cur_node)

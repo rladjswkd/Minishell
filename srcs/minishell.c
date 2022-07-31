@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 11:02:34 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 11:33:21 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		print_command_content(parsed_header.next);
+		// print_command_content(parsed_header.next);
 		execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.

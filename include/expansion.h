@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 17:25:03 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 11:39:58 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef enum e_check_dollar_expansion_flag
 typedef struct s_sub_str_info
 {
 	size_t	len;
-	char	*start_of_word;
+	size_t	start_idx;
 }				t_sub_str_info;
 
 int	dollar_sign_conversion(t_env_list *env_list, t_token *token);

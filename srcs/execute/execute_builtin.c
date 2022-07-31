@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 10:23:52 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 11:32:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ int builtin_process(t_env_list *env_list, t_list *cmd_list, int is_child)
 	char	**argv;
 	char	**cmd;
 
+	if (cmd_list == NULL)
+		return (0);
 	cmd = list_to_array(cmd_list);
 	if (cmd == NULL)
 		return (2);
