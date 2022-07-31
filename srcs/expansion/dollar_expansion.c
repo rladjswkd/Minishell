@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 16:43:29 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 19:14:21 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 	variable의 마지막 위치를 반환한다.
 */
 
-static void	change_dollar_expansion_flag(int **dollar_expansion_flag)
+static void	change_dollar_expansion_flag(int *dollar_expansion_flag)
 {
-	if (**dollar_expansion_flag == NORMAL)
-		**dollar_expansion_flag = VARIABLE;
+	if (*dollar_expansion_flag == NORMAL)
+		*dollar_expansion_flag = VARIABLE;
 	else
-		**dollar_expansion_flag = NORMAL;
+		*dollar_expansion_flag = NORMAL;
 }
 
 /*
@@ -37,15 +37,19 @@ static void	change_dollar_expansion_flag(int **dollar_expansion_flag)
 static int	check_dollar_expansion_flag(int flag, char ch, int len)
 {
 	if (flag == NORMAL)
+	{
 		if (ch == '$')
 			return (CHANGED);
+	}
 	else if (flag == VARIABLE)
 	{
 		if (len == 0 && ch == '$')
 			return (NOT_CHANGED);
 		else if (len == 1)
+		{
 			if (check_start_of_variable(ch) == 0)
 				return (CHANGED);
+		}
 		else if (check_mid_of_variable(ch) == 0)
 			return (CHANGED);
 	}
@@ -80,15 +84,18 @@ static int	check_dollar_expansion_flag(int flag, char ch, int len)
 				 1, $ab, \34, $ab_42, %42
 */
 
-static void	reset_expansion_str_split_var(t_list *tmp_expansion_list, \
+static void	reset_expansion_str_split_var(t_list *cur_node, \
 									int *dollar_expansion_flag, \
 									t_sub_str_info	*sub_str_info, \
-									int idx)
+									int idx, const char *as_is_str)
 {
-	get_token(tmp_expansion_list->next)->types = *dollar_expansion_flag;
-	change_dollar_expansion_flag(&dollar_expansion_flag);
+	get_token(cur_node)->types = *dollar_expansion_flag;
+	if (as_is_str[idx] == '$' && dollar_expansion_flag == VARIABLE)
+		;
+	else
+		change_dollar_expansion_flag(dollar_expansion_flag);
 	sub_str_info->start_idx = (size_t)idx; // 제대로 될것인가?
-	sub_str_info->len = 0;;
+	sub_str_info->len = 0;
 }
 
 /*
@@ -107,7 +114,7 @@ static void	init_expansion_str_split_var(const char *as_is_str, int *idx, \
 	sub_str_info->start_idx = 0;
 }
 
-
+/*
 static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 						char *as_is_str, int dollar_expansion_flag)
 {
@@ -117,7 +124,7 @@ static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 		sub_str_info.len++;
 		idx++;
 	}
-	tmp_expansion_list->next = (t_list *)malloc(sizeof(t_list));
+	tmp_expansion_list->next = (t_list *)malloc(sizeof(t_token));
 	if (tmp_expansion_list->next == NULL)
 		return (-1); // free tmp_expansion_list
 	get_token(tmp_expansion_list->next)->data = \
@@ -129,7 +136,7 @@ static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 							&sub_str_info, idx);
 	tmp_expansion_list = tmp_expansion_list->next;
 }
-/**/
+*/
 
 // expansion_str_split
 int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
@@ -137,8 +144,10 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 	const char		*as_is_str;
 	int				idx;
 	t_sub_str_info	sub_str_info;
+	t_list			*cur_node;
 	int				dollar_expansion_flag;
 
+	cur_node = tmp_expansion_list;
 	as_is_str = (const char	*)token->data;
 	init_expansion_str_split_var(as_is_str, &idx, &sub_str_info, &dollar_expansion_flag);
 	while (as_is_str[idx])
@@ -154,21 +163,29 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 				sub_str_info.len++;
 				idx++;
 			}
-			tmp_expansion_list->next = create_list();
-			if (tmp_expansion_list->next == NULL)
+			cur_node->next = (t_list *)malloc(sizeof(t_token));
+			if (cur_node->next == NULL)
 				return (-1); // free tmp_expansion_list
-			get_token(tmp_expansion_list->next)->data = \
+			get_token(cur_node->next)->data = \
 			ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
-			if (get_token(tmp_expansion_list->next)->data == NULL)
+			if (get_token(cur_node->next)->data == NULL)
 				return (-1); // free tmp_expansion_list, also data.
-			reset_expansion_str_split_var(tmp_expansion_list, \
+			reset_expansion_str_split_var(cur_node->next, \
 									&dollar_expansion_flag, \
-									&sub_str_info, idx);
-			tmp_expansion_list = tmp_expansion_list->next;
+									&sub_str_info, idx, as_is_str);
+			cur_node = cur_node->next;
+			cur_node->next = NULL;
 		}
 		sub_str_info.len++;
 		idx++;
 	}
+	cur_node->next = (t_list *)malloc(sizeof(t_token));
+	if (cur_node->next == NULL)
+		return (-1); // free tmp_expansion_list
+	get_token(cur_node->next)->data = \
+	ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
+	if (get_token(cur_node->next)->data == NULL)
+		return (-1); // free tmp_expansion_list, also data.
 	return (0);
 }
 
@@ -287,6 +304,7 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 	t_list	tmp_expansion_list;
 	t_list	*cur_node;	
 
+	tmp_expansion_list.next = NULL;
 	if (env_list == NULL || token == NULL)
 		return (-1);
 	// expansion_str_split

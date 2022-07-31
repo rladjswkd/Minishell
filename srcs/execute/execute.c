@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 15:38:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 20:49:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,15 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 
 static int check_execute_operator(t_list *parse_list)
 {
+	const char	*operator;
+
+	operator = get_token(parse_list->node)->data;
+	if (ft_strncmp("||", operator, max_nonnegative("||", operator)) == 0)
+		;
+	else if (ft_strncmp("&&", operator, max_nonnegative("&&", operator)) == 0)
+		;
+	else
+		;//error
 	parse_list->node;
 	return (1);
 }
