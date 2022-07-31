@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 20:49:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 08:26:46 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,20 +99,19 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 				- SIMPLE_NORMAL
 */
 
-
-static int check_execute_operator(t_list *parse_list)
+// SIMPLE_AND = 16,
+// 	SIMPLE_OR = 32,
+static int check_execute_operator_skip(t_list *parse_list)
 {
-	const char	*operator;
+	int	operator;
 
-	operator = get_token(parse_list->node)->data;
-	if (ft_strncmp("||", operator, max_nonnegative("||", operator)) == 0)
-		;
-	else if (ft_strncmp("&&", operator, max_nonnegative("&&", operator)) == 0)
-		;
+	operator = get_command_type(parse_list->node);
+	if (operator & SIMPLE_AND && *get_exit_status() != 0)
+		(1);
+	else if (operator & SIMPLE_OR && *get_exit_status() == 0)
+		(1);
 	else
-		;//error
-	parse_list->node;
-	return (1);
+		(0);//error
 }
 
 int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
@@ -123,27 +122,27 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
 	if (env_list == NULL || parse_list == NULL)
 		return (2);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
-		update_exit_status(simple_cmd(env_list, scmd_list, is_child),\
-							env_list, parse_list);
+		update_exit_status(simple_cmd(env_list, scmd_list, is_child), \
+							parse_list);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
-		update_exit_status(pipeline_processing(env_list, \
-											get_compound(parse_list)->list), \
-											env_list, parse_list);
+		update_exit_status(pipeline_processing(env_list, 
+							get_compound(parse_list)->list), parse_list);
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
 		update_exit_status(execute_processing(env_list, \
-											get_compound(parse_list)->list,\
-											is_child), env_list, parse_list);
+							get_compound(parse_list)->list, is_child), \
+							parse_list);
 	// echo abc | (echo a | cat) || echo asdf 의 경우 어떻게 동작할것인가?
 	// PL || SCMD
 	// SCMD | SUBSHELL || SCMD
-	// if (parse_list->next)
-	// {
-	// 	parse_list = parse_list->next;
-	// 	while (parse_list && check_execute_operator(parse_list))
-	// 		parse_list = parse_list->next->next;
-	// 	if (parse_list != NULL)
-	// 		update_exit_status(\
-	// 				execute_processing(env_list, parse_list, is_child));
-	// }
+	if (parse_list->next)
+	{
+		parse_list = parse_list->next;
+		while (parse_list && check_execute_operator_skip(parse_list))
+			parse_list = parse_list->next->next;
+		if (parse_list != NULL)
+			update_exit_status(\
+						execute_processing(env_list, parse_list->next, is_child), \
+						parse_list);
+	}
 	return (*(get_exit_status()));
 }

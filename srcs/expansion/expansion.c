@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 16:21:01 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 23:25:08 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,8 +147,8 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 
 	if (env_list == NULL || list == NULL)
 		return (0);
-	if (expand_dollar_sign_in_every_node(env_list, list))
-		return (-1);
+	// if (expand_dollar_sign_in_every_node(env_list, list))
+	// 	return (-1);
 	/* 
 		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
 	*/
