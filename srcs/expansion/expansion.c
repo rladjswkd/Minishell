@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 11:22:42 by jim              ###   ########.fr       */
+/*   Updated: 2022/07/31 16:21:01 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,22 @@
 #include "utils.h"
 #include <stdlib.h>
 
+
+static int	is_there_any_dollar_sign(t_token *token)
+{
+	const char	*str;
+	int			idx;
+
+	str = (const char *)token->data;
+	idx = 0;
+	while (str[idx])
+	{
+		if (str[idx] == '$')
+			return (1);
+		idx++;
+	}
+	return (0);
+}
 /*
 	-simple cmd에서만 실행됨
 	- redirs, args에서 읽어와서 $, "", ''로 된 것들을 변환하고 하나의 node로 붙인다.
@@ -34,8 +50,8 @@
 */
 static int	is_dollar_sign_conversion(t_token *token)
 {
-	if (token->types & TOKEN_NORMAL 
-		|| token->types & TOKEN_DQUOTE)
+	if ((token->types & TOKEN_NORMAL || token->types & TOKEN_DQUOTE)
+		&& is_there_any_dollar_sign(token))
 		return (1);
 	return (0);
 }
