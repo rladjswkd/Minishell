@@ -6,11 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2022/07/31 23:25:08 by jim              ###   ########.fr       */
-=======
-/*   Updated: 2022/08/01 20:59:56 by jim              ###   ########.fr       */
->>>>>>> c885569a85f37038920567a5b0483fffaa655a79
+/*   Updated: 2022/08/01 23:51:17 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +17,8 @@
 #include "utils.h"
 #include <stdlib.h>
 
+// debug
+void	free_node(t_list **node);
 
 static int	is_there_any_dollar_sign(t_token *token)
 {
@@ -87,7 +85,7 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
 		{
 			next_node = cur_node->next;
 			cur_node->next = cur_node->next->next;
-			free_node(&tmp_node);
+			free_node(&next_node);
 		}
 		cur_node = cur_node->next;
 	}
@@ -166,16 +164,8 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 
 	if (env_list == NULL || list == NULL)
 		return (0);
-<<<<<<< HEAD
-	// if (expand_dollar_sign_in_every_node(env_list, list))
-	// 	return (-1);
-	/* 
-		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
-	*/
-=======
 	if (expand_dollar_sign_in_every_node(env_list, list))
 		return (-1);
->>>>>>> c885569a85f37038920567a5b0483fffaa655a79
 	cur_node = list;
 	while (cur_node)
 	{
