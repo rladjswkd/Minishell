@@ -38,7 +38,7 @@ int	check_valid_variable(char *str)
 	idx++;
 	while (str[idx])
 	{
-		if (check_mid_of_variable(str[idx]))
+		if (check_mid_of_variable(str[idx]) == 0)
 			return (0);
 		idx++;
 	}
