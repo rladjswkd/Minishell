@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/07/29 13:40:03 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 16:19:51 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,10 @@
 #include <unistd.h>
 #include <stdio.h>  // readline이전에 stdio를 include해야한다 왜?
 #include <readline/readline.h>
-#include "utils.h"
 #include "heredoc.h"
+#include "expansion.h"
+#include "lexer.h"
+#include "utils.h"
 //계속 return시킬 것 아니라면 exit한다.
 // unlink 실패해도 free해야한다. 어쨌든, -1 return하므로 error 체크하지 않는다.
 static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)
@@ -67,6 +69,17 @@ static int	get_tmp_file_fd(char *file_name)
 		return (-1);
 	safe_free(&file_name);
 	return (open_fd);
+}
+
+int	concat_heredoc_word_list(t_list *list)
+{
+	if (get_token(list)->types & TOKEN_CONCAT
+		&& list->next)
+	{
+		if (concat_list_in_condition(list) < 0)
+			return (-1);
+	}
+	return (0);
 }
 
 int	heredoc_routine(char *heredoc_word)

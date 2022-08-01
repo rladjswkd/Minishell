@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 23:41:32 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 15:27:15 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include "linked_list.h"
 #include "utils.h"
 
-/* */
 static int	check_tmp_file_name(char *file_name)
 {
 	DIR				*dir_ptr;

@@ -6,7 +6,11 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/07/31 23:25:08 by jim              ###   ########.fr       */
+=======
+/*   Updated: 2022/08/01 20:59:56 by jim              ###   ########.fr       */
+>>>>>>> c885569a85f37038920567a5b0483fffaa655a79
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +50,11 @@ static int	is_there_any_dollar_sign(t_token *token)
 		1101을 ->1001로 만드는법 
 		해당 부분만 빼고 나머지는 1로 만든다음에 & 연산한다.
 		-> ~(TOKEN_CONCAT) & ORG
-		
 */
 static int	is_dollar_sign_conversion(t_token *token)
 {
-	if ((token->types & TOKEN_NORMAL || token->types & TOKEN_DQUOTE)
+	if (!(token->types & TOKEN_SQUOTE)
+		&& (token->types & TOKEN_NORMAL || token->types & TOKEN_DQUOTE)
 		&& is_there_any_dollar_sign(token))
 		return (1);
 	return (0);
@@ -58,7 +62,9 @@ static int	is_dollar_sign_conversion(t_token *token)
 
 static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
 {
-	t_list	*cur_node;
+	t_list		*cur_node;
+	t_list		*next_node;
+	const char	*cur_str;
 
 	if (env_list == NULL || list == NULL)
 		return (-1);
@@ -72,7 +78,19 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
 				(-1);
 		cur_node = cur_node->next;
 	}
-	// $로 변환했는데도 비어있다면 해당 노드를 날린다.
+	// $로 변환했는데도 비어있다면(data값이 ""인 경우)해당 노드를 날린다.
+	cur_node = list;
+	while (cur_node)
+	{
+		cur_str = get_token(cur_node)->data;
+		if (ft_strncmp(cur_str, "", max_nonnegative(cur_str, "") == 0))
+		{
+			next_node = cur_node->next;
+			cur_node->next = cur_node->next->next;
+			free_node(&tmp_node);
+		}
+		cur_node = cur_node->next;
+	}
 }
 
 void	free_node(t_list **node)
@@ -129,7 +147,7 @@ static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
 	get_token(cur_node)->data = dst; // dst가 "" 될 수 있는 경우가 있는가?
 }
 
-static int	concat_list_in_condition(t_list *list)
+int	concat_list_in_condition(t_list *list)
 {
 	int		alloc_size;
 	char	*to_be_str;
@@ -139,6 +157,7 @@ static int	concat_list_in_condition(t_list *list)
 	if (to_be_str == NULL)
 		return (-1);
 	concat_list_data_in_condition(list, to_be_str, alloc_size);
+	return (0);
 }
 
 static int	do_expansion(t_env_list *env_list, t_list *list)
@@ -147,17 +166,25 @@ static int	do_expansion(t_env_list *env_list, t_list *list)
 
 	if (env_list == NULL || list == NULL)
 		return (0);
+<<<<<<< HEAD
 	// if (expand_dollar_sign_in_every_node(env_list, list))
 	// 	return (-1);
 	/* 
 		CONCAT 있는 동안에는 이어붙이며 이어붙여진 node는 제거한다.
 	*/
+=======
+	if (expand_dollar_sign_in_every_node(env_list, list))
+		return (-1);
+>>>>>>> c885569a85f37038920567a5b0483fffaa655a79
 	cur_node = list;
 	while (cur_node)
 	{
 		if (get_token(cur_node)->types & TOKEN_CONCAT
 			&& cur_node->next)
-			concat_list_in_condition(cur_node);
+		{
+			if (concat_list_in_condition(cur_node) < 0)
+				(-1);
+		}
 		cur_node = cur_node->next;
 	}
 }

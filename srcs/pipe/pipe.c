@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 10:34:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 15:48:41 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 #include "ft_error.h"
 
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info);
+							t_pipelist_info *pipelist_info, t_list *org_list);
 
 // parameter수정필요
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
@@ -92,7 +92,7 @@ static void	switch_flag(int *flag)
 // 	process_info_list
 // }
 
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
+int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *org_list)
 {
 	t_pipelist_info		pipelist_info;
 	t_fd_info			fd_info;
@@ -110,14 +110,11 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
-			return (child_process(env_list, &fd_info, &pipelist_info));
+			return (child_process(env_list, &fd_info, &pipelist_info, org_list));
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
 	}
-	// wait_processing(&process_info_list);
-	// waitpid(-1, NULL, 0);
-	// 마지막 상태만 기록하면 되므로 get_status로 처리한다?
 	while (wait(&process_info.status) != -1)
 		*(get_exit_status()) = process_info.status;
 	return (*get_exit_status());
@@ -144,7 +141,7 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 	- exit_status
 */
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info)
+							t_pipelist_info *pipelist_info, t_list *org_list)
 {
 	t_list	*compound_list;
 	int		status;
@@ -157,7 +154,7 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
 	{
-		status = execute_processing(env_list , pipelist_info->cur_node, TRUE);
+		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)

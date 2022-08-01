@@ -387,7 +387,6 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 {
 	t_simple	*simple;
 	t_list		*next;
-	int			heredoc_fd;
 
 	while (find_simple_type(*list) & SIMPLE_NORMAL)
 	{
@@ -397,10 +396,12 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 		{
 			if (get_token_type(*list) & TOKEN_HEREDOC)
 			{
-				heredoc_fd = heredoc_routine(get_token((*list)->next)->data);
-				if (heredoc_fd < 0)
+				if (concat_heredoc_word_list((*list)->next))
+					return ; // token, parse free and exit()
+				get_token((*list)->next)->heredoc_fd = \
+							heredoc_routine(get_token((*list)->next)->data);
+				if (get_token((*list)->next)->heredoc_fd < 0)
 					return ;
-				get_token((*list)->next)->heredoc_fd = heredoc_fd;
 			}
 			append_token(&(simple->redirs), *list);
 		}

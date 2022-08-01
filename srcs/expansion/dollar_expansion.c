@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 19:14:21 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 20:20:58 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static void	reset_expansion_str_split_var(t_list *cur_node, \
 									int idx, const char *as_is_str)
 {
 	get_token(cur_node)->types = *dollar_expansion_flag;
-	if (as_is_str[idx] == '$' && dollar_expansion_flag == VARIABLE)
+	if (as_is_str[idx] == '$' && *dollar_expansion_flag == VARIABLE)
 		;
 	else
 		change_dollar_expansion_flag(dollar_expansion_flag);
@@ -163,9 +163,12 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 				sub_str_info.len++;
 				idx++;
 			}
-			cur_node->next = (t_list *)malloc(sizeof(t_token));
+			cur_node->next = (t_list *)malloc(sizeof(t_list));
 			if (cur_node->next == NULL)
 				return (-1); // free tmp_expansion_list
+			cur_node->next->node = (t_token *)malloc(sizeof(t_list));
+			if (cur_node->next == NULL)
+				return (-1); // free_linked_list_node, free_token
 			get_token(cur_node->next)->data = \
 			ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
 			if (get_token(cur_node->next)->data == NULL)
@@ -179,13 +182,19 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 		sub_str_info.len++;
 		idx++;
 	}
-	cur_node->next = (t_list *)malloc(sizeof(t_token));
+	cur_node->next = (t_list *)malloc(sizeof(t_list));
 	if (cur_node->next == NULL)
 		return (-1); // free tmp_expansion_list
+	cur_node->next->node = (t_token *)malloc(sizeof(t_list));
+	if (cur_node->next == NULL)
+		return (-1); // free_linked_list_node, free_token
 	get_token(cur_node->next)->data = \
 	ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
 	if (get_token(cur_node->next)->data == NULL)
 		return (-1); // free tmp_expansion_list, also data.
+	get_token(cur_node->next)->types = dollar_expansion_flag;
+	cur_node = cur_node->next;
+	cur_node->next = NULL;
 	return (0);
 }
 
@@ -193,7 +202,7 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 	- find key
 	
 */
-static char	*convesion_using_env(t_env_list *env_list, char *str)
+static char	*convesion_using_env(t_env_list *env_list, const char *str)
 { 
 	t_env_node	*env_node;
 
@@ -202,7 +211,11 @@ static char	*convesion_using_env(t_env_list *env_list, char *str)
 	{
 		if (ft_strncmp(env_node->key, str, \
 						max_nonnegative(env_node->key, str)) == 0)
+		{
+			if (env_node->value == NULL)
+				return (ft_strdup(""));
 			return (ft_strdup(env_node->value));
+		}
 		env_node = env_node->next_node;
 	}
 	return (ft_strdup(""));
@@ -232,7 +245,6 @@ static void	concat_list_data(t_list *list, char *dst, \
 	while (cur_node)
 	{
 		ft_strlcat(dst, get_token(cur_node)->data, dstsize);
-		dstsize -= ft_strlen(get_token(cur_node)->data);
 		cur_node = cur_node->next;
 	}
 }
@@ -241,7 +253,8 @@ static void	concat_list_data(t_list *list, char *dst, \
 static int	concat_tmp_expansion_list(t_token *token, \
 										t_list *tmp_expansion_list)
 {
-	int		alloc_size;
+	int	alloc_size;
+	int	idx;
 
 	alloc_size = get_alloc_size(tmp_expansion_list->next) + 1;
 	token->data = (char *)malloc(sizeof(char) * alloc_size);
@@ -251,6 +264,7 @@ static int	concat_tmp_expansion_list(t_token *token, \
 		// 호출한 함수에서 잘 지워지는지도 확인해야한다.
 		return (-1);
 	}
+	(token->data)[0] = '\0';
 	concat_list_data(tmp_expansion_list->next, token->data, alloc_size);
 	return (0);
 }
@@ -258,11 +272,13 @@ static int	concat_tmp_expansion_list(t_token *token, \
 // token->data 시작이 $부터인지 재검증 필요
 static int  conversion(t_env_list *env_list, t_token *token)
 {
-	char	*as_is_str;
-	char	*to_be_str;
+	const char	*as_is_str;
+	char		*to_be_str;
 
-	as_is_str = token->data;
-	if (as_is_str[1] == '?')
+	as_is_str = (const char *)token->data;
+	if (as_is_str[1] == '\0')
+		to_be_str = ft_strdup("$");
+	else if (as_is_str[1] == '?')
 		to_be_str = ft_itoa(*get_exit_status());
 	else // env list에 있는것을 이용해서 변환한다.
 		to_be_str = convesion_using_env(env_list, &(as_is_str[1]));
@@ -307,7 +323,6 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 	tmp_expansion_list.next = NULL;
 	if (env_list == NULL || token == NULL)
 		return (-1);
-	// expansion_str_split
 	if (expansion_str_split(token, &tmp_expansion_list) < 0)
 		return (-1);
 	cur_node = tmp_expansion_list.next;
