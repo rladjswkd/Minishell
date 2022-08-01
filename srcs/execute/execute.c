@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 20:49:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/01 20:25:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "redirect.h"
 #include "heredoc.h"
 #include "execute.h"
+#include "expansion.h"
 #include "exit.h"
 #include "utils.h"
 //debug
@@ -115,7 +116,8 @@ static int check_execute_operator(t_list *parse_list)
 	return (1);
 }
 
-int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
+int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
+						t_list *org_list)
 {
 	t_simple	*scmd_list;
 
@@ -124,26 +126,26 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
 		return (2);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		update_exit_status(simple_cmd(env_list, scmd_list, is_child),\
-							env_list, parse_list);
+							org_list);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
 		update_exit_status(pipeline_processing(env_list, \
-											get_compound(parse_list)->list), \
-											env_list, parse_list);
+											get_compound(parse_list)->list, \
+											org_list), org_list);
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
 		update_exit_status(execute_processing(env_list, \
 											get_compound(parse_list)->list,\
-											is_child), env_list, parse_list);
+											is_child, org_list), org_list);
 	// echo abc | (echo a | cat) || echo asdf 의 경우 어떻게 동작할것인가?
 	// PL || SCMD
 	// SCMD | SUBSHELL || SCMD
-	// if (parse_list->next)
-	// {
-	// 	parse_list = parse_list->next;
-	// 	while (parse_list && check_execute_operator(parse_list))
-	// 		parse_list = parse_list->next->next;
-	// 	if (parse_list != NULL)
-	// 		update_exit_status(\
-	// 				execute_processing(env_list, parse_list, is_child));
-	// }
+	if (parse_list->next)
+	{
+		parse_list = parse_list->next;
+		while (parse_list && check_execute_operator(parse_list))
+			parse_list = parse_list->next->next;
+		if (parse_list != NULL)
+			update_exit_status(\
+					execute_processing(env_list, parse_list, is_child, org_list), org_list);
+	}
 	return (*(get_exit_status()));
 }
