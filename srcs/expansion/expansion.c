@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/01 23:51:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/02 00:51:56 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 // debug
-void	free_node(t_list **node);
+void	free_node(t_list **list);
 
 static int	is_there_any_dollar_sign(t_token *token)
 {
@@ -58,15 +58,15 @@ static int	is_dollar_sign_conversion(t_token *token)
 	return (0);
 }
 
-static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
+static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list **list)
 {
 	t_list		*cur_node;
-	t_list		*next_node;
+	t_list		*prev_node;
 	const char	*cur_str;
 
-	if (env_list == NULL || list == NULL)
+	if (env_list == NULL || list == NULL || *list == NULL)
 		return (-1);
-	cur_node = list;
+	cur_node = *list;
 	// expasion만 진행
 	while (cur_node)
 	{
@@ -77,25 +77,40 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list *list)
 		cur_node = cur_node->next;
 	}
 	// $로 변환했는데도 비어있다면(data값이 ""인 경우)해당 노드를 날린다.
-	cur_node = list;
+	cur_node = *list;
+	prev_node = *list;
 	while (cur_node)
 	{
 		cur_str = get_token(cur_node)->data;
-		if (ft_strncmp(cur_str, "", max_nonnegative(cur_str, "") == 0))
+		if (ft_strncmp(cur_str, "", max_nonnegative(cur_str, "")) == 0)
 		{
-			next_node = cur_node->next;
-			cur_node->next = cur_node->next->next;
-			free_node(&next_node);
+			if (cur_node == prev_node)
+			{
+				prev_node = prev_node->next;
+				free_node(&cur_node);
+				cur_node = prev_node;
+				*list = prev_node;
+			}
+			else
+			{
+				prev_node->next = cur_node->next;
+				free_node(&cur_node);
+				cur_node = prev_node->next;
+			}
+			continue ;
 		}
+		prev_node = cur_node;
 		cur_node = cur_node->next;
 	}
 }
 
-void	free_node(t_list **node)
+void	free_node(t_list **list)
 {
-	safe_free(&(get_token(*node)->data));
-	free(*node);
-	*node = NULL;
+	safe_free(&(get_token(*list)->data));
+	free((*list)->node);
+	(*list)->node = NULL;
+	free(*list);
+	*list = NULL;
 }
 
 // 42"a" 5 ->42a 5로 붙어야한다.
@@ -158,15 +173,15 @@ int	concat_list_in_condition(t_list *list)
 	return (0);
 }
 
-static int	do_expansion(t_env_list *env_list, t_list *list)
+static int	do_expansion(t_env_list *env_list, t_list **list)
 {
 	t_list	*cur_node;
 
-	if (env_list == NULL || list == NULL)
+	if (env_list == NULL || list == NULL || *list == NULL)
 		return (0);
 	if (expand_dollar_sign_in_every_node(env_list, list))
 		return (-1);
-	cur_node = list;
+	cur_node = *list;
 	while (cur_node)
 	{
 		if (get_token(cur_node)->types & TOKEN_CONCAT
@@ -183,9 +198,9 @@ int	expansion(t_env_list *env_list, t_simple *scmd_list)
 {
 	if (env_list == NULL || scmd_list == NULL)
 		return (-1);
-	if (do_expansion(env_list, scmd_list->redirs) < 0)
+	if (do_expansion(env_list, &(scmd_list->redirs)) < 0)
 		return (-1);
-	if (do_expansion(env_list, scmd_list->args) < 0)
+	if (do_expansion(env_list, &(scmd_list->args)) < 0)
 		return (-1);
 	return (0);
 }
