@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/02 18:13:14 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 23:48:01 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		// expansion_and_heredoc(env_list, parsed_header.next);
 		// print_command_content(parsed_header.next);
 		execute_processing(env_list, parsed_header.next, FALSE, &parsed_header);
 		add_history(input);
