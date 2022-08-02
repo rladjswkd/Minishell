@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 16:06:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/01 23:48:09 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/02 17:56:11 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	*get_exit_status()
 	return (&exit_status);
 }
 
-int	update_exit_status(int status, t_list *org_list)
+void	update_exit_status(int status, t_list *org_list)
 {
 	if (status < 0)
 	{

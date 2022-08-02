@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/02 00:51:56 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/02 17:59:07 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list **list)
 		// $가 붙어있는 경우 변환한다.
 		if (is_dollar_sign_conversion(get_token(cur_node)))
 			if (dollar_sign_conversion(env_list, get_token(cur_node)) < 0)
-				(-1);
+				return (-1);
 		cur_node = cur_node->next;
 	}
 	// $로 변환했는데도 비어있다면(data값이 ""인 경우)해당 노드를 날린다.
@@ -102,6 +102,7 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list **list)
 		prev_node = cur_node;
 		cur_node = cur_node->next;
 	}
+	return (0);
 }
 
 void	free_node(t_list **list)
@@ -188,10 +189,11 @@ static int	do_expansion(t_env_list *env_list, t_list **list)
 			&& cur_node->next)
 		{
 			if (concat_list_in_condition(cur_node) < 0)
-				(-1);
+				return (-1);
 		}
 		cur_node = cur_node->next;
 	}
+	return (0);
 }
 
 int	expansion(t_env_list *env_list, t_simple *scmd_list)

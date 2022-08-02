@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/01 15:48:41 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/02 18:24:26 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	t_list	*compound_list;
 	int		status;
 
-	compound_list = get_compound(pipelist_info->cur_node)->list;
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]);
 	if (is_exist_next_pipe(pipelist_info->cur_node))
@@ -154,7 +153,9 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
 	{
-		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
+		print_error(NULL, NULL, NULL, "PL COMPOUND_PIPELINE or COMPOUND_SUBSHELL");
+		compound_list = get_compound(pipelist_info->cur_node)->list;
+		status = execute_processing(env_list , compound_list, TRUE, org_list);
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)

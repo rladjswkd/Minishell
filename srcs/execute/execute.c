@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/01 23:52:10 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/02 18:06:38 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,13 @@ static int check_execute_operator_skip(t_list *parse_list)
 {
 	int	operator;
 
-	operator = get_command_type(parse_list->node);
+	operator = get_command_type(parse_list);
 	if (operator & SIMPLE_AND && *get_exit_status() != 0)
-		(1);
+		return (1);
 	else if (operator & SIMPLE_OR && *get_exit_status() == 0)
-		(1);
+		return (1);
 	else
-		(0);//error
+		return (0);//error
 }
 
 int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
@@ -141,7 +141,7 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 			parse_list = parse_list->next->next;
 		if (parse_list != NULL)
 			update_exit_status(\
-					execute_processing(env_list, parse_list, is_child, org_list), org_list);
+			execute_processing(env_list, parse_list, is_child, org_list), org_list);
 	}
 	return (*(get_exit_status()));
 }
