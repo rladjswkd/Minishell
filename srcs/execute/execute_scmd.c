@@ -6,10 +6,11 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 01:43:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/03 19:32:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/errno.h>
 #include <stddef.h>
 #include "linked_list.h"
 #include "env_list.h"
@@ -22,83 +23,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	**list_to_array(t_list *plist);
-
-static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)
-{
-	*dst = ft_strjoin(s1, s2);
-	if (*dst == NULL)
-	{
-		free_list(&depend_list);
-		return (-1);
-	}
-	return (0);
-}
-
-char	**list_to_array(t_list *plist)
-{
-	char		**arr_list;
-	int			idx;
-	int			list_len;
-	t_token		*token;
-	t_list		*cur_node;
-
-	if (plist == NULL)
-		return (NULL);
-	arr_list = NULL;
-	list_len = 0;
-	cur_node = plist;
-	while (cur_node)
-	{
-		cur_node = cur_node->next;
-		list_len++;
-	}
-	arr_list = (char **)malloc(sizeof(char *) * (list_len + 1));
-	if (arr_list == NULL)
-		return (NULL);
-	idx = 0;
-	cur_node = plist;
-	while (idx < list_len)
-	{
-		token = (t_token *)(cur_node->node);
-		arr_list[idx] = token->data;
-		idx++;
-		cur_node = cur_node->next;
-	}
-	arr_list[list_len] = NULL;
-	return (arr_list);
-}
-/**/
-
-char	**env_list_to_array(t_env_list *env_list)
-{
-	char		**arr_list;
-	int			idx;
-	t_env_node	*cur_node;
-	char		*tmp_str;
-
-	arr_list = (char **)malloc(sizeof(char *) * (env_list->list_length + 1));
-	if (arr_list == NULL)
-		return (NULL);
-	idx = 0;
-	cur_node = env_list->header_node;
-	while (cur_node || idx < env_list->list_length)
-	{
-		if (safe_strjoin(&tmp_str, cur_node->key, "=", arr_list)
-			|| safe_strjoin(&arr_list[idx], tmp_str, \
-							cur_node->value, arr_list))
-		{
-			free(tmp_str);
-			free_list(&arr_list);
-			return (NULL);
-		}
-		free(tmp_str);
-		cur_node = cur_node->next_node;
-		idx++;
-	}
-	arr_list[env_list->list_length] = NULL;
-	return (arr_list);
-}
 /**/
 
 static char	**find_path_list(char **envp)
@@ -145,8 +69,18 @@ int	execute_cmd(char **envp, char **cmd)
 		safe_free(&cmd_path);
 		idx++;
 	}
-	status = execve(cmd[0], cmd, envp);
-	print_error(SHELL_NAME, cmd[0], NULL, "command not found.");
+	execve(cmd[0], cmd, envp);
+	// cmd not executable
 	free_list(&path_list);
+	if (errno == ENOENT)
+	{
+		print_error(SHELL_NAME, cmd[0], NULL, "command not found.");
+		status = 127;
+	}
+	else
+	{
+		print_error(SHELL_NAME, cmd[0], NULL, "command not an executable.");
+		status = 126;
+	}
 	exit(status);
 }

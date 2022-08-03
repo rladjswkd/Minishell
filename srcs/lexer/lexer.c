@@ -388,9 +388,9 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 	t_simple	*simple;
 	t_list		*next;
 
+	simple = get_simple(parsed);
 	while (find_simple_type(*list) & SIMPLE_NORMAL)
 	{
-		simple = get_simple(parsed);
 		next = (*list)->next;
 		if (get_token_type(*list) & (TOKEN_REDIR | TOKEN_REDIRARG))
 		{
@@ -412,10 +412,11 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 	}
 }
 
-void	free_token(t_list *token)
+void	free_token(t_list *list)
 {
-	free(get_token(token)->data);
-	free(token);
+	free(get_token(list)->data);
+	free(list->node);
+	free(list);
 }
 
 void	free_token_list(t_list *list)
@@ -430,40 +431,43 @@ void	free_token_list(t_list *list)
 	}
 }
 
-void	free_simple_members(t_list *list)
-{
-	t_simple	*simple;
-
-	simple = get_simple(list);
-	free_token_list(simple->args);
-	free_token_list(simple->redirs);
-	free(list->node);
-}
-
-void	free_compound_members(t_list *list)
-{
-	t_compound	*compound;
-	t_list		*next;
-
-	compound = get_compound(list);
-	while (compound->list)
-	{
-		next = compound->list->next;
-		free_command(compound->list);
-		free(compound->list);
-		compound->list = next;
-	}
-}
-
 void	free_command(t_list *list)
 {
-	if (get_command_type(list) & SIMPLE_NORMAL)
-		free_simple_members(list);
-	else
-		free_compound_members(list);
+	t_command	*command;
+	t_list		*next;
+
+	command = get_command(list);
+	if (command->type & SIMPLE_NORMAL)
+	{
+		free_token_list(command->l1);
+		free_token_list(command->l2);
+	}
+	else if (command->type & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL)) 
+	{
+		while (command->l1)
+		{
+			next = command->l1->next;
+			free_command(command->l1);
+			command->l1 = next;
+		}
+	}
+	free(command);
 	free(list);
 }
 
+void	free_command_list(t_list *list)
+{
+	t_list	*next;
+
+	while (list)
+	{
+		next = list->next;
+		free_command(list);
+		list = next;
+	}
+}
+
+/* SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다 */
 int	parse_simple(t_list *token_list, t_list *header)
 {
 	int	type;
@@ -474,7 +478,7 @@ int	parse_simple(t_list *token_list, t_list *header)
 		type = find_simple_type(token_list);
 		if (!create_command(&(header->next), type))
 			return (0);
-		if (type & SIMPLE_NORMAL) // SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다.
+		if (type & SIMPLE_NORMAL)
 			parse_args_redirs(header->next, &token_list);
 		else
 		{
@@ -629,7 +633,7 @@ void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
 		else
 		{
 			add_list_back(&(get_compound(neu)->list), s);
-			if (s != e)
+			if (s != e) // s == e일 때도 s->next = 0을 하면 while 조건식이 s != NULL이 된다.
 				s->next = 0;
 		}
 		s = next;
@@ -789,7 +793,6 @@ void	print_simple_content(t_list *command, char *tab)
 void	print_compound_content(t_list *command)
 {
 	int	types;
-	t_list	*list;
 
 	types = get_command_type(command);
 	printf("\n");
@@ -797,12 +800,7 @@ void	print_compound_content(t_list *command)
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_PIPELINE::START");
 	else
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_SUBSHELL::START");
-	list = get_compound(command)->list;
-	while (list)
-	{
-		print_command_content(list);
-		list = list->next;
-	}
+	print_command_content(get_compound(command)->list);
 	printf("\033[0;31m::END \033[m\n");
 }
 
@@ -810,10 +808,11 @@ void	print_command_content(t_list *command)
 {
 	while (command)
 	{
-		if (get_command_type(command) < COMPOUND_PIPELINE)
-			print_simple_content(command, "");
-		else
+		if (get_command_type(command) & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL))
 			print_compound_content(command);
+		else
+			print_simple_content(command, "");
 		command = command->next;
 	}
 }
+/* free_all 이라는 함수 만들어서 input, token_header->next, parsed_header->next 중 null이 아닌 거 다 free하기 */

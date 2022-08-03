@@ -39,6 +39,7 @@ EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \
 			execute.c	\
 			execute_scmd.c \
 			execute_builtin.c \
+			execute_utils.c \
 )
 
 REDIRECT_SRCS = $(addprefix $(SRCS_DIR)/$(REDIRECT_DIR)/, \

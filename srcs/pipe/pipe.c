@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/02 18:24:26 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/03 20:36:13 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,12 +150,19 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]);
 	if (is_exist_next_pipe(pipelist_info->cur_node))
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
-	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE 
-		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
+	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE)
+		// || get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
 	{
-		print_error(NULL, NULL, NULL, "PL COMPOUND_PIPELINE or COMPOUND_SUBSHELL");
-		compound_list = get_compound(pipelist_info->cur_node)->list;
-		status = execute_processing(env_list , compound_list, TRUE, org_list);
+		print_error(NULL, NULL, NULL, "PL COMPOUND_PIPELINE");
+		// compound_list = get_compound(pipelist_info->cur_node);
+		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
+		exit((char)status);
+	}
+	else if (get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
+	{
+		print_error(NULL, NULL, NULL, "GR COMPOUND_SUBSHELL");
+		// compound_list = get_compound(pipelist_info->cur_node);
+		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)

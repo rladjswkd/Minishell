@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/02 18:06:38 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/03 21:57:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #include "utils.h"
 //debug
 #include <stdio.h>
+#include "ft_error.h"
+
 /*
 	- prepair
 		- expansion
@@ -33,6 +35,16 @@
 	- builtin check
 	- execve()
 */
+
+static int	handle_status(int status)
+{
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else if (WIFSIGNALED(status)) //  128+n if the command was terminated by signal n
+		return (WTERMSIG(status) + 128);
+	else
+		return (EXIT_FAILURE);
+}
 
 /*
 	- status에 대한 처리가 필요하다.
@@ -68,6 +80,7 @@ static int	extern_cmd(t_env_list *env_list, t_list *cmd_list, int is_child)
 		free_list(&envp);
 		free_list(&cmd);
 		waitpid(pid, &status, 0);
+		status = handle_status(status);
 	}
 	return (status);
 }
@@ -115,11 +128,36 @@ static int check_execute_operator_skip(t_list *parse_list)
 		return (0);//error
 }
 
+static int execute_subshell(t_env_list *env_list, t_list *parse_list, \
+							int is_child, t_list *org_list)
+{
+	int pid;
+	int status;
+
+	pid = fork();
+	if (pid < 0)
+		return (-1);
+	else if (pid == 0)
+	{
+		status = execute_processing(env_list, \
+									parse_list,\
+									1, org_list);
+		exit(status);
+	}
+	waitpid(pid, &status, 0);
+	status = handle_status(status);
+	return (status);
+}
+
 int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 						t_list *org_list)
 {
 	t_simple	*scmd_list;
 
+	// fprintf(stderr, "== execute_processing ==\n");
+	// fprintf(stderr, "get_command_type(parse_list) : %d\n", get_command_type(parse_list));
+	// fprintf(stderr, "get_compound(parse_list)->list : %p\n", get_compound(parse_list)->list);
+	// fprintf(stderr, "parse_list->next : %p\n", parse_list->next);
 	scmd_list = get_simple(parse_list);
 	if (env_list == NULL || parse_list == NULL)
 		return (2);
@@ -134,8 +172,12 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 		update_exit_status(execute_processing(env_list, \
 											get_compound(parse_list)->list,\
 											is_child, org_list), org_list);
+	fprintf(stderr, "before parse_list->next : %p\n", parse_list->next);
 	if (parse_list->next)
 	{
+		if (is_child)
+			fprintf(stderr, "is child check for PL check \n");
+		fprintf(stderr, "check_execute_operator_skip \n");
 		parse_list = parse_list->next;
 		while (parse_list && check_execute_operator_skip(parse_list))
 			parse_list = parse_list->next->next;
