@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/03 17:14:37 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/04 15:15:12 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "execute.h"
 #include "lexer.h"
 #include "heredoc.h"
+#include "ft_signal.h"
 //debug
 #include <stdlib.h>
 #include "linked_list.h"
@@ -71,6 +72,19 @@ static int	reset_in_out_fd(int io_backup[2])
 	return (0);
 }
 
+static int	input_processing(char **input)
+{
+	*input = readline("pepsi zero> ");
+	if (*input == NULL)
+	{
+		printf("exit\n");
+		exit(0);
+	}
+	if (!(*input)[0])
+		return (0);
+	return (1);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
@@ -78,21 +92,16 @@ int	main(int argc, char **argv, char **envp)
 	t_list		parsed_header;
 	int			io_backup[2];
 
-	// signal(SIGQUIT, SIG_IGN);
-	// signal(SIGINT, handler);
+	signal_processing();
 	if (init_value(&env_list, envp, io_backup) < 0)
 		return (1);
 	while (1)
 	{
-		// printf("error code before readline : %s\n", strerror(errno));
-		input = readline("pepsi zero> ");
-		if (input == NULL)
-			exit(1);
-		if (!input[0])
+		if (input_processing(&input) == 0)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		print_command_content(parsed_header.next);
+		// print_command_content(parsed_header.next);
 		execute_processing(env_list, parsed_header.next, FALSE, &parsed_header);
 		add_history(input);
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.

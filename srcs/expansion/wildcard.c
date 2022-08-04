@@ -6,10 +6,11 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 00:07:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/04 14:09:36 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include <limits.h>
 #include <dirent.h>
 #include "linked_list.h"
@@ -34,7 +35,7 @@ static int	do_wildcard(t_list *list)
 	DIR				*dir_ptr;
 	struct dirent	*file;
 	char			buf[PATH_MAX];
-	
+
 	if (list == NULL)
 		return (0);
 	if (getcwd(buf, sizeof(buf)) == NULL)
@@ -45,7 +46,7 @@ static int	do_wildcard(t_list *list)
 	file = readdir(dir_ptr);
 	while (file != NULL)
 	{
-		file->d_name;
+		// file->d_name;
 		file = readdir(dir_ptr);
 	}
 	closedir(dir_ptr);

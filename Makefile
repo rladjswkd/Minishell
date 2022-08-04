@@ -18,6 +18,7 @@ EXPANSION_DIR = expansion
 REDIRECT_DIR = redirect
 HEREDOC_DIR = heredoc
 PIPE_DIR = pipe
+SIGNAL_DIR = signal
 LINKING_FLAGS = -lreadline -L${HOME}/.brew/opt/readline/lib
 COMFILE_FLAGS = -I${HOME}/.brew/opt/readline/include
 SRCS = $(addprefix $(SRCS_DIR)/, \
@@ -74,6 +75,10 @@ BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
 			unset.c	\
 )
 
+SIGNAL_SRCS = $(addprefix $(SRCS_DIR)/$(SIGNAL_DIR)/, \
+			signal.c	\
+)
+
 UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_strndup.c	\
 			ft_strjoin.c	\
@@ -104,18 +109,19 @@ PIPE_OBJS = $(PIPE_SRCS:.c=.o)
 EXPANSION_OBJS = $(EXPANSION_SRCS:.c=.o)
 BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
 LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
+SIGNAL_OBJS  = $(SIGNAL_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+	$(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 # $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
 # $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
-	$(CC) $^ -o $@ $(LDLIBS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(CC) $(LINKING_FLAGS) $^ -o $@
 
 # $(CC) $(LINKING_FLAGS) $^ -o $@
 # $(CC) $^ -o $@ $(LDLIBS)
@@ -124,7 +130,7 @@ $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)

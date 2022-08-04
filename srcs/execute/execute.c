@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/03 21:57:29 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/04 15:21:32 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ static int check_execute_operator_skip(t_list *parse_list)
 		return (0);//error
 }
 
+// tmp debug for like this case (echo a && echo b) | cat 
 static int execute_subshell(t_env_list *env_list, t_list *parse_list, \
 							int is_child, t_list *org_list)
 {
@@ -172,12 +173,12 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 		update_exit_status(execute_processing(env_list, \
 											get_compound(parse_list)->list,\
 											is_child, org_list), org_list);
-	fprintf(stderr, "before parse_list->next : %p\n", parse_list->next);
+	// fprintf(stderr, "before parse_list->next : %p\n", parse_list->next);
 	if (parse_list->next)
 	{
-		if (is_child)
-			fprintf(stderr, "is child check for PL check \n");
-		fprintf(stderr, "check_execute_operator_skip \n");
+		// if (is_child)
+		// 	fprintf(stderr, "is child check for PL check \n");
+		// fprintf(stderr, "check_execute_operator_skip \n");
 		parse_list = parse_list->next;
 		while (parse_list && check_execute_operator_skip(parse_list))
 			parse_list = parse_list->next->next;
