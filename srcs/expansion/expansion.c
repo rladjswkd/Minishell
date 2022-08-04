@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/02 17:59:07 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/04 18:06:07 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,14 +174,10 @@ int	concat_list_in_condition(t_list *list)
 	return (0);
 }
 
-static int	do_expansion(t_env_list *env_list, t_list **list)
+int	do_concat_list(t_list **list)
 {
 	t_list	*cur_node;
 
-	if (env_list == NULL || list == NULL || *list == NULL)
-		return (0);
-	if (expand_dollar_sign_in_every_node(env_list, list))
-		return (-1);
 	cur_node = *list;
 	while (cur_node)
 	{
@@ -193,6 +189,32 @@ static int	do_expansion(t_env_list *env_list, t_list **list)
 		}
 		cur_node = cur_node->next;
 	}
+	return (0);
+}
+
+int	concat_list(t_simple *scmd_list)
+{
+	t_list	*cur_node;
+
+	if (scmd_list == NULL)
+		return (-1);
+	if (do_concat_list(&(scmd_list->redirs)) < 0)
+		return (-1);
+	if (do_concat_list(&(scmd_list->args)) < 0)
+		return (-1);
+	return (0);
+}
+
+static int	do_expansion(t_env_list *env_list, t_list **list)
+{
+	t_list	*cur_node;
+
+	if (env_list == NULL || list == NULL || *list == NULL)
+		return (0);
+	if (expand_dollar_sign_in_every_node(env_list, list))
+		return (-1);
+	// if (concat_list(list) < 0)
+	// 	return (-1);
 	return (0);
 }
 
