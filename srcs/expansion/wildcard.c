@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 20:37:08 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/06 01:11:54 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,41 @@
 #include "linked_list.h"
 #include "lexer.h"
 #include "utils.h"
+
+// 함수정리 필요!
+static void	safe_free_token_list(t_list *list);
+static void	safe_free_token(t_list **token);
+static int	wrapper_free_token_list(t_list *list, int return_val);
+
+static void	safe_free_token(t_list **token)
+{
+	free(get_token(*token)->data);
+	get_token(*token)->data = NULL;
+	free(*token);
+	*token = NULL;
+}
+
+static void	safe_free_token_list(t_list *list)
+{
+	t_list	*next_node;
+	t_list	*cur_node;
+
+	cur_node = list;
+	while (cur_node)
+	{
+		next_node = cur_node->next;
+		safe_free_token(&cur_node);
+		cur_node = next_node;
+	}
+	list = NULL;
+}
+
+static int	wrapper_free_token_list(t_list *list, int return_val)
+{
+	safe_free_token_list(list);
+	return (return_val);
+}
+
 
 /*
   매칭되는 것이 없다면 literal로 취급
@@ -269,22 +304,23 @@ static char	*get_organized_pattern(t_list *start_node, t_list *end_node, \
 	return (pattern);
 }
 
-int	add_pattern_list(t_list **pattern_list, char *dir_file_name)
+int	add_pattern_list(t_list *pattern_list, char *dir_file_name)
 {
-	t_list	*cur_node;
-
-	cur_node = *pattern_list;
-	while (cur_node)
-		cur_node = cur_node->next;
-	cur_node = (t_list *)malloc(sizeof(t_list));
-	if (pattern_list == NULL)
+	while (pattern_list->next)
+		pattern_list = pattern_list->next;
+	pattern_list->next = (t_list *)malloc(sizeof(t_list));
+	if (pattern_list->next == NULL)
 		return (-1);
-	cur_node->node = (t_token *)malloc(sizeof(t_token));
-	if (cur_node->node == NULL)
+	pattern_list->next->node = (t_token *)malloc(sizeof(t_token));
+	if (pattern_list->next->node == NULL)
 		return (-1); // free pattern_list, node, data free는 할당의 역순!
-	// get_token(pattern_list)->data = (char *)malloc(sizeof(char) * ())
-	if (get_token(cur_node)->data == NULL)
+	get_token(pattern_list->next)->data = ft_strdup(dir_file_name);
+	get_token(pattern_list->next)->types = TOKEN_NORMAL;
+	if (get_token(pattern_list->next)->data == NULL)
 		return (-1); // free pattern_list, node, data
+	pattern_list = pattern_list->next;
+	pattern_list->next = NULL;
+	return (0);
 }
 
 /*
@@ -311,9 +347,7 @@ static int	match_pattern(const char *pattern, const char *dir_file_name, \
 	pattern_idx = 0;
 	while (pattern[pattern_idx] && dir_file_name[idx])
 	{
-		if (wildcard_pattern_flag[pattern_idx] != 0)
-			pattern_idx++;
-		else
+		if (wildcard_pattern_flag[pattern_idx] == 0)
 		{
 			if (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1])
 			{
@@ -325,6 +359,7 @@ static int	match_pattern(const char *pattern, const char *dir_file_name, \
 				return (0);
 			idx++;
 		}
+		pattern_idx++;
 	}
 	return (1);
 }
@@ -337,18 +372,24 @@ static t_list	*get_pattern_matched_list(char *pattern, \
 											char **cur_dir_file_list, \
 											int	*wildcard_pattern_flag)
 {
-	t_list	*pattern_list;
+	t_list	pattern_list;
 	int		idx;
 
 	idx = 0;
-	pattern_list = NULL;
+	pattern_list.next = NULL;
 	while (cur_dir_file_list[idx])
 	{
 		if (match_pattern(pattern, cur_dir_file_list[idx], wildcard_pattern_flag))
-			add_pattern_list(&pattern_list, cur_dir_file_list[idx]);
+		{
+			if (add_pattern_list(&pattern_list, cur_dir_file_list[idx]) < 0)
+			{
+				// free pattern_list
+				return (NULL);
+			}
+		}
 		idx++;
 	}
-	return (pattern_list);
+	return (pattern_list.next);
 }
 
 static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
@@ -372,6 +413,37 @@ static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
 	}
 	return (wildcard_pattern_flag);
 }
+
+// match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
+// 그리고 기존 start_node 이후부터 end_node까지는 제거한다. matched_list마지막이 end_node->next 노드를 가리켜야한다.
+static int	concat_matched_list_to_org_list(t_list **start_node, \
+											t_list **end_node, \
+											t_list *matched_list)
+{
+	t_list	*tmp_node;
+	t_list	*cur_node;
+	t_list	*next_node;
+
+	tmp_node = *start_node;
+	if (*start_node == NULL || *end_node == NULL || matched_list == NULL)
+		return (-1);
+	*start_node = matched_list;
+	cur_node = *start_node;
+	while (cur_node->next)
+		cur_node = cur_node->next;
+	cur_node->next = (*end_node)->next;
+	while (tmp_node)
+	{
+		next_node = tmp_node->next;
+		safe_free_token(&tmp_node);
+		if (tmp_node == *end_node)
+			break ;
+		tmp_node = next_node;
+	}
+	*end_node = cur_node->next;
+	return (0);
+}
+
 /*
 	TOKEN_CONCAT이 있을 수 있으므로 "."*"."같이 들어오는 경우 혹은 ls* 같이 1개 노드만 들어오는 경우를 가정
 
@@ -384,36 +456,47 @@ static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
 
 	""
 */
-static int	wildcard_conversion(t_list **start_node, t_list *end_node, \
-								char **cur_dir_file_list)
+// list에 wildcard_conversion 해준 리스트를 연결해준다.
+// 단순한 방법 고민
+static int	wildcard_conversion(t_list **start_node, t_list **end_node, \
+								char **cur_dir_file_list, t_list **list)
 {
 	char	*pattern;
 	int		*wildcard_pattern_flag;
 	t_list	*matched_list;
+	t_list	*tmp_start_node;
 
-	wildcard_pattern_flag = get_wildcard_pattern_flag(*start_node, end_node);
+	tmp_start_node = *start_node;
+	wildcard_pattern_flag = get_wildcard_pattern_flag(*start_node, *end_node);
 	if (wildcard_pattern_flag == NULL)
 		return (-1);
-	pattern = get_organized_pattern(*start_node, end_node, wildcard_pattern_flag);
+	pattern = get_organized_pattern(*start_node, *end_node, wildcard_pattern_flag);
 	if (pattern == NULL)
 		return (-1);
 	matched_list = get_pattern_matched_list(pattern, cur_dir_file_list, \
 											wildcard_pattern_flag);
 	if (matched_list)
-		; // match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
-		// 그리고 기존 start_node 이후부터 end_node까지는 제거한다. matched_list마지막이 end_node->next 노드를 가리켜야한다.
+		concat_matched_list_to_org_list(start_node, end_node, matched_list);
+	if (tmp_start_node == *list)
+		*list = *start_node;
+	else
+	{
+		while ((*list)->next != tmp_start_node)
+			(*list) = (*list)->next;
+		(*list)->next = *start_node;
+	}
 	safe_free(&pattern);
 	return (0);
 }
 
-static int	do_wildcard(t_list *list, char **cur_dir_file_list)
+static int	do_wildcard(t_list **list, char **cur_dir_file_list)
 {
 	t_list	*cur_node;
 	t_list	*start_node;
 
-	if (list == NULL || cur_dir_file_list == NULL)
+	if (*list == NULL || cur_dir_file_list == NULL)
 		return (0);
-	cur_node = list;
+	cur_node = *list;
 	start_node = NULL;
 	while (cur_node)
 	{
@@ -423,13 +506,14 @@ static int	do_wildcard(t_list *list, char **cur_dir_file_list)
 		{
 			while (cur_node->next && get_token(cur_node)->types & TOKEN_CONCAT)
 				cur_node = cur_node->next;
-			if (wildcard_conversion(&start_node, cur_node, \
-									cur_dir_file_list) < 0)
+			if (wildcard_conversion(&start_node, &cur_node, \
+									cur_dir_file_list, list) < 0)
 				return (-1);
 		}
-		if (!(get_token(cur_node)->types & TOKEN_CONCAT))
+		if (cur_node && !(get_token(cur_node)->types & TOKEN_CONCAT))
 			start_node = NULL;
-		cur_node = cur_node->next;
+		if (cur_node)
+			cur_node = cur_node->next;
 	}
 	return (0);
 }
@@ -448,9 +532,9 @@ int	wildcard_for_curdir(t_simple *scmd_list)
 	cur_dir_file_list = get_cur_dir_file_list();
 	if (cur_dir_file_list == NULL)
 		return (-1);
-	if (do_wildcard(scmd_list->redirs, cur_dir_file_list) < 0)
+	if (do_wildcard(&(scmd_list->redirs), cur_dir_file_list) < 0)
 		return (wrapper_free_list(&cur_dir_file_list));
-	if (do_wildcard(scmd_list->args, cur_dir_file_list) < 0)
+	if (do_wildcard(&(scmd_list->args), cur_dir_file_list) < 0)
 		return (wrapper_free_list(&cur_dir_file_list));
 	free_list(&cur_dir_file_list);
 	return (0);
