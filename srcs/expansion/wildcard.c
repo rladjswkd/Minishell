@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 20:21:38 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/05 12:56:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,29 @@ static int	wrapper_free_list(char ***word_list)
 	return (-1);
 }
 
+
+static int	get_normal_case_pattern_size(t_list *cur_node)
+{
+	int		idx;
+	int		alloc_size;
+	char	prev_char;
+
+	idx = 0;
+	alloc_size = 0;
+	while ((get_token(cur_node)->data)[idx])
+	{
+		if ((get_token(cur_node)->data)[idx] != '*')
+			alloc_size += 1;
+		else
+		{
+			if (prev_char != '*')
+				alloc_size += 1;
+		}
+		prev_char = (get_token(cur_node)->data)[idx];
+		idx++;
+	}
+	return (alloc_size);
+}
 /*
 	- pattern이 정리되었을 경우의 사이즈를 재서 return해준다.
 	e.g) **.** -> *.* size 3
@@ -149,8 +172,57 @@ static int	wrapper_free_list(char ***word_list)
 */
 static int	get_pattern_alloc_size(t_list *start_node, t_list *end_node)
 {
+	t_list	*cur_node;
+	int		alloc_size;
+	int		idx;
+	char	prev_char;
+	
 	if (start_node == NULL || end_node == NULL)
 		return (0);
+	alloc_size = 0;
+	cur_node = start_node;
+	while (cur_node)
+	{
+		if (get_token(cur_node)->types & TOKEN_SQUOTE
+			|| get_token(cur_node)->types & TOKEN_DQUOTE)
+			alloc_size += ft_strlen(get_token(cur_node)->data);
+		else
+			alloc_size += get_normal_case_pattern_size(cur_node);
+		if (cur_node == end_node)
+			break ;
+		cur_node = cur_node->next;
+	}
+	return (alloc_size);
+}
+
+// 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
+void	copy_normal_case_pattern(char *pattern, t_list *cur_node, int alloc_size)
+{
+	int		idx;
+	int 	pattern_idx;
+	char	prev_char;
+
+	idx = 0;
+	pattern_idx = 0;
+	while (idx < alloc_size)
+	{
+		if ((get_token(cur_node)->data)[idx] != '*')
+		{
+			pattern[pattern_idx] = '*';
+			pattern_idx++;
+		}
+		else
+		{
+			if (prev_char != '*')
+			{
+				pattern[pattern_idx] += (get_token(cur_node)->data)[idx];
+				pattern_idx++;
+			}
+		}
+		prev_char = (get_token(cur_node)->data)[idx];
+		idx++;
+	}
+	pattern[pattern_idx] = '\0';
 }
 /*
 	새로운 공간에 organize된것을 담고있다가
@@ -173,34 +245,70 @@ static char	*get_organized_pattern(t_list *start_node, t_list *end_node)
 	pattern = (char *)malloc(sizeof(char) * alloc_size);
 	if (pattern == NULL)
 		return (NULL);
+	pattern[0] = '\0';
 	cur_node = start_node;
-	while (1)
+	while (cur_node)
 	{
-		cur_node = cur_node->next;
+		if (get_token(cur_node)->types & TOKEN_SQUOTE
+			|| get_token(cur_node)->types & TOKEN_DQUOTE)
+			ft_strlcat(pattern, get_token(cur_node)->data, alloc_size);
+		else
+			copy_normal_case_pattern(pattern, cur_node, alloc_size);
 		if (cur_node == end_node)
 			break ;
+		cur_node = cur_node->next;
 	}
 	return (pattern);
 }
 
-int	add_pattern_list(t_list **pattern_list)
+int	add_pattern_list(t_list **pattern_list, char *dir_file_name)
 {
 	t_list	*cur_node;
 
 	cur_node = *pattern_list;
 	while (cur_node)
 		cur_node = cur_node->next;
-	pattern_list = (t_list *)malloc(sizeof(t_list));
+	cur_node = (t_list *)malloc(sizeof(t_list));
 	if (pattern_list == NULL)
 		return (NULL);
-	pattern_list->node = (t_token *)malloc(sizeof(t_token));
-	if (pattern_list->node == NULL)
+	cur_node->node = (t_token *)malloc(sizeof(t_token));
+	if (cur_node->node == NULL)
 		return (-1); // free pattern_list, node, data free는 할당의 역순!
 	// get_token(pattern_list)->data = (char *)malloc(sizeof(char) * ())
-	if (get_token(pattern_list)->data == NULL)
+	if (get_token(cur_node)->data == NULL)
 		return (-1); // free pattern_list, node, data
 }
 
+/*
+아래 타입들에 대해서 어떤식으로 패턴 매칭할것인가?
+	다음패턴을 확인한다.
+	e.g) *l*
+		중간에 l이들어가거나, l로 시작하거나 l로 끝날 수 있다.
+- *
+- .*
+- .*.
+- *.*.
+- *.*.*
+- ..으로만 시작하는건 또 다르다.
+*/
+static int	match_pattern(const char *pattern, const char *dir_file_name)
+{
+	int	idx;
+	int	pattern_idx;
+
+	idx = 0;
+	pattern_idx = 0;
+	//.
+	if (pattern[pattern_idx])
+		;
+	while (pattern[pattern_idx] && dir_file_name[idx])
+	{
+		if (pattern[pattern_idx] != '*')
+		idx++;
+		pattern_idx++;
+	}
+	return (0);
+}
 /*
 	cur_dir_file_list 문자열들을 돌면서 pattern에 매칭되는것을 찾는다.
 	매칭된것은 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
@@ -215,19 +323,10 @@ static t_list	*get_pattern_matched_list(char *pattern, char **cur_dir_file_list)
 	pattern_list = NULL;
 	while (cur_dir_file_list[idx])
 	{
-		if (match_pattern(&pattern, cur_dir_file_list[idx]))
-			
+		if (match_pattern(pattern, cur_dir_file_list[idx]))
+			add_pattern_list(&pattern_list, cur_dir_file_list[idx]);
 		idx++;
 	}
-	pattern_list = (t_list *)malloc(sizeof(t_list));
-	if (pattern_list == NULL)
-		return (NULL);
-	pattern_list->node = (t_token *)malloc(sizeof(t_token));
-	if (pattern_list->node == NULL)
-		return (-1); // free pattern_list, node, data free는 할당의 역순!
-	// get_token(pattern_list)->data = (char *)malloc(sizeof(char) * ())
-	if (get_token(pattern_list)->data == NULL)
-		return (-1); // free pattern_list, node, data
 	return (pattern_list);
 }
 
