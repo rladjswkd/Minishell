@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/06 01:11:54 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/06 01:52:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -406,7 +406,7 @@ static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
 	if (wildcard_pattern_flag == NULL)
 		return (NULL);
 	idx = 0;
-	while (idx <= alloc_size)
+	while (idx < alloc_size)
 	{
 		wildcard_pattern_flag[idx] = 0;
 		idx++;
@@ -504,7 +504,7 @@ static int	do_wildcard(t_list **list, char **cur_dir_file_list)
 			start_node = cur_node;
 		if (is_there_any_wildcard(cur_node))
 		{
-			while (cur_node->next && get_token(cur_node)->types & TOKEN_CONCAT)
+			while (cur_node && get_token(cur_node)->types & TOKEN_CONCAT)
 				cur_node = cur_node->next;
 			if (wildcard_conversion(&start_node, &cur_node, \
 									cur_dir_file_list, list) < 0)
