@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 18:05:46 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/05 13:27:53 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,6 @@ int	expansion(t_env_list *env_list, t_simple *scmd_list);
 int	concat_list(t_simple *scmd_list);
 int	concat_list_in_condition(t_list *list);
 int	dollar_sign_conversion(t_env_list *env_list, t_token *token);
-int	wildcard_for_curdir(t_list *parse_list);
+int	wildcard_for_curdir(t_simple *scmd_list);
 
 #endif

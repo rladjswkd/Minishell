@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 18:07:39 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/05 13:27:10 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,8 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 
 	if (expansion(env_list, scmd_list) < 0)
 		return (-1);
-	// if (wildcard_for_curdir(scmd_list) < 0)
-	// 	return (-1);
+	if (wildcard_for_curdir(scmd_list) < 0)
+		return (-1);
 	if (concat_list(scmd_list) < 0)
 		return (-1);
 	status = redirection(scmd_list->redirs, is_child);

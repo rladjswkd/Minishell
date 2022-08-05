@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 12:56:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/05 19:51:39 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,30 +196,36 @@ static int	get_pattern_alloc_size(t_list *start_node, t_list *end_node)
 }
 
 // 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
-void	copy_normal_case_pattern(char *pattern, t_list *cur_node, int alloc_size)
+void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, \
+								t_list *cur_node, int dst_size)
 {
-	int		idx;
-	int 	pattern_idx;
-	char	prev_char;
+	int			idx;
+	int 		pattern_idx;
+	char		prev_char;
+	const char	*normal_str;
 
 	idx = 0;
 	pattern_idx = 0;
-	while (idx < alloc_size)
+	normal_str = get_token(cur_node)->data;
+	while (pattern[pattern_idx])
+		pattern_idx++;
+	while (normal_str[idx] && pattern_idx < dst_size)
 	{
-		if ((get_token(cur_node)->data)[idx] != '*')
-		{
-			pattern[pattern_idx] = '*';
-			pattern_idx++;
-		}
-		else
+		if (normal_str[idx] == '*')
 		{
 			if (prev_char != '*')
 			{
-				pattern[pattern_idx] += (get_token(cur_node)->data)[idx];
+				pattern[pattern_idx] = normal_str[idx];
+				wildcard_pattern_flag[pattern_idx] = 1;
 				pattern_idx++;
 			}
 		}
-		prev_char = (get_token(cur_node)->data)[idx];
+		else
+		{
+			pattern[pattern_idx] = normal_str[idx];
+			pattern_idx++;
+		}
+		prev_char = normal_str[idx];
 		idx++;
 	}
 	pattern[pattern_idx] = '\0';
@@ -233,13 +239,14 @@ void	copy_normal_case_pattern(char *pattern, t_list *cur_node, int alloc_size)
 	"", ''분간해야한다.
 	**로 여러개가 들어오면 이어붙인다.
 */
-static char	*get_organized_pattern(t_list *start_node, t_list *end_node)
+static char	*get_organized_pattern(t_list *start_node, t_list *end_node, \
+									int *wildcard_pattern_flag)
 {
 	t_list	*cur_node;
 	char	*pattern;
 	int		alloc_size;
 
-	if (start_node == NULL || end_node == NULL)
+	if (start_node == NULL || end_node == NULL || wildcard_pattern_flag == NULL)
 		return (NULL);
 	alloc_size = get_pattern_alloc_size(start_node, end_node) + 1;
 	pattern = (char *)malloc(sizeof(char) * alloc_size);
@@ -253,7 +260,8 @@ static char	*get_organized_pattern(t_list *start_node, t_list *end_node)
 			|| get_token(cur_node)->types & TOKEN_DQUOTE)
 			ft_strlcat(pattern, get_token(cur_node)->data, alloc_size);
 		else
-			copy_normal_case_pattern(pattern, cur_node, alloc_size);
+			copy_normal_case_pattern(pattern, wildcard_pattern_flag,\
+									 cur_node, alloc_size);
 		if (cur_node == end_node)
 			break ;
 		cur_node = cur_node->next;
@@ -270,7 +278,7 @@ int	add_pattern_list(t_list **pattern_list, char *dir_file_name)
 		cur_node = cur_node->next;
 	cur_node = (t_list *)malloc(sizeof(t_list));
 	if (pattern_list == NULL)
-		return (NULL);
+		return (-1);
 	cur_node->node = (t_token *)malloc(sizeof(t_token));
 	if (cur_node->node == NULL)
 		return (-1); // free pattern_list, node, data free는 할당의 역순!
@@ -291,30 +299,43 @@ int	add_pattern_list(t_list **pattern_list, char *dir_file_name)
 - *.*.*
 - ..으로만 시작하는건 또 다르다.
 */
-static int	match_pattern(const char *pattern, const char *dir_file_name)
+static int	match_pattern(const char *pattern, const char *dir_file_name, \
+							const int *wildcard_pattern_flag)
 {
-	int	idx;
-	int	pattern_idx;
-
+	int		idx;
+	int		pattern_idx;
+	//.에 대한 처리 검증필요
+	if (dir_file_name[0] == '.' && pattern[0] != '.')
+		return (0);
 	idx = 0;
 	pattern_idx = 0;
-	//.
-	if (pattern[pattern_idx])
-		;
 	while (pattern[pattern_idx] && dir_file_name[idx])
 	{
-		if (pattern[pattern_idx] != '*')
-		idx++;
-		pattern_idx++;
+		if (wildcard_pattern_flag[pattern_idx] != 0)
+			pattern_idx++;
+		else
+		{
+			if (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1])
+			{
+				while (dir_file_name[idx]
+						&& dir_file_name[idx] != pattern[pattern_idx])
+					idx++;
+			}
+			if (dir_file_name[idx] != pattern[pattern_idx])
+				return (0);
+			idx++;
+		}
 	}
-	return (0);
+	return (1);
 }
 /*
 	cur_dir_file_list 문자열들을 돌면서 pattern에 매칭되는것을 찾는다.
 	매칭된것은 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
 	매칭된것을 찾으면 리스트를 만든다.
 */
-static t_list	*get_pattern_matched_list(char *pattern, char **cur_dir_file_list)
+static t_list	*get_pattern_matched_list(char *pattern, \
+											char **cur_dir_file_list, \
+											int	*wildcard_pattern_flag)
 {
 	t_list	*pattern_list;
 	int		idx;
@@ -323,13 +344,35 @@ static t_list	*get_pattern_matched_list(char *pattern, char **cur_dir_file_list)
 	pattern_list = NULL;
 	while (cur_dir_file_list[idx])
 	{
-		if (match_pattern(pattern, cur_dir_file_list[idx]))
+		if (match_pattern(pattern, cur_dir_file_list[idx], wildcard_pattern_flag))
 			add_pattern_list(&pattern_list, cur_dir_file_list[idx]);
 		idx++;
 	}
 	return (pattern_list);
 }
 
+static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
+{
+	t_list	*cur_node;
+	int		*wildcard_pattern_flag;
+	int		alloc_size;
+	int		idx;
+
+	if (start_node == NULL || end_node == NULL)
+		return (NULL);
+	alloc_size = get_pattern_alloc_size(start_node, end_node) + 1;
+	wildcard_pattern_flag = (int *)malloc(sizeof(int) * alloc_size);
+	if (wildcard_pattern_flag == NULL)
+		return (NULL);
+	idx = 0;
+	while (wildcard_pattern_flag[idx])
+	{
+		wildcard_pattern_flag[idx] = 0;
+		idx++;
+	}
+	wildcard_pattern_flag[idx] = 0;
+	return (wildcard_pattern_flag);
+}
 /*
 	TOKEN_CONCAT이 있을 수 있으므로 "."*"."같이 들어오는 경우 혹은 ls* 같이 1개 노드만 들어오는 경우를 가정
 
@@ -339,17 +382,24 @@ static t_list	*get_pattern_matched_list(char *pattern, char **cur_dir_file_list)
 		- 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
 		- 매칭되는 것이 있을때만 만들고 기존 값을 없애고 새로운 노드를 이어붙인다.
 	- 매칭되는 것이 없으면 원본을 건들지 않는다.
+
+	""
 */
 static int	wildcard_conversion(t_list **start_node, t_list *end_node, \
 								char **cur_dir_file_list)
 {
 	char	*pattern;
+	int		*wildcard_pattern_flag;
 	t_list	*matched_list;
 
-	pattern = get_organized_pattern(*start_node, end_node);
+	wildcard_pattern_flag = get_wildcard_pattern_flag(*start_node, end_node);
+	if (wildcard_pattern_flag == NULL)
+		return (-1);
+	pattern = get_organized_pattern(*start_node, end_node, wildcard_pattern_flag);
 	if (pattern == NULL)
 		return (-1);
-	matched_list = get_pattern_matched_list(pattern, cur_dir_file_list);
+	matched_list = get_pattern_matched_list(pattern, cur_dir_file_list, \
+											wildcard_pattern_flag);
 	if (matched_list)
 		; // match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
 		// 그리고 기존 start_node 이후부터 end_node까지는 제거한다. matched_list마지막이 end_node->next 노드를 가리켜야한다.
@@ -370,9 +420,9 @@ static int	do_wildcard(t_list *list, char **cur_dir_file_list)
 	{
 		if (start_node == NULL)
 			start_node = cur_node;
-		if (is_there_any_wildcard(&cur_node))
+		if (is_there_any_wildcard(cur_node))
 		{
-			while (cur_node && get_token(cur_node)->types & TOKEN_CONCAT)
+			while (cur_node->next && get_token(cur_node)->types & TOKEN_CONCAT)
 				cur_node = cur_node->next;
 			if (wildcard_conversion(&start_node, cur_node, \
 									cur_dir_file_list) < 0)

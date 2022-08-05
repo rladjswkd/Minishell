@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/01 20:20:58 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/05 19:48:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 #include "exit.h"
 #include "utils.h"
 #include "expansion.h"
+
+static void	safe_free_token_list(t_list *list);
+static void	safe_free_token(t_list **token);
+static int	wrapper_free_token_list(t_list *list, int return_val);
 /*
 	variable의 마지막 위치를 반환한다.
 */
@@ -114,7 +118,7 @@ static void	init_expansion_str_split_var(const char *as_is_str, int *idx, \
 	sub_str_info->start_idx = 0;
 }
 
-/*
+/* 
 static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 						char *as_is_str, int dollar_expansion_flag)
 {
@@ -124,17 +128,21 @@ static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
 		sub_str_info.len++;
 		idx++;
 	}
-	tmp_expansion_list->next = (t_list *)malloc(sizeof(t_token));
-	if (tmp_expansion_list->next == NULL)
+	cur_node->next = (t_list *)malloc(sizeof(t_list));
+	if (cur_node->next == NULL)
 		return (-1); // free tmp_expansion_list
-	get_token(tmp_expansion_list->next)->data = \
+	cur_node->next->node = (t_token *)malloc(sizeof(t_list));
+	if (cur_node->next == NULL)
+		return (-1); // free_linked_list_node, free_token
+	get_token(cur_node->next)->data = \
 	ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
-	if (get_token(tmp_expansion_list->next)->data == NULL)
+	if (get_token(cur_node->next)->data == NULL)
 		return (-1); // free tmp_expansion_list, also data.
-	reset_expansion_str_split_var(tmp_expansion_list, \
+	reset_expansion_str_split_var(cur_node->next, \
 							&dollar_expansion_flag, \
-							&sub_str_info, idx);
-	tmp_expansion_list = tmp_expansion_list->next;
+							&sub_str_info, idx, as_is_str);
+	cur_node = cur_node->next;
+	cur_node->next = NULL;
 }
 */
 
@@ -165,14 +173,14 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 			}
 			cur_node->next = (t_list *)malloc(sizeof(t_list));
 			if (cur_node->next == NULL)
-				return (-1); // free tmp_expansion_list
+				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list
 			cur_node->next->node = (t_token *)malloc(sizeof(t_list));
 			if (cur_node->next == NULL)
-				return (-1); // free_linked_list_node, free_token
+				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free_linked_list_node, free_token
 			get_token(cur_node->next)->data = \
 			ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
 			if (get_token(cur_node->next)->data == NULL)
-				return (-1); // free tmp_expansion_list, also data.
+				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list, also data.
 			reset_expansion_str_split_var(cur_node->next, \
 									&dollar_expansion_flag, \
 									&sub_str_info, idx, as_is_str);
@@ -259,11 +267,7 @@ static int	concat_tmp_expansion_list(t_token *token, \
 	alloc_size = get_alloc_size(tmp_expansion_list->next) + 1;
 	token->data = (char *)malloc(sizeof(char) * alloc_size);
 	if (token->data == NULL)
-	{
-		// free tmp_expansion_list, tmp_expansion_list data 
-		// 호출한 함수에서 잘 지워지는지도 확인해야한다.
 		return (-1);
-	}
 	(token->data)[0] = '\0';
 	concat_list_data(tmp_expansion_list->next, token->data, alloc_size);
 	return (0);
@@ -289,6 +293,34 @@ static int  conversion(t_env_list *env_list, t_token *token)
 	return (0);
 }
 
+static void	safe_free_token(t_list **token)
+{
+	free(get_token(*token)->data);
+	get_token(*token)->data = NULL;
+	free(*token);
+	*token = NULL;
+}
+
+static void	safe_free_token_list(t_list *list)
+{
+	t_list	*next_node;
+	t_list	*cur_node;
+
+	cur_node = list;
+	while (cur_node)
+	{
+		next_node = cur_node->next;
+		safe_free_token(&cur_node);
+		cur_node = next_node;
+	}
+	list = NULL;
+}
+
+static int	wrapper_free_token_list(t_list *list, int return_val)
+{
+	safe_free_token_list(list);
+	return (return_val);
+}
 /*
 	- 문자열을 node로 만든다. $로 이루어져있거나 그렇지 않은 것으로 나뉘어있다.
 		-  $로 이루어진것은 변환한다.
@@ -330,18 +362,15 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 	{
 		if (get_token(cur_node)->types == VARIABLE)
 		{
+			// free tmp_expansion_list, tmp_expansion_list data
 			if (conversion(env_list, get_token(cur_node)) < 0)
-			{
-				// free tmp_expansion_list, tmp_expansion_list data
-				return (-1);
-			}
+				return (wrapper_free_token_list(&tmp_expansion_list, -1));
 		}
 		cur_node = cur_node->next;
 	}
 	safe_free(&(token->data));
 	// tmp_expansion_list 각 token data에 있는 문자열을 세서 ft_strcat으로 이어붙인다.
 	if (concat_tmp_expansion_list(token, &tmp_expansion_list) < 0)
-		return (-1);
-	// free tmp_expansion_list, tmp_expansion_list data
+		return (wrapper_free_token_list(&tmp_expansion_list, -1));
 	return (0);
 }

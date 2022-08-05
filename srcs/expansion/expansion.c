@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 18:06:07 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/05 19:05:02 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,39 @@ static int	is_dollar_sign_conversion(t_token *token)
 	return (0);
 }
 
+static void		remove_empty_node(t_list **cur_node, t_list **prev_node, t_list **list)
+{
+	const char	*cur_str;
+
+	while (*cur_node)
+	{
+		cur_str = get_token(*cur_node)->data;
+		if (ft_strncmp(cur_str, "", max_nonnegative(cur_str, "")) == 0)
+		{
+			if (*cur_node == *prev_node)
+			{
+				*prev_node = (*prev_node)->next;
+				free_node(cur_node);
+				*cur_node = *prev_node;
+				*list = *prev_node;
+			}
+			else
+			{
+				(*prev_node)->next = (*cur_node)->next;
+				free_node(cur_node);
+				*cur_node = (*prev_node)->next;
+			}
+			continue ;
+		}
+		*prev_node = *cur_node;
+		*cur_node = (*cur_node)->next;
+	}
+}
+
 static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list **list)
 {
 	t_list		*cur_node;
 	t_list		*prev_node;
-	const char	*cur_str;
 
 	if (env_list == NULL || list == NULL || *list == NULL)
 		return (-1);
@@ -79,29 +107,7 @@ static int	expand_dollar_sign_in_every_node(t_env_list *env_list, t_list **list)
 	// $로 변환했는데도 비어있다면(data값이 ""인 경우)해당 노드를 날린다.
 	cur_node = *list;
 	prev_node = *list;
-	while (cur_node)
-	{
-		cur_str = get_token(cur_node)->data;
-		if (ft_strncmp(cur_str, "", max_nonnegative(cur_str, "")) == 0)
-		{
-			if (cur_node == prev_node)
-			{
-				prev_node = prev_node->next;
-				free_node(&cur_node);
-				cur_node = prev_node;
-				*list = prev_node;
-			}
-			else
-			{
-				prev_node->next = cur_node->next;
-				free_node(&cur_node);
-				cur_node = prev_node->next;
-			}
-			continue ;
-		}
-		prev_node = cur_node;
-		cur_node = cur_node->next;
-	}
+	remove_empty_node(&cur_node, &prev_node, list);
 	return (0);
 }
 

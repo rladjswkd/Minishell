@@ -86,4 +86,7 @@ t_command	*get_command(t_list *parsed);
 
 t_token		*get_token(t_list *token_list);
 
+void		free_token_list(t_list *list);
+void		free_token(t_list *list);
+
 #endif
