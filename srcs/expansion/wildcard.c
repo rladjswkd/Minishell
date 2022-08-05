@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 19:51:39 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/05 20:37:08 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,12 +365,11 @@ static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
 	if (wildcard_pattern_flag == NULL)
 		return (NULL);
 	idx = 0;
-	while (wildcard_pattern_flag[idx])
+	while (idx <= alloc_size)
 	{
 		wildcard_pattern_flag[idx] = 0;
 		idx++;
 	}
-	wildcard_pattern_flag[idx] = 0;
 	return (wildcard_pattern_flag);
 }
 /*
