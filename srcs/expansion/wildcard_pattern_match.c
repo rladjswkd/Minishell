@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 00:52:44 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 01:55:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 02:03:51 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ t_list	*get_pattern_matched_list(char *pattern,
 		{
 			if (add_pattern_list(&pattern_list, cur_dir_file_list[idx]) < 0)
 			{
-                safe_free_token_list(&pattern_list);
+				safe_free_token_list(&pattern_list);
 				return (NULL);
 			}
 		}
