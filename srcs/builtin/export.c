@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 18:44:35 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 13:54:05 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 	{
 		if (split_key_value(arg_list[idx], &key, &value) == -1)
 			error_handler(NULL, NULL, ALLOC_FAIL, 1);
-		if	(check_valid_variable(key) == 0)
+		if (check_valid_variable(key) == 0)
 		{
 			print_error(SHELL_NAME, "export", key, NONVALID);
 			idx++;

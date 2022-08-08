@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:23:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 19:05:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 12:05:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,8 +219,6 @@ static int	do_expansion(t_env_list *env_list, t_list **list)
 		return (0);
 	if (expand_dollar_sign_in_every_node(env_list, list))
 		return (-1);
-	// if (concat_list(list) < 0)
-	// 	return (-1);
 	return (0);
 }
 

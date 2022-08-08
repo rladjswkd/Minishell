@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 22:54:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 12:58:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,103 +106,71 @@ static void	reset_expansion_str_split_var(t_list *cur_node, \
 as_is_str
 sub_str_info->start_of_word = as_is_str; 제대로 되는지 확ㅇ니
 */
-static void	init_expansion_str_split_var(const char *as_is_str, int *idx, \
-								t_sub_str_info *sub_str_info, \
+static void	init_expansion_str_split_var(t_sub_str_info *sub_str_info, \
 								int *dollar_expansion_flag)
 {
 	*dollar_expansion_flag = NORMAL;
-	if (as_is_str[0] == '$')
+	if ((sub_str_info->as_is_str)[0] == '$')
 		*dollar_expansion_flag = VARIABLE;
-	*idx = 0;
+	sub_str_info->idx = 0;
 	sub_str_info->len = 0;
 	sub_str_info->start_idx = 0;
 }
 
 /* 
-static int	alloc_node(t_list *tmp_expansion_list, t_sub_str_info sub_str_info, \
-						char *as_is_str, int dollar_expansion_flag)
-{
-	if (dollar_expansion_flag == VARIABLE
-		&& as_is_str[idx] == '?')
-	{
-		sub_str_info.len++;
-		idx++;
-	}
-	cur_node->next = (t_list *)malloc(sizeof(t_list));
-	if (cur_node->next == NULL)
-		return (-1); // free tmp_expansion_list
-	cur_node->next->node = (t_token *)malloc(sizeof(t_list));
-	if (cur_node->next == NULL)
-		return (-1); // free_linked_list_node, free_token
-	get_token(cur_node->next)->data = \
-	ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
-	if (get_token(cur_node->next)->data == NULL)
-		return (-1); // free tmp_expansion_list, also data.
-	reset_expansion_str_split_var(cur_node->next, \
-							&dollar_expansion_flag, \
-							&sub_str_info, idx, as_is_str);
-	cur_node = cur_node->next;
-	cur_node->next = NULL;
-}
 */
+static int	alloc_node(t_list **cur_node, t_list *tmp_expansion_list, \
+						t_sub_str_info *sub_str_info, \
+						int *dollar_expansion_flag)
+{
+	(*cur_node)->next = (t_list *)malloc(sizeof(t_list));
+	if ((*cur_node)->next == NULL)
+		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list
+	(*cur_node)->next->node = (t_token *)malloc(sizeof(t_list));
+	if ((*cur_node)->next == NULL)
+		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free_linked_list_node, free_token
+	get_token((*cur_node)->next)->data = \
+				ft_substr(sub_str_info->as_is_str, \
+							sub_str_info->start_idx, sub_str_info->len);
+	if (get_token((*cur_node)->next)->data == NULL)
+		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list, also data.
+	reset_expansion_str_split_var((*cur_node)->next, \
+							dollar_expansion_flag, \
+							sub_str_info, sub_str_info->idx, \
+							sub_str_info->as_is_str);
+	(*cur_node) = (*cur_node)->next;
+	(*cur_node)->next = NULL;
+}
 
-// expansion_str_split
 int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 {
-	const char		*as_is_str;
-	int				idx;
 	t_sub_str_info	sub_str_info;
 	t_list			*cur_node;
 	int				dollar_expansion_flag;
 
 	cur_node = tmp_expansion_list;
-	as_is_str = (const char	*)token->data;
-	init_expansion_str_split_var(as_is_str, &idx, &sub_str_info, &dollar_expansion_flag);
-	while (as_is_str[idx])
+	sub_str_info.as_is_str = (const char	*)token->data;
+	init_expansion_str_split_var(&sub_str_info, &dollar_expansion_flag);
+	while (sub_str_info.as_is_str[sub_str_info.idx])
 	{
-		// alloc_node(tmp_expansion_list, )// 지역변수로 처리될것인가?
-		// 현재문자 이전까지만 할당되어야한다. 정상적으로 될것인가?
-		if (check_dollar_expansion_flag(dollar_expansion_flag, as_is_str[idx], \
-										sub_str_info.len))
+		if (check_dollar_expansion_flag(dollar_expansion_flag, \
+									sub_str_info.as_is_str[sub_str_info.idx], \
+									sub_str_info.len))
 		{
 			if (dollar_expansion_flag == VARIABLE
-				&& as_is_str[idx] == '?')
+				&& sub_str_info.as_is_str[sub_str_info.idx] == '?')
 			{
-				sub_str_info.len++;
-				idx++;
+				(sub_str_info.len)++;
+				(sub_str_info.idx)++;
 			}
-			cur_node->next = (t_list *)malloc(sizeof(t_list));
-			if (cur_node->next == NULL)
-				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list
-			cur_node->next->node = (t_token *)malloc(sizeof(t_list));
-			if (cur_node->next == NULL)
-				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free_linked_list_node, free_token
-			get_token(cur_node->next)->data = \
-			ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
-			if (get_token(cur_node->next)->data == NULL)
-				return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list, also data.
-			reset_expansion_str_split_var(cur_node->next, \
-									&dollar_expansion_flag, \
-									&sub_str_info, idx, as_is_str);
-			cur_node = cur_node->next;
-			cur_node->next = NULL;
+			alloc_node(&cur_node, tmp_expansion_list, &sub_str_info, \
+						&dollar_expansion_flag);
 		}
-		sub_str_info.len++;
-		idx++;
+		(sub_str_info.len)++;
+		(sub_str_info.idx)++;
 	}
-	cur_node->next = (t_list *)malloc(sizeof(t_list));
-	if (cur_node->next == NULL)
-		return (-1); // free tmp_expansion_list
-	cur_node->next->node = (t_token *)malloc(sizeof(t_list));
-	if (cur_node->next == NULL)
-		return (-1); // free_linked_list_node, free_token
-	get_token(cur_node->next)->data = \
-	ft_substr(as_is_str, sub_str_info.start_idx, sub_str_info.len);
-	if (get_token(cur_node->next)->data == NULL)
-		return (-1); // free tmp_expansion_list, also data.
-	get_token(cur_node->next)->types = dollar_expansion_flag;
-	cur_node = cur_node->next;
-	cur_node->next = NULL;
+	alloc_node(&cur_node, tmp_expansion_list, &sub_str_info, \
+				&dollar_expansion_flag);
 	return (0);
 }
 
@@ -362,14 +330,12 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 	{
 		if (get_token(cur_node)->types == VARIABLE)
 		{
-			// free tmp_expansion_list, tmp_expansion_list data
 			if (conversion(env_list, get_token(cur_node)) < 0)
 				return (wrapper_free_token_list(&tmp_expansion_list, -1));
 		}
 		cur_node = cur_node->next;
 	}
 	safe_free(&(token->data));
-	// tmp_expansion_list 각 token data에 있는 문자열을 세서 ft_strcat으로 이어붙인다.
 	if (concat_tmp_expansion_list(token, &tmp_expansion_list) < 0)
 		return (wrapper_free_token_list(&tmp_expansion_list, -1));
 	return (0);

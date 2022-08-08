@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/05 13:27:53 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 12:52:23 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,10 @@ typedef enum e_check_dollar_expansion_flag
 
 typedef struct s_sub_str_info
 {
-	size_t	len;
-	size_t	start_idx;
+	const char	*as_is_str;
+	int			idx;
+	size_t		len;
+	size_t		start_idx;
 }				t_sub_str_info;
 
 int	expansion(t_env_list *env_list, t_simple *scmd_list);

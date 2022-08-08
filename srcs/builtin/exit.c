@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 17:38:18 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 13:57:57 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void	exit_cmd(char **status, int is_child)
 		exit_status = (char)ft_atol(*status, &num_flag);
 	if (*status == NULL)
 		exit_status = (char)*get_exit_status();
-	else if (num_flag == 0) 
+	else if (num_flag == 0)
 	{
 		print_error(SHELL_NAME, "exit", *status, \
 					"numeric argument required");
