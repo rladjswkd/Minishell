@@ -6,13 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/03 19:32:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 14:49:19 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/errno.h>
 #include <stddef.h>
-#include "linked_list.h"
 #include "env_list.h"
 #include "utils.h"
 #include "execute.h"
@@ -49,6 +48,20 @@ static int	preprocess_path(char ***path_list, char **envp)
 	return (1);
 }
 
+static void	exit_status_handling(int *status, char *cmd)
+{
+	if (errno == ENOENT)
+	{
+		print_error(SHELL_NAME, cmd, NULL, "command not found.");
+		*status = 127;
+	}
+	else
+	{
+		print_error(SHELL_NAME, cmd, NULL, "command not an executable.");
+		*status = 126;
+	}
+}
+
 int	execute_cmd(char **envp, char **cmd)
 {
 	char	*cmd_path;
@@ -70,17 +83,7 @@ int	execute_cmd(char **envp, char **cmd)
 		idx++;
 	}
 	execve(cmd[0], cmd, envp);
-	// cmd not executable
 	free_list(&path_list);
-	if (errno == ENOENT)
-	{
-		print_error(SHELL_NAME, cmd[0], NULL, "command not found.");
-		status = 127;
-	}
-	else
-	{
-		print_error(SHELL_NAME, cmd[0], NULL, "command not an executable.");
-		status = 126;
-	}
+	exit_status_handling(&status, cmd[0]);
 	exit(status);
 }

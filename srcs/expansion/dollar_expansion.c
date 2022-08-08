@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 12:58:43 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 19:35:44 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,28 +18,18 @@
 #include "utils.h"
 #include "expansion.h"
 
-static void	safe_free_token_list(t_list *list);
-static void	safe_free_token(t_list **token);
-static int	wrapper_free_token_list(t_list *list, int return_val);
-/*
-	variable의 마지막 위치를 반환한다.
-*/
-
-static void	change_dollar_expansion_flag(int *dollar_expansion_flag)
-{
-	if (*dollar_expansion_flag == NORMAL)
-		*dollar_expansion_flag = VARIABLE;
-	else
-		*dollar_expansion_flag = NORMAL;
-}
-
 /*
 	variable naming 조건에 맞춘다면
 	variable시작인지도 확인해야겠지만
 	$ 에서 없는 환경변수라면
 */
-static int	check_dollar_expansion_flag(int flag, char ch, int len)
+int	check_dollar_flag(int flag, t_sub_str_info sub_str_info)
 {
+	char	ch;
+	int		len;
+
+	ch = (sub_str_info.as_is_str)[sub_str_info.idx];
+	len = sub_str_info.len;
 	if (flag == NORMAL)
 	{
 		if (ch == '$')
@@ -59,127 +49,9 @@ static int	check_dollar_expansion_flag(int flag, char ch, int len)
 	}
 	return (NOT_CHANGED);
 }
-/*
-	- only do double qoute
-	cur_node가 가리키는 곳의 변수값을 바꿔야한다.
-	pointer에 따른 차이 재확인 필요
-	호출한 함수에서 동적할당하는 경우 
-	호출된 함수에서는 로컬이라서 동적할당한게 로컬로 처리될 수 있는가?
-	즉 가리키는 포인터가 로컬 variable인가?
 
-	jake@DESKTOP-39VE82R:/mnt/d/42/Minishell$ echo $test 34 454
-	34 454
-	jake@DESKTOP-39VE82R:/mnt/d/42/Minishell$ echo "$test 34 454"
-	34 454
-	변환할때 없다면 해당 노드자체를 없앤다.
-	변환된 문자열할당할때 일관성을 위해 malloc은 동일하게 하는가?
-
-	- " $ $  $ $ $" 처럼 $기호로 된게 많다면 어떻게 할것인가?
-	 그떄마다 realloc할것인가?
-	- linked list가 나을것인가?
-	 대신 $, $사이에 있는 문자열도 linked list로 만들어야한다.
-	 모든 문자열이 변환되면
-	 각 해당 노드들에 담긴 문자열의 길이를 세서 
-	 해당 길이만큼 문자열 할당한 뒤 노드 하나씩 이어붙여 준다. 
-	 이어붙여진 문자열을 담은 노드는 삭제한다.
-	 (이 노드는 "$ $ $ $ $"을 $를 포함하거나 하지 않은 것들로 이루어진 node이다.)
-	 e.g) "42 $test %% $abc $?" -> "42 ", $test, " %% ", $abc, " ", $?
-	  		echo 1$ab\34$ab_42%42
-				 1, $ab, \34, $ab_42, %42
-*/
-
-static void	reset_expansion_str_split_var(t_list *cur_node, \
-									int *dollar_expansion_flag, \
-									t_sub_str_info	*sub_str_info, \
-									int idx, const char *as_is_str)
-{
-	get_token(cur_node)->types = *dollar_expansion_flag;
-	if (as_is_str[idx] == '$' && *dollar_expansion_flag == VARIABLE)
-		;
-	else
-		change_dollar_expansion_flag(dollar_expansion_flag);
-	sub_str_info->start_idx = (size_t)idx; // 제대로 될것인가?
-	sub_str_info->len = 0;
-}
-
-/*
-as_is_str
-sub_str_info->start_of_word = as_is_str; 제대로 되는지 확ㅇ니
-*/
-static void	init_expansion_str_split_var(t_sub_str_info *sub_str_info, \
-								int *dollar_expansion_flag)
-{
-	*dollar_expansion_flag = NORMAL;
-	if ((sub_str_info->as_is_str)[0] == '$')
-		*dollar_expansion_flag = VARIABLE;
-	sub_str_info->idx = 0;
-	sub_str_info->len = 0;
-	sub_str_info->start_idx = 0;
-}
-
-/* 
-*/
-static int	alloc_node(t_list **cur_node, t_list *tmp_expansion_list, \
-						t_sub_str_info *sub_str_info, \
-						int *dollar_expansion_flag)
-{
-	(*cur_node)->next = (t_list *)malloc(sizeof(t_list));
-	if ((*cur_node)->next == NULL)
-		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list
-	(*cur_node)->next->node = (t_token *)malloc(sizeof(t_list));
-	if ((*cur_node)->next == NULL)
-		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free_linked_list_node, free_token
-	get_token((*cur_node)->next)->data = \
-				ft_substr(sub_str_info->as_is_str, \
-							sub_str_info->start_idx, sub_str_info->len);
-	if (get_token((*cur_node)->next)->data == NULL)
-		return (wrapper_free_token_list(tmp_expansion_list, -1)); // free tmp_expansion_list, also data.
-	reset_expansion_str_split_var((*cur_node)->next, \
-							dollar_expansion_flag, \
-							sub_str_info, sub_str_info->idx, \
-							sub_str_info->as_is_str);
-	(*cur_node) = (*cur_node)->next;
-	(*cur_node)->next = NULL;
-}
-
-int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
-{
-	t_sub_str_info	sub_str_info;
-	t_list			*cur_node;
-	int				dollar_expansion_flag;
-
-	cur_node = tmp_expansion_list;
-	sub_str_info.as_is_str = (const char	*)token->data;
-	init_expansion_str_split_var(&sub_str_info, &dollar_expansion_flag);
-	while (sub_str_info.as_is_str[sub_str_info.idx])
-	{
-		if (check_dollar_expansion_flag(dollar_expansion_flag, \
-									sub_str_info.as_is_str[sub_str_info.idx], \
-									sub_str_info.len))
-		{
-			if (dollar_expansion_flag == VARIABLE
-				&& sub_str_info.as_is_str[sub_str_info.idx] == '?')
-			{
-				(sub_str_info.len)++;
-				(sub_str_info.idx)++;
-			}
-			alloc_node(&cur_node, tmp_expansion_list, &sub_str_info, \
-						&dollar_expansion_flag);
-		}
-		(sub_str_info.len)++;
-		(sub_str_info.idx)++;
-	}
-	alloc_node(&cur_node, tmp_expansion_list, &sub_str_info, \
-				&dollar_expansion_flag);
-	return (0);
-}
-
-/*
-	- find key
-	
-*/
 static char	*convesion_using_env(t_env_list *env_list, const char *str)
-{ 
+{
 	t_env_node	*env_node;
 
 	env_node = env_list->header_node;
@@ -197,52 +69,7 @@ static char	*convesion_using_env(t_env_list *env_list, const char *str)
 	return (ft_strdup(""));
 }
 
-static int	get_alloc_size(t_list *tmp_expansion_list)
-{
-	t_list	*cur_node;
-	int		alloc_size;
-
-	cur_node = tmp_expansion_list;
-	alloc_size = 0;
-	while (cur_node)
-	{
-		alloc_size += ft_strlen(get_token(cur_node)->data);
-		cur_node = cur_node->next;
-	}
-	return (alloc_size);
-}
-
-static void	concat_list_data(t_list *list, char *dst, \
-							int dstsize)
-{
-	t_list	*cur_node;
-
-	cur_node = list;
-	while (cur_node)
-	{
-		ft_strlcat(dst, get_token(cur_node)->data, dstsize);
-		cur_node = cur_node->next;
-	}
-}
-
-// tmp_expansion_list 각 token data에 있는 문자열을 세서 ft_strcat으로 이어붙인다.
-static int	concat_tmp_expansion_list(t_token *token, \
-										t_list *tmp_expansion_list)
-{
-	int	alloc_size;
-	int	idx;
-
-	alloc_size = get_alloc_size(tmp_expansion_list->next) + 1;
-	token->data = (char *)malloc(sizeof(char) * alloc_size);
-	if (token->data == NULL)
-		return (-1);
-	(token->data)[0] = '\0';
-	concat_list_data(tmp_expansion_list->next, token->data, alloc_size);
-	return (0);
-}
-
-// token->data 시작이 $부터인지 재검증 필요
-static int  conversion(t_env_list *env_list, t_token *token)
+static int	conversion(t_env_list *env_list, t_token *token)
 {
 	const char	*as_is_str;
 	char		*to_be_str;
@@ -252,7 +79,7 @@ static int  conversion(t_env_list *env_list, t_token *token)
 		to_be_str = ft_strdup("$");
 	else if (as_is_str[1] == '?')
 		to_be_str = ft_itoa(*get_exit_status());
-	else // env list에 있는것을 이용해서 변환한다.
+	else
 		to_be_str = convesion_using_env(env_list, &(as_is_str[1]));
 	if (to_be_str == NULL)
 		return (-1);
@@ -261,34 +88,6 @@ static int  conversion(t_env_list *env_list, t_token *token)
 	return (0);
 }
 
-static void	safe_free_token(t_list **token)
-{
-	free(get_token(*token)->data);
-	get_token(*token)->data = NULL;
-	free(*token);
-	*token = NULL;
-}
-
-static void	safe_free_token_list(t_list *list)
-{
-	t_list	*next_node;
-	t_list	*cur_node;
-
-	cur_node = list;
-	while (cur_node)
-	{
-		next_node = cur_node->next;
-		safe_free_token(&cur_node);
-		cur_node = next_node;
-	}
-	list = NULL;
-}
-
-static int	wrapper_free_token_list(t_list *list, int return_val)
-{
-	safe_free_token_list(list);
-	return (return_val);
-}
 /*
 	- 문자열을 node로 만든다. $로 이루어져있거나 그렇지 않은 것으로 나뉘어있다.
 		-  $로 이루어진것은 변환한다.

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/29 00:03:47 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 16:01:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include "lexer.h"
 #include "redirect.h"
 #include "ft_error.h"
-
 
 static int	safe_dup2(int from, int to)
 {

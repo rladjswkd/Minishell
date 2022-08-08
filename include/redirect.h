@@ -33,7 +33,6 @@ typedef enum e_file_flag
 	FILE_WRONLY,
 }				t_file_flag;
 
-
 int	redirection(t_list *redir_list, int is_child);
 int	append_redirect(char *file_name);
 int	output_redirect(char *file_name);

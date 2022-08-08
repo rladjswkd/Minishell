@@ -1,28 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   preprocess.c                                       :+:      :+:    :+:   */
+/*   wildcard.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/24 23:30:53 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 13:40:12 by jim              ###   ########.fr       */
+/*   Created: 2022/08/08 20:01:02 by jim               #+#    #+#             */
+/*   Updated: 2022/08/08 20:32:48 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "linked_list.h"
+#ifndef WILDCARD_H
+# define WILDCARD_H
 
-/*
-	- tokenize를 진행한다.
-	- token list를 기반으로 한 자씩 이어붙인다.
-*/
+# include "linked_list.h"
 
-/*
-t_LinkedList	*preprocess(char const *input)
-{
-	token_list = create_linked_list();
-	if (token_list == NULL)
-		return (NULL);
-	tokenize(input, token_list);
-}
-*/
+char	**get_cur_dir_file_list(void);
+
+int		get_pattern_alloc_size(t_list *start_node, t_list *end_node);
+char	*get_organized_pattern(t_list *start_node, t_list *end_node, \
+								int *wildcard_pattern_flag);
+int		*get_wildcard_pattern_flag(t_list *start_node, t_list *end_node);
+
+#endif

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/03 20:36:13 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 15:44:24 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 // parameter수정필요
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 							t_list *cur_node);
-// t_pipe_info;
-// cat a > b > c
+
 /*
 	echo a > output > b > c > d < e | cat |
 	stdout
@@ -41,8 +40,6 @@ static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 	- pipe 1개, 2개, n개 일때의 fd 전달
 	- redirec 있을때 케이스
 */
-
-
 /*
 	- make multipipe
 	- 다음에 파이프가 있는지 확인하고서 있으면 연결한다.
@@ -58,8 +55,6 @@ static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 	pipe()선언한다.
 	fork()를 뜬다.
 */
-
-
 /*
 	- exit status
 	- pipe가 있는 동안 계속 파이프 만들고 프로세스 생성한다.
@@ -87,12 +82,8 @@ static void	switch_flag(int *flag)
 		*flag = 1;
 }
 
-// static int	wait_processing(t_process_info_list *process_info_list)
-// {
-// 	process_info_list
-// }
-
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *org_list)
+int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
+						t_list *org_list)
 {
 	t_pipelist_info		pipelist_info;
 	t_fd_info			fd_info;
@@ -103,14 +94,15 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *or
 	pipelist_info.cur_node = pipeline_list;
 	while (pipelist_info.cur_node)
 	{
-		if (is_exist_next_pipe(pipelist_info.cur_node ))
+		if (is_exist_next_pipe(pipelist_info.cur_node))
 			if (pipe(fd_info.fd[(fd_info.spin_flag + 1) % 2]) < 0)
 				return (1);
 		process_info.pid = fork();
 		if (process_info.pid < 0)
 			return (-1);
 		else if (process_info.pid == 0)
-			return (child_process(env_list, &fd_info, &pipelist_info, org_list));
+			return (child_process(env_list, &fd_info, &pipelist_info, \
+									org_list));
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
@@ -120,26 +112,6 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, t_list *or
 	return (*get_exit_status());
 }
 
-
-/*
-	builtin check
-	env_list를 singleton으로?
-	- preperation
-	- redir처리
-	- builtin()
-	- extern_cmd()
-	- exit status
-*/
-/*
-	- pipe 연결
-	- command type확인
-		- compound
-			- pipeline
-			- subshell
-		- simple
-			- simple_cmd를 호출한다.
-	- exit_status
-*/
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *org_list)
 {
@@ -150,19 +122,12 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]);
 	if (is_exist_next_pipe(pipelist_info->cur_node))
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
-	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE)
-		// || get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
+	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE
+		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
 	{
 		print_error(NULL, NULL, NULL, "PL COMPOUND_PIPELINE");
-		// compound_list = get_compound(pipelist_info->cur_node);
-		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
-		exit((char)status);
-	}
-	else if (get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-	{
-		print_error(NULL, NULL, NULL, "GR COMPOUND_SUBSHELL");
-		// compound_list = get_compound(pipelist_info->cur_node);
-		status = execute_processing(env_list , pipelist_info->cur_node, TRUE, org_list);
+		status = execute_processing(env_list, pipelist_info->cur_node, TRUE, \
+									org_list);
 		exit((char)status);
 	}
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
@@ -171,21 +136,11 @@ static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 	else
 	{
 		status = 2;
-		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");// error
+		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");
 	}
 	return (status);
 }
 
-/*
-	현재가 오른쪽으로 연결하는지 왼쪽으로 연결하는지에 따라서 달라진다.
-	닫아야할 fd가 달라진다.
-	어떻게 구분해서 넘겨줄것인가
-	조건문을 덕지덕지 나눠서 넣지 않고 할수 있는 방법은 무엇인가?
-	왼쪽에 파이프가 있었다면 
-	close(fd[WRITE_END]);
-	parent process가 child보다 늦게 실행되는가?
-*/
-//int fd[2][2], int spin_flag
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 							t_list *cur_node)
 {

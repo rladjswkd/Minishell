@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 10:23:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 16:08:21 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,6 @@
 #include "redirect.h"
 #include "utils.h"
 #include "ft_error.h"
-
-/*
-	- redirection check
-	- open file using that redireciton option and then return the fd!
-	- dup2으로 연결
-*/
 
 static int	get_redirection_flag(t_token *token)
 {
@@ -52,10 +46,10 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 
 	status = 0;
 	if (redirect_node == NULL || data_node == NULL)
-		return (-1);
+		return (1);
 	file_name = get_token(data_node)->data;
 	if (file_name == NULL )
-		return (-1);
+		return (1);
 	redirect_flag = get_redirection_flag(get_token(redirect_node));
 	if (redirect_flag == HEREDOC)
 		status = heredoc_redirect(get_token(data_node));
@@ -66,7 +60,22 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	else if (redirect_flag == APPEND)
 		status = append_redirect(file_name);
 	else
-		status = -1;
+		status = 1;
+	return (status);
+}
+
+static int	redirect_ordinary_case(t_list *cur_node, int is_child)
+{
+	int	status;
+
+	status = redirect_bound_process(cur_node, cur_node->next);
+	if (status == -1)
+	{
+		print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, \
+					strerror(errno));
+		if (is_child)
+			exit(status);
+	}
 	return (status);
 }
 
@@ -75,7 +84,9 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	그러므로 짝수개씩 들어오게 된다.
 	그렇지 않다면 이전에 parse 혹은 expansion에서 걸러준다.
 	- 시작이 redirec type을 가지고 있어야만하며, 그 다음은 꼭 인자들이어야한다.
-*/ 
+	- * 같은 경우 2개 이상의 파일이 들어올수 있다 이런경우 
+	bash: **redi*rect.***: ambiguous redirect를 출력한다.
+*/
 int	redirection(t_list *redir_list, int is_child)
 {
 	t_list	*cur_node;
@@ -89,23 +100,15 @@ int	redirection(t_list *redir_list, int is_child)
 	{
 		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
 		{
-			// redirec status는 어떻게 처리할 것인가?
-			status = redirect_bound_process(cur_node, cur_node->next);
-			if (status == -1)
-			{
-				print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, strerror(errno));
-				if (is_child)
-					exit(status);
-			}
+			redirect_ordinary_case(cur_node, is_child);
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
 				return (status);
-			cur_node = cur_node->next->next; 
+			cur_node = cur_node->next->next;
 		}
-		else if (redir_list != cur_node)// expansion에서 합칠것이긴 하지만 혹시 모르므로 REDIR 타입이 아니면 서로 합친다?
-			cur_node = cur_node->next; // < file_name_ing"add_filename" 이런 형식으로 되어있는 경우를 대비.
+		else if (redir_list != cur_node)
+			cur_node = cur_node->next;
 		else
-			return (-1);//error
+			return (1);
 	}
 	return (status);
 }
-/**/
