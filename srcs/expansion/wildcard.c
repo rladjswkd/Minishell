@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 21:01:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 01:20:56 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,125 +17,21 @@
 #include "lexer.h"
 #include "utils.h"
 
-int	add_pattern_list(t_list *pattern_list, char *dir_file_name)
+
+static void	link_conversion_to_middle_or_end(t_list **list, \
+											t_list **start_node, \
+											t_list *tmp_start_node)
 {
-	while (pattern_list->next)
-		pattern_list = pattern_list->next;
-	pattern_list->next = (t_list *)malloc(sizeof(t_list));
-	if (pattern_list->next == NULL)
-		return (-1);
-	pattern_list->next->node = (t_token *)malloc(sizeof(t_token));
-	if (pattern_list->next->node == NULL)
-		return (-1); // free pattern_list, node, data free는 할당의 역순!
-	get_token(pattern_list->next)->data = ft_strdup(dir_file_name);
-	get_token(pattern_list->next)->types = TOKEN_NORMAL;
-	if (get_token(pattern_list->next)->data == NULL)
-		return (-1); // free pattern_list, node, data
-	pattern_list = pattern_list->next;
-	pattern_list->next = NULL;
-	return (0);
-}
-
-/*
-아래 타입들에 대해서 어떤식으로 패턴 매칭할것인가?
-	다음패턴을 확인한다.
-	e.g) *l*
-		중간에 l이들어가거나, l로 시작하거나 l로 끝날 수 있다.
-- *
-- .*
-- .*.
-- *.*.
-- *.*.*
-- ..으로만 시작하는건 또 다르다.
-*/
-static int	match_pattern(const char *pattern, const char *dir_file_name,
-						 const int *wildcard_pattern_flag)
-{
-	int	idx;
-	int	pattern_idx;
-
-	if (dir_file_name[0] == '.' && pattern[0] != '.')
-		return (0);
-	idx = 0;
-	pattern_idx = 0;
-	while (pattern[pattern_idx] && dir_file_name[idx])
-	{
-		if (wildcard_pattern_flag[pattern_idx] == 0)
-		{
-			if (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1])
-			{
-				while (dir_file_name[idx] && dir_file_name[idx] != pattern[pattern_idx])
-					idx++;
-			}
-			if (dir_file_name[idx] != pattern[pattern_idx])
-				return (0);
-			idx++;
-		}
-		pattern_idx++;
-	}
-	return (1);
-}
-
-/*
-	cur_dir_file_list 문자열들을 돌면서 pattern에 매칭되는것을 찾는다.
-	매칭된것은 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
-	매칭된것을 찾으면 리스트를 만든다.
-*/
-static t_list	*get_pattern_matched_list(char *pattern,
-										char **cur_dir_file_list,
-										int *wildcard_pattern_flag)
-{
-	t_list	pattern_list;
-	int		idx;
-
-	idx = 0;
-	pattern_list.next = NULL;
-	while (cur_dir_file_list[idx])
-	{
-		if (match_pattern(pattern, cur_dir_file_list[idx], wildcard_pattern_flag))
-		{
-			if (add_pattern_list(&pattern_list, cur_dir_file_list[idx]) < 0)
-			{
-				// free pattern_list
-				return (NULL);
-			}
-		}
-		idx++;
-	}
-	return (pattern_list.next);
-}
-
-// match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
-// 그리고 기존 start_node 이후부터 end_node까지는 제거한다. 
-// matched_list마지막이 end_node->next 노드를 가리켜야한다.
-static int	concat_matched_list_to_org_list(t_list **start_node,
-										   t_list **end_node,
-										   t_list *matched_list)
-{
-	t_list	*tmp_node;
 	t_list	*cur_node;
-	t_list	*next_node;
 
-	tmp_node = *start_node;
-	if (*start_node == NULL || *end_node == NULL || matched_list == NULL)
-		return (-1);
-	*start_node = matched_list;
-	cur_node = *start_node;
-	while (cur_node->next)
+	cur_node = *list;
+	while (cur_node->next != tmp_start_node)
 		cur_node = cur_node->next;
-	cur_node->next = (*end_node)->next;
-	while (tmp_node)
-	{
-		next_node = tmp_node->next;
-		safe_free_token(&tmp_node);
-		if (tmp_node == *end_node)
-			break ;
-		tmp_node = next_node;
-	}
-	*end_node = cur_node->next;
-	return (0);
+	// (*start_node)->next = cur_node->next;
+	cur_node->next = *start_node;
 }
-
+// pepsi zero> echo abdf 3422 trset *.*
+// pepsi zero> echo a *.* 42
 /*
 	TOKEN_CONCAT이 있을 수 있으므로 "."*"."같이 들어오는 경우 혹은 ls* 같이 1개 노드만 들어오는 경우를 가정
 
@@ -173,12 +69,7 @@ static int	wildcard_conversion(t_list **start_node, t_list **end_node,
 	if (tmp_start_node == *list)
 		*list = *start_node;
 	else
-	{
-		// 
-		while ((*list)->next != tmp_start_node)
-			(*list) = (*list)->next;
-		(*list)->next = *start_node;
-	}
+		link_conversion_to_middle_or_end(list, start_node, tmp_start_node);
 	safe_free(&pattern);
 	return (0);
 }

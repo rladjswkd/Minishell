@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:23:52 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 20:03:33 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 00:59:37 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	safe_free_token(t_list **token)
 {
 	free(get_token(*token)->data);
 	get_token(*token)->data = NULL;
+	free((*token)->node);
+	(*token)->node = NULL;
 	free(*token);
 	*token = NULL;
 }

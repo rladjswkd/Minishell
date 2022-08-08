@@ -71,6 +71,7 @@ EXPANSION_SRCS = $(addprefix $(SRCS_DIR)/$(EXPANSION_DIR)/, \
 			wildcard_utils.c	\
 			wildcard_pattern.c	\
 			wildcard_pattern_utils.c	\
+			wildcard_pattern_match.c	\
 			wildcard_cur_dir_file_list.c	\
 			concat_list.c \
 ) 
