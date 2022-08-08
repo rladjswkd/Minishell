@@ -1,0 +1,541 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   wildcard.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
+/*   Updated: 2022/08/06 01:52:49 by jim              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <dirent.h>
+#include "linked_list.h"
+#include "lexer.h"
+#include "utils.h"
+
+// 함수정리 필요!
+static void	safe_free_token_list(t_list *list);
+static void	safe_free_token(t_list **token);
+static int	wrapper_free_token_list(t_list *list, int return_val);
+
+static void	safe_free_token(t_list **token)
+{
+	free(get_token(*token)->data);
+	get_token(*token)->data = NULL;
+	free(*token);
+	*token = NULL;
+}
+
+static void	safe_free_token_list(t_list *list)
+{
+	t_list	*next_node;
+	t_list	*cur_node;
+
+	cur_node = list;
+	while (cur_node)
+	{
+		next_node = cur_node->next;
+		safe_free_token(&cur_node);
+		cur_node = next_node;
+	}
+	list = NULL;
+}
+
+static int	wrapper_free_token_list(t_list *list, int return_val)
+{
+	safe_free_token_list(list);
+	return (return_val);
+}
+
+
+/*
+  매칭되는 것이 없다면 literal로 취급
+  *만 들어오는 경우 현재 디렉토리에 있는 file or directory들을 넘겨준다.
+  .*이 있는 경우에만 .을 가져온다
+  *.* (총  2자 이상이야어햔다.   .으로 시작하는 것은 포함되지 않으며, .으로 끝나는건 가능하다.)
+  pattern은 별도 함수에서 매칭시킨다.
+  매칭된 것은 연결리스트로 준다?
+  $> cat < a*
+	minishell: ambiguous redirection
+	$> cat < ab*
+	abab
+*/
+
+static int	get_alloc_size(void)
+{
+	DIR				*dir_ptr;
+	struct dirent	*file;
+	char			buf[PATH_MAX];
+	int				size;
+
+	if (getcwd(buf, sizeof(buf)) == NULL)
+		return (1);
+	dir_ptr = opendir(buf);
+	if (dir_ptr == NULL)
+		return (-1);
+	file = readdir(dir_ptr);
+	size = 0;
+	while (file != NULL)
+	{
+		file = readdir(dir_ptr);
+		size++;
+	}
+	closedir(dir_ptr);
+	return (size);
+}
+
+static char	**alloc_word_list(void)
+{
+	int		alloc_size;
+	char	**word_list;
+	int		idx;
+
+	alloc_size = get_alloc_size() + 1;
+	word_list = (char **)malloc(sizeof(char *) * alloc_size);
+	if (word_list == NULL)
+		return (NULL);
+	idx = 0;
+	while (idx < alloc_size)
+	{
+		word_list[idx] = NULL;
+		idx++;
+	}
+	return (word_list);
+}
+
+static int	copy_cur_dir_file_list(DIR *dir_ptr, char buf[PATH_MAX], \
+									char ***cur_dir_file_list)
+{
+	struct dirent	*file;
+	int				idx;
+
+	dir_ptr = opendir(buf);
+	if (dir_ptr == NULL)
+	{
+		free_list(cur_dir_file_list);
+		return (-1);
+	}
+	file = readdir(dir_ptr);
+	idx = 0;
+	while (file != NULL)
+	{
+		(*cur_dir_file_list)[idx] = ft_strdup(file->d_name);
+		if ((*cur_dir_file_list)[idx] == NULL)
+		{
+			free_list(cur_dir_file_list);
+			return (-1);
+		}
+		file = readdir(dir_ptr);
+		idx++;
+	}
+	(*cur_dir_file_list)[idx] = NULL;
+	return (0);
+}
+
+static char	**get_cur_dir_file_list(void)
+{
+	char			**cur_dir_file_list;
+	DIR				*dir_ptr;
+	char			buf[PATH_MAX];
+
+	cur_dir_file_list = alloc_word_list();
+	if (cur_dir_file_list == NULL)
+		return (NULL);
+	if (getcwd(buf, sizeof(buf)) == NULL)
+		return (NULL);
+	dir_ptr = opendir(buf);
+	if (dir_ptr == NULL)
+		return (NULL);
+	if (copy_cur_dir_file_list(dir_ptr, buf, &cur_dir_file_list) < 0)
+		return (NULL);
+	closedir(dir_ptr);
+	return (cur_dir_file_list);
+}
+
+static int	is_there_any_wildcard(t_list *cur_node)
+{
+	char	*str;
+
+	if (get_token(cur_node)->types & TOKEN_SQUOTE
+		|| get_token(cur_node)->types & TOKEN_DQUOTE)
+		return (0);
+	str = get_token(cur_node)->data;
+	if (ft_strchr(str, '*') < 0)
+		return (0);
+	return (1);
+}
+
+static int	wrapper_free_list(char ***word_list)
+{
+	free_list(word_list);
+	return (-1);
+}
+
+
+static int	get_normal_case_pattern_size(t_list *cur_node)
+{
+	int		idx;
+	int		alloc_size;
+	char	prev_char;
+
+	idx = 0;
+	alloc_size = 0;
+	while ((get_token(cur_node)->data)[idx])
+	{
+		if ((get_token(cur_node)->data)[idx] != '*')
+			alloc_size += 1;
+		else
+		{
+			if (prev_char != '*')
+				alloc_size += 1;
+		}
+		prev_char = (get_token(cur_node)->data)[idx];
+		idx++;
+	}
+	return (alloc_size);
+}
+/*
+	- pattern이 정리되었을 경우의 사이즈를 재서 return해준다.
+	e.g) **.** -> *.* size 3
+		"***".'***' -> ***.*** size 7
+	"", '' 신경써서 처리
+*/
+static int	get_pattern_alloc_size(t_list *start_node, t_list *end_node)
+{
+	t_list	*cur_node;
+	int		alloc_size;
+	int		idx;
+	char	prev_char;
+	
+	if (start_node == NULL || end_node == NULL)
+		return (0);
+	alloc_size = 0;
+	cur_node = start_node;
+	while (cur_node)
+	{
+		if (get_token(cur_node)->types & TOKEN_SQUOTE
+			|| get_token(cur_node)->types & TOKEN_DQUOTE)
+			alloc_size += ft_strlen(get_token(cur_node)->data);
+		else
+			alloc_size += get_normal_case_pattern_size(cur_node);
+		if (cur_node == end_node)
+			break ;
+		cur_node = cur_node->next;
+	}
+	return (alloc_size);
+}
+
+// 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
+void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, \
+								t_list *cur_node, int dst_size)
+{
+	int			idx;
+	int 		pattern_idx;
+	char		prev_char;
+	const char	*normal_str;
+
+	idx = 0;
+	pattern_idx = 0;
+	normal_str = get_token(cur_node)->data;
+	while (pattern[pattern_idx])
+		pattern_idx++;
+	while (normal_str[idx] && pattern_idx < dst_size)
+	{
+		if (normal_str[idx] == '*')
+		{
+			if (prev_char != '*')
+			{
+				pattern[pattern_idx] = normal_str[idx];
+				wildcard_pattern_flag[pattern_idx] = 1;
+				pattern_idx++;
+			}
+		}
+		else
+		{
+			pattern[pattern_idx] = normal_str[idx];
+			pattern_idx++;
+		}
+		prev_char = normal_str[idx];
+		idx++;
+	}
+	pattern[pattern_idx] = '\0';
+}
+/*
+	새로운 공간에 organize된것을 담고있다가
+	기존 공간에 넘겨줄것인가?(기존공간은 free)
+	만일 동일한 경우 낭비가 될수 있다.
+	패턴이 일치하는게 없을 경우 기존것을 바꾸는 것은 정의한 동작이 아니므로 문제가 될수 있다.
+	organize 하면 안된다.ㄴ
+	"", ''분간해야한다.
+	**로 여러개가 들어오면 이어붙인다.
+*/
+static char	*get_organized_pattern(t_list *start_node, t_list *end_node, \
+									int *wildcard_pattern_flag)
+{
+	t_list	*cur_node;
+	char	*pattern;
+	int		alloc_size;
+
+	if (start_node == NULL || end_node == NULL || wildcard_pattern_flag == NULL)
+		return (NULL);
+	alloc_size = get_pattern_alloc_size(start_node, end_node) + 1;
+	pattern = (char *)malloc(sizeof(char) * alloc_size);
+	if (pattern == NULL)
+		return (NULL);
+	pattern[0] = '\0';
+	cur_node = start_node;
+	while (cur_node)
+	{
+		if (get_token(cur_node)->types & TOKEN_SQUOTE
+			|| get_token(cur_node)->types & TOKEN_DQUOTE)
+			ft_strlcat(pattern, get_token(cur_node)->data, alloc_size);
+		else
+			copy_normal_case_pattern(pattern, wildcard_pattern_flag,\
+									 cur_node, alloc_size);
+		if (cur_node == end_node)
+			break ;
+		cur_node = cur_node->next;
+	}
+	return (pattern);
+}
+
+int	add_pattern_list(t_list *pattern_list, char *dir_file_name)
+{
+	while (pattern_list->next)
+		pattern_list = pattern_list->next;
+	pattern_list->next = (t_list *)malloc(sizeof(t_list));
+	if (pattern_list->next == NULL)
+		return (-1);
+	pattern_list->next->node = (t_token *)malloc(sizeof(t_token));
+	if (pattern_list->next->node == NULL)
+		return (-1); // free pattern_list, node, data free는 할당의 역순!
+	get_token(pattern_list->next)->data = ft_strdup(dir_file_name);
+	get_token(pattern_list->next)->types = TOKEN_NORMAL;
+	if (get_token(pattern_list->next)->data == NULL)
+		return (-1); // free pattern_list, node, data
+	pattern_list = pattern_list->next;
+	pattern_list->next = NULL;
+	return (0);
+}
+
+/*
+아래 타입들에 대해서 어떤식으로 패턴 매칭할것인가?
+	다음패턴을 확인한다.
+	e.g) *l*
+		중간에 l이들어가거나, l로 시작하거나 l로 끝날 수 있다.
+- *
+- .*
+- .*.
+- *.*.
+- *.*.*
+- ..으로만 시작하는건 또 다르다.
+*/
+static int	match_pattern(const char *pattern, const char *dir_file_name, \
+							const int *wildcard_pattern_flag)
+{
+	int		idx;
+	int		pattern_idx;
+	//.에 대한 처리 검증필요
+	if (dir_file_name[0] == '.' && pattern[0] != '.')
+		return (0);
+	idx = 0;
+	pattern_idx = 0;
+	while (pattern[pattern_idx] && dir_file_name[idx])
+	{
+		if (wildcard_pattern_flag[pattern_idx] == 0)
+		{
+			if (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1])
+			{
+				while (dir_file_name[idx]
+						&& dir_file_name[idx] != pattern[pattern_idx])
+					idx++;
+			}
+			if (dir_file_name[idx] != pattern[pattern_idx])
+				return (0);
+			idx++;
+		}
+		pattern_idx++;
+	}
+	return (1);
+}
+/*
+	cur_dir_file_list 문자열들을 돌면서 pattern에 매칭되는것을 찾는다.
+	매칭된것은 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
+	매칭된것을 찾으면 리스트를 만든다.
+*/
+static t_list	*get_pattern_matched_list(char *pattern, \
+											char **cur_dir_file_list, \
+											int	*wildcard_pattern_flag)
+{
+	t_list	pattern_list;
+	int		idx;
+
+	idx = 0;
+	pattern_list.next = NULL;
+	while (cur_dir_file_list[idx])
+	{
+		if (match_pattern(pattern, cur_dir_file_list[idx], wildcard_pattern_flag))
+		{
+			if (add_pattern_list(&pattern_list, cur_dir_file_list[idx]) < 0)
+			{
+				// free pattern_list
+				return (NULL);
+			}
+		}
+		idx++;
+	}
+	return (pattern_list.next);
+}
+
+static int *get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
+{
+	t_list	*cur_node;
+	int		*wildcard_pattern_flag;
+	int		alloc_size;
+	int		idx;
+
+	if (start_node == NULL || end_node == NULL)
+		return (NULL);
+	alloc_size = get_pattern_alloc_size(start_node, end_node) + 1;
+	wildcard_pattern_flag = (int *)malloc(sizeof(int) * alloc_size);
+	if (wildcard_pattern_flag == NULL)
+		return (NULL);
+	idx = 0;
+	while (idx < alloc_size)
+	{
+		wildcard_pattern_flag[idx] = 0;
+		idx++;
+	}
+	return (wildcard_pattern_flag);
+}
+
+// match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
+// 그리고 기존 start_node 이후부터 end_node까지는 제거한다. matched_list마지막이 end_node->next 노드를 가리켜야한다.
+static int	concat_matched_list_to_org_list(t_list **start_node, \
+											t_list **end_node, \
+											t_list *matched_list)
+{
+	t_list	*tmp_node;
+	t_list	*cur_node;
+	t_list	*next_node;
+
+	tmp_node = *start_node;
+	if (*start_node == NULL || *end_node == NULL || matched_list == NULL)
+		return (-1);
+	*start_node = matched_list;
+	cur_node = *start_node;
+	while (cur_node->next)
+		cur_node = cur_node->next;
+	cur_node->next = (*end_node)->next;
+	while (tmp_node)
+	{
+		next_node = tmp_node->next;
+		safe_free_token(&tmp_node);
+		if (tmp_node == *end_node)
+			break ;
+		tmp_node = next_node;
+	}
+	*end_node = cur_node->next;
+	return (0);
+}
+
+/*
+	TOKEN_CONCAT이 있을 수 있으므로 "."*"."같이 들어오는 경우 혹은 ls* 같이 1개 노드만 들어오는 경우를 가정
+
+	** 여러개 있는 경우는 skip하고 * 한개로 만든다.
+	pattern을 가져와서 cur_dir_file_list에 문자열들을 돌면서 매칭되는것을 찾는다.
+	- 매칭되는 것을 찾았다면
+		- 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
+		- 매칭되는 것이 있을때만 만들고 기존 값을 없애고 새로운 노드를 이어붙인다.
+	- 매칭되는 것이 없으면 원본을 건들지 않는다.
+
+	""
+*/
+// list에 wildcard_conversion 해준 리스트를 연결해준다.
+// 단순한 방법 고민
+static int	wildcard_conversion(t_list **start_node, t_list **end_node, \
+								char **cur_dir_file_list, t_list **list)
+{
+	char	*pattern;
+	int		*wildcard_pattern_flag;
+	t_list	*matched_list;
+	t_list	*tmp_start_node;
+
+	tmp_start_node = *start_node;
+	wildcard_pattern_flag = get_wildcard_pattern_flag(*start_node, *end_node);
+	if (wildcard_pattern_flag == NULL)
+		return (-1);
+	pattern = get_organized_pattern(*start_node, *end_node, wildcard_pattern_flag);
+	if (pattern == NULL)
+		return (-1);
+	matched_list = get_pattern_matched_list(pattern, cur_dir_file_list, \
+											wildcard_pattern_flag);
+	if (matched_list)
+		concat_matched_list_to_org_list(start_node, end_node, matched_list);
+	if (tmp_start_node == *list)
+		*list = *start_node;
+	else
+	{
+		while ((*list)->next != tmp_start_node)
+			(*list) = (*list)->next;
+		(*list)->next = *start_node;
+	}
+	safe_free(&pattern);
+	return (0);
+}
+
+static int	do_wildcard(t_list **list, char **cur_dir_file_list)
+{
+	t_list	*cur_node;
+	t_list	*start_node;
+
+	if (*list == NULL || cur_dir_file_list == NULL)
+		return (0);
+	cur_node = *list;
+	start_node = NULL;
+	while (cur_node)
+	{
+		if (start_node == NULL)
+			start_node = cur_node;
+		if (is_there_any_wildcard(cur_node))
+		{
+			while (cur_node && get_token(cur_node)->types & TOKEN_CONCAT)
+				cur_node = cur_node->next;
+			if (wildcard_conversion(&start_node, &cur_node, \
+									cur_dir_file_list, list) < 0)
+				return (-1);
+		}
+		if (cur_node && !(get_token(cur_node)->types & TOKEN_CONCAT))
+			start_node = NULL;
+		if (cur_node)
+			cur_node = cur_node->next;
+	}
+	return (0);
+}
+
+/*< a << b >> c >> e << df
+	- 어떤 redir type인지 읽어서 처리한다.
+	- expansion 처리되었다는 가정하에 실행한다.
+	- ex
+*/
+int	wildcard_for_curdir(t_simple *scmd_list)
+{
+	char	**cur_dir_file_list;
+
+	if (scmd_list == NULL)
+		return (-1);
+	cur_dir_file_list = get_cur_dir_file_list();
+	if (cur_dir_file_list == NULL)
+		return (-1);
+	if (do_wildcard(&(scmd_list->redirs), cur_dir_file_list) < 0)
+		return (wrapper_free_list(&cur_dir_file_list));
+	if (do_wildcard(&(scmd_list->args), cur_dir_file_list) < 0)
+		return (wrapper_free_list(&cur_dir_file_list));
+	free_list(&cur_dir_file_list);
+	return (0);
+}
