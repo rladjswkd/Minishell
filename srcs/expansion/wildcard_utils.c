@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 01:04:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 01:23:01 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:14:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,14 @@ int	concat_matched_list_to_org_list(t_list **start_node, \
 	while (tmp_node)
 	{
 		next_node = tmp_node->next;
-		safe_free_token(&tmp_node);
 		if (tmp_node == *end_node)
+		{
+			safe_free_token(&tmp_node);
 			break ;
+		}
+		safe_free_token(&tmp_node);
 		tmp_node = next_node;
 	}
-	*end_node = cur_node->next;
+	*end_node = cur_node;
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 01:20:56 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:10:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,10 @@ static void	link_conversion_to_middle_or_end(t_list **list, \
 	cur_node = *list;
 	while (cur_node->next != tmp_start_node)
 		cur_node = cur_node->next;
-	// (*start_node)->next = cur_node->next;
 	cur_node->next = *start_node;
+	// cur_node= *start_node;
 }
-// pepsi zero> echo abdf 3422 trset *.*
-// pepsi zero> echo a *.* 42
+
 /*
 	TOKEN_CONCAT이 있을 수 있으므로 "."*"."같이 들어오는 경우 혹은 ls* 같이 1개 노드만 들어오는 경우를 가정
 
@@ -41,11 +40,7 @@ static void	link_conversion_to_middle_or_end(t_list **list, \
 		- 해당 문자열을 포함하는 list(node멤버변수에 token을 포함함)를 만든다.
 		- 매칭되는 것이 있을때만 만들고 기존 값을 없애고 새로운 노드를 이어붙인다.
 	- 매칭되는 것이 없으면 원본을 건들지 않는다.
-
-	""
 */
-// list에 wildcard_conversion 해준 리스트를 연결해준다.
-// 단순한 방법 고민
 static int	wildcard_conversion(t_list **start_node, t_list **end_node,
 							   char **cur_dir_file_list, t_list **list)
 {
