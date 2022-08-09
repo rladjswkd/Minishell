@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 12:07:49 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 12:22:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,15 +96,12 @@ int	redirection(t_list *redir_list, int is_child)
 	cur_node = redir_list;
 	while (cur_node)
 	{
-		/*
-		// if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
-		// 	&& (cur_node->next->next
-		// 		&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
-		// 	return (error_handler(NULL, get_token(cur_node->next)->data, \
-		// 			AMBIGUOUS_REDIRECT, 1));
-		// else 
-		*/
-		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
+		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
+			&& (cur_node->next->next
+				&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
+			return (error_handler(NULL, get_token(cur_node->next)->data, \
+					AMBIGUOUS_REDIRECT, 1));
+		else if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
 		{
 			redirect_ordinary_case(cur_node, is_child);
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
