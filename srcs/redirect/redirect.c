@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 02:21:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 12:07:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static int	redirect_bound_process(t_list *redirect_node, t_list *data_node)
 	status = 0;
 	if (redirect_node == NULL || data_node == NULL)
 		return (1);
-	if (data_node->next && get_token(data_node->next)->types)
 	file_name = get_token(data_node)->data;
 	if (file_name == NULL )
 		return (1);
@@ -97,12 +96,15 @@ int	redirection(t_list *redir_list, int is_child)
 	cur_node = redir_list;
 	while (cur_node)
 	{
-		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
-			&& (cur_node->next->next
-				&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
-			return (error_handler(NULL, get_token(cur_node->next)->data, \
-					AMBIGUOUS_REDIRECT, 1));
-		else if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
+		/*
+		// if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
+		// 	&& (cur_node->next->next
+		// 		&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
+		// 	return (error_handler(NULL, get_token(cur_node->next)->data, \
+		// 			AMBIGUOUS_REDIRECT, 1));
+		// else 
+		*/
+		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
 		{
 			redirect_ordinary_case(cur_node, is_child);
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
