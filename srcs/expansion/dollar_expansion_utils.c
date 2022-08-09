@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:37:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 19:37:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:31:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ static int	alloc_node(t_list **cur_node, t_list *tmp_expansion_list, \
 							sub_str_info);
 	(*cur_node) = (*cur_node)->next;
 	(*cur_node)->next = NULL;
+	return (0);
 }
 
 int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 20:48:23 by jim               #+#    #+#             */
-/*   Updated: 2022/06/28 21:25:41 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/09 11:29:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ char	*ft_strndup(const char *s1, int len)
 	if (dest == NULL)
 		return (NULL);
 	idx = 0;
-	while (s1[idx] && len > idx)
+	while (s1[idx] && (size_t)len > idx)
 	{
 		dest[idx] = s1[idx];
 		idx++;

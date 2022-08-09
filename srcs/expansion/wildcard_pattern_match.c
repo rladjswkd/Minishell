@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 00:52:44 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 02:03:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:33:45 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ static int	match_pattern(const char *pattern, const char *dir_file_name,
 		{
 			while (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1]
 					&& dir_file_name[idx]
-					&& (pattern[pattern_idx + 1] == 0 && dir_file_name[idx + 1]
-						|| dir_file_name[idx] != pattern[pattern_idx])
+					&& ((pattern[pattern_idx + 1] == 0 && dir_file_name[idx + 1])
+						|| (dir_file_name[idx] != pattern[pattern_idx]))
 					)
 				idx++;
 			if (dir_file_name[idx] != pattern[pattern_idx])

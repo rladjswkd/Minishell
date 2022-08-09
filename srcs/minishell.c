@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 16:25:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:28:30 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ int	main(int argc, char **argv, char **envp)
 	t_list		parsed_header;
 	int			io_backup[2];
 
+	(void)argc;
+	(void)argv;
 	signal_processing();
 	if (init_value(&env_list, envp, io_backup) < 0)
 		return (1);

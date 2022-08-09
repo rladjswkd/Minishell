@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 16:06:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 16:12:10 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:30:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	*get_exit_status(void)
 
 void	update_exit_status(int status, t_list *org_list)
 {
+	(void)org_list; // delete should be freed
 	if (status < 0)
 	{
 		// delete_list(&org_list);

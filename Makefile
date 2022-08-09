@@ -1,7 +1,6 @@
 NAME = minishell
 CC = cc -g
-#CFLAGS = -Wall -Wextra -Werror
-# CFLAGS = -g
+CFLAGS = -Wall -Wextra -Werror
 LDLIBS = -lreadline
 RM = rm -f
 INCLUDE = include
@@ -126,18 +125,18 @@ SIGNAL_OBJS  = $(SIGNAL_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
-# $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+# $(CC) $(CFLAGS)-I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
-# $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
+# $(CC) $(CFLAGS) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(DATA_STRUCTURE_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
-	$(CC) $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
 
-# $(CC) $(LINKING_FLAGS) $^ -o $@
-# $(CC) $^ -o $@ $(LDLIBS)
+# $(CC) $(CFLAGS) $(LINKING_FLAGS) $^ -o $@
+# $(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
 # $(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)

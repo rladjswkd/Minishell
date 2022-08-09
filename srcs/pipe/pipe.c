@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 15:44:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:31:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *org_list)
 {
-	t_list	*compound_list;
 	int		status;
 
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))

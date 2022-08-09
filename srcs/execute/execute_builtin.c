@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 14:58:40 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:35:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	builtin_process(t_env_list *env_list, char **cmd, int is_child)
 	else if (ft_strncmp("pwd", *cmd, max_nonnegative("pwd", *cmd)) == 0)
 		status = pwd_cmd();
 	else if (ft_strncmp("env", *cmd, max_nonnegative("env", *cmd)) == 0)
-		status = env_cmd(env_list, argv);
+		status = env_cmd(env_list);
 	else if (ft_strncmp("export", *cmd, max_nonnegative("export", *cmd)) == 0)
 		status = export_cmd(env_list, argv);
 	else if (ft_strncmp("unset", *cmd, max_nonnegative("unset", *cmd)) == 0)

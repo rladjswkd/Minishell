@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 02:04:04 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:32:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ char	*get_organized_pattern(t_list *start_node, t_list *end_node,
 
 int	*get_wildcard_pattern_flag(t_list *start_node, t_list *end_node)
 {
-	t_list	*cur_node;
 	int		*wildcard_pattern_flag;
 	int		alloc_size;
 	int		idx;

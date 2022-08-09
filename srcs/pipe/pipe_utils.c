@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 19:25:31 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 15:45:42 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:31:11 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ int	connect_to_prev(int fd[2])
 */
 int	connect_to_next(int fd[2])
 {
-	char	*pipe_fd[2];
-
 	if (close(fd[READ_END]) < 0)
 		return (-1);
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) < 0)

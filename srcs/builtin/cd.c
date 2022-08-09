@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:26:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:34:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,9 @@ static char	*get_env_value(t_env_list	*env_list, char *env_key)
 */
 static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 {
-	char		*env_value;
 	t_env_node	*cur_env_node;
 	size_t		cmp_len;
 
-	env_value = NULL;
 	cur_env_node = env_list->header_node;
 	while (cur_env_node)
 	{

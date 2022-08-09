@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 15:24:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 15:32:49 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:34:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ static void	concat_list_data_in_condition(t_list *list, char *dst, int dstsize)
 {
 	t_list	*cur_node;
 	t_list	*next_node;
-	char	*to_be_str;
 
 	cur_node = list;
 	next_node = cur_node->next;
@@ -86,8 +85,6 @@ static int	do_concat_list(t_list **list)
 
 int	concat_list(t_simple *scmd_list)
 {
-	t_list	*cur_node;
-
 	if (scmd_list == NULL)
 		return (-1);
 	if (do_concat_list(&(scmd_list->redirs)) < 0)

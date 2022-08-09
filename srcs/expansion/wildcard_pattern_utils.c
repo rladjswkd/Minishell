@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 20:19:56 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:33:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,6 @@ int	get_pattern_alloc_size(t_list *start_node, t_list *end_node)
 {
 	t_list	*cur_node;
 	int		alloc_size;
-	int		idx;
-	char	prev_char;
 
 	if (start_node == NULL || end_node == NULL)
 		return (0);
