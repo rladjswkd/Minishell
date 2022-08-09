@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:35:32 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 16:35:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	builtin_process(t_env_list *env_list, char **cmd, int is_child)
 	status = 0;
 	argv = &(cmd[1]);
 	if (ft_strncmp("exit", *cmd, max_nonnegative("exit", *cmd)) == 0)
-		exit_cmd(argv, is_child);
+		status = exit_cmd(argv, is_child);
 	else if (ft_strncmp("echo", *cmd, max_nonnegative("echo", *cmd)) == 0)
 		status = echo_cmd(argv);
 	else if (ft_strncmp("cd", *cmd, max_nonnegative("cd", *cmd)) == 0)

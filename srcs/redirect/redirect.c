@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 12:22:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 18:44:35 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static int	redirect_ordinary_case(t_list *cur_node, int is_child)
 	{
 		print_error(SHELL_NAME, NULL, get_token(cur_node->next)->data, \
 					strerror(errno));
+		status = 1;
 		if (is_child)
 			exit(status);
 	}
@@ -90,6 +91,7 @@ static int	redirect_ordinary_case(t_list *cur_node, int is_child)
 int	redirection(t_list *redir_list, int is_child)
 {
 	t_list	*cur_node;
+	int		status;
 
 	if (redir_list == NULL)
 		return (0);
@@ -103,7 +105,9 @@ int	redirection(t_list *redir_list, int is_child)
 					AMBIGUOUS_REDIRECT, 1));
 		else if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)
 		{
-			redirect_ordinary_case(cur_node, is_child);
+			status = redirect_ordinary_case(cur_node, is_child);
+			if (status)
+				return (status);
 			if (cur_node->next == NULL || cur_node->next->next == NULL)
 				return (0);
 			cur_node = cur_node->next->next;

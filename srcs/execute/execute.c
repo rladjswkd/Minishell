@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 02:13:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 18:56:19 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,6 @@ static int	execute_subshell(t_env_list *env_list, t_list *parse_list, \
 	return (status);
 }
 */
-static int	handle_status(int status)
-{
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	else if (WIFSIGNALED(status))
-		return (WTERMSIG(status) + 128);
-	else
-		return (EXIT_FAILURE);
-}
 
 static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 {
@@ -91,17 +82,19 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 	char	**cmd;
 
 	if (expansion(env_list, scmd_list) < 0)
-		return (-1);
+		return (1);
 	if (wildcard_for_curdir(scmd_list) < 0)
-		return (-1);
+		return (1);
 	if (concat_list(scmd_list) < 0)
-		return (-1);
+		return (1);
 	status = redirection(scmd_list->redirs, is_child);
 	if (status != 0)
 		return (status);
+	if (scmd_list->args == NULL)
+		return (0);
 	cmd = list_to_array(scmd_list->args);
 	if (cmd == NULL)
-		return (2);
+		return (1);
 	if (check_builtin(scmd_list->args))
 		status = builtin_process(env_list, cmd, is_child);
 	else

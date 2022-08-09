@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:31:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 18:30:15 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 				return (1);
 		process_info.pid = fork();
 		if (process_info.pid < 0)
-			return (-1);
+			return (1);
 		else if (process_info.pid == 0)
 			return (child_process(env_list, &fd_info, &pipelist_info, \
 									org_list));
@@ -107,8 +107,10 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
 	}
+	// waitpid(process_info.pid, &process_info.status, 0);
+	// 마지막 프로세스가 처리하도록 변경해야한다.
 	while (wait(&process_info.status) != -1)
-		*(get_exit_status()) = process_info.status;
+		*(get_exit_status()) = handle_status(process_info.status);
 	return (*get_exit_status());
 }
 

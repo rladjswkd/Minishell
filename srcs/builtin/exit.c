@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 13:57:57 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 16:40:35 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,16 @@ static int	is_it_over_long_long(char *str, long long sign)
 	return (0);
 }
 
+static void	handle_sign(char *str, size_t *idx, long long *sign)
+{
+	if (str[*idx] == '-' || str[*idx] == '+')
+	{
+		if (str[*idx] == '-')
+			*sign = -1;
+		(*idx)++;
+	}
+}
+
 static long long	ft_atol(char *str, int *num_flag)
 {
 	long long	ret;
@@ -74,9 +84,7 @@ static long long	ft_atol(char *str, int *num_flag)
 	sign = 1;
 	while (is_whitespace(str[idx]))
 		idx++;
-	if (str[idx] == '-' || str[idx] == '+')
-		if (str[idx] == '-')
-			sign = -1;
+	handle_sign(str, &idx, &sign);
 	if (is_it_over_long_long(&str[idx], sign))
 		*num_flag = 0;
 	while (str[idx] && *num_flag)
@@ -89,14 +97,7 @@ static long long	ft_atol(char *str, int *num_flag)
 		ret = ret * 10 + str[idx] - '0';
 		idx++;
 	}
-	return (ret);
-}
-
-static int	is_more_than_one(char **status)
-{
-	if (*status != NULL && *(status + 1) != NULL)
-		return (1);
-	return (0);
+	return (ret * sign);
 }
 
 /*
@@ -108,7 +109,7 @@ static int	is_more_than_one(char **status)
  * exit status를 바꾼다?
  */
 
-void	exit_cmd(char **status, int is_child)
+int	exit_cmd(char **status, int is_child)
 {
 	int		num_flag;
 	char	exit_status;
@@ -122,14 +123,10 @@ void	exit_cmd(char **status, int is_child)
 	{
 		print_error(SHELL_NAME, "exit", *status, \
 					"numeric argument required");
-		exit_status = (char)255;
+		exit_status = (char)2;
 	}
-	else if (is_more_than_one(status))
-	{
-		print_error(SHELL_NAME, "exit", NULL, "too many arguments");
-		exit_status = (char)1;
-		return ;
-	}
+	else if (*status != NULL && *(status + 1) != NULL)
+		return (error_handler("exit", NULL, "too many arguments", 1));
 	if (num_flag && is_child == FALSE)
 		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_status);

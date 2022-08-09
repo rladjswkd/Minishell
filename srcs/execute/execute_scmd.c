@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 14:49:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 16:49:13 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ static void	exit_status_handling(int *status, char *cmd)
 {
 	if (errno == ENOENT)
 	{
-		print_error(SHELL_NAME, cmd, NULL, "command not found.");
+		print_error(SHELL_NAME, cmd, NULL, "command not found");
 		*status = 127;
 	}
 	else
 	{
-		print_error(SHELL_NAME, cmd, NULL, "command not an executable.");
+		print_error(SHELL_NAME, cmd, NULL, "command not an executable");
 		*status = 126;
 	}
 }
@@ -82,8 +82,9 @@ int	execute_cmd(char **envp, char **cmd)
 		safe_free(&cmd_path);
 		idx++;
 	}
-	execve(cmd[0], cmd, envp);
 	free_list(&path_list);
+	execve(cmd[0], cmd, envp);
 	exit_status_handling(&status, cmd[0]);
 	exit(status);
 }
+// manual*

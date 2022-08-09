@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 15:22:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 16:26:39 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 16:55:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int	expand_dollar_sign_in_every_node(t_env_list *env_list, \
 	t_list		*prev_node;
 
 	if (env_list == NULL || list == NULL || *list == NULL)
-		return (-1);
+		return (0);
 	cur_node = *list;
 	while (cur_node)
 	{
