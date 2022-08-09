@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 19:35:40 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 19:17:47 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef enum e_check_dollar_flag
 
 typedef struct s_sub_str_info
 {
+	t_token		*token;
 	const char	*as_is_str;
 	int			idx;
 	size_t		len;
