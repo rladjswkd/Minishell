@@ -6,25 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 20:07:21 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:09:09 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LINKED_LIST_H
 # define LINKED_LIST_H
-# include <stddef.h>
-
-typedef struct s_LinkedListNode
-{
-	struct s_LinkedListNode	*next_node;
-	void					*node;
-}				t_LinkedListNode;
-
-typedef struct s_LinkedList
-{
-	t_LinkedListNode	*header_node;
-	size_t				list_length;
-}				t_LinkedList;
 
 typedef struct s_list
 {

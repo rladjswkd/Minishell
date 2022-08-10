@@ -6,16 +6,16 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 19:17:47 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 18:03:21 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXPANSION_H
 # define EXPANSION_H
 
-#include "linked_list.h"
-#include "env_list.h"
-#include "lexer.h"
+# include "linked_list.h"
+# include "env_list.h"
+# include "lexer.h"
 
 typedef enum e_dollar_expansion_flag
 {

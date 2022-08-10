@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:32:47 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:59:46 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,37 +16,43 @@
 #include "lexer.h"
 #include "utils.h"
 
-// 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
-static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag,
-							  t_list *cur_node, int dst_size)
+static void	copy_normal_case_pattern_sub_routine(t_pattern_info *pattern_info, \
+													int idx, int *pattern_idx)
 {
-	int			idx;
-	int			pattern_idx;
-	char		prev_char;
-	const char	*normal_str;
+	if (pattern_info->prev_char != '*')
+	{
+		pattern_info->pattern[*pattern_idx] = pattern_info->normal_str[idx];
+		pattern_info->wildcard_pattern_flag[*pattern_idx] = 1;
+		(*pattern_idx)++;
+	}
+}
+
+// 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
+static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, \
+										t_list *cur_node, int dst_size)
+{
+	int				idx;
+	int				pattern_idx;
+	t_pattern_info	pattern_info;
 
 	idx = 0;
 	pattern_idx = 0;
-	normal_str = get_token(cur_node)->data;
-	while (pattern[pattern_idx])
+	pattern_info.normal_str = get_token(cur_node)->data;
+	pattern_info.pattern = pattern;
+	pattern_info.wildcard_pattern_flag = wildcard_pattern_flag;
+	while (pattern_info.pattern[pattern_idx])
 		pattern_idx++;
-	while (normal_str[idx] && pattern_idx < dst_size)
+	while (pattern_info.normal_str[idx] && pattern_idx < dst_size)
 	{
-		if (normal_str[idx] == '*')
-		{
-			if (prev_char != '*')
-			{
-				pattern[pattern_idx] = normal_str[idx];
-				wildcard_pattern_flag[pattern_idx] = 1;
-				pattern_idx++;
-			}
-		}
+		if (pattern_info.normal_str[idx] == '*')
+			copy_normal_case_pattern_sub_routine(&pattern_info, \
+												idx, &pattern_idx);
 		else
 		{
-			pattern[pattern_idx] = normal_str[idx];
+			pattern[pattern_idx] = pattern_info.normal_str[idx];
 			pattern_idx++;
 		}
-		prev_char = normal_str[idx];
+		pattern_info.prev_char = pattern_info.normal_str[idx];
 		idx++;
 	}
 	pattern[pattern_idx] = '\0';
@@ -62,7 +68,7 @@ static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag,
 	**로 여러개가 들어오면 이어붙인다.
 */
 char	*get_organized_pattern(t_list *start_node, t_list *end_node,
-								   int *wildcard_pattern_flag)
+									int *wildcard_pattern_flag)
 {
 	t_list	*cur_node;
 	char	*pattern;

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 00:52:44 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:33:45 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:02:15 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ int	add_pattern_list(t_list *pattern_list, char *dir_file_name)
 - *.*.*
 - ..으로만 시작하는건 또 다르다.
 */
-static int	match_pattern(const char *pattern, const char *dir_file_name,
-						 const int *wildcard_pattern_flag)
+static int	match_pattern(const char *pattern, const char *dir_file_name, \
+							const int *wildcard_pattern_flag)
 {
 	int	idx;
 	int	pattern_idx;
@@ -60,11 +60,11 @@ static int	match_pattern(const char *pattern, const char *dir_file_name,
 	{
 		if (wildcard_pattern_flag[pattern_idx] == 0)
 		{
-			while (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1]
-					&& dir_file_name[idx]
-					&& ((pattern[pattern_idx + 1] == 0 && dir_file_name[idx + 1])
-						|| (dir_file_name[idx] != pattern[pattern_idx]))
-					)
+			while (pattern_idx > 0 && wildcard_pattern_flag[pattern_idx - 1] \
+				&& dir_file_name[idx] \
+				&& ((pattern[pattern_idx + 1] == 0 && dir_file_name[idx + 1]) \
+					|| (dir_file_name[idx] != pattern[pattern_idx])) \
+				)
 				idx++;
 			if (dir_file_name[idx] != pattern[pattern_idx])
 				return (0);
@@ -91,7 +91,8 @@ t_list	*get_pattern_matched_list(char *pattern,
 	pattern_list.next = NULL;
 	while (cur_dir_file_list[idx])
 	{
-		if (match_pattern(pattern, cur_dir_file_list[idx], wildcard_pattern_flag))
+		if (match_pattern(pattern, cur_dir_file_list[idx], \
+							wildcard_pattern_flag))
 		{
 			if (add_pattern_list(&pattern_list, cur_dir_file_list[idx]) < 0)
 			{

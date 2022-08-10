@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 18:30:15 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:39:08 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@
 static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *org_list);
 
-// parameter수정필요
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 							t_list *cur_node);
 
@@ -82,7 +81,7 @@ static void	switch_flag(int *flag)
 		*flag = 1;
 }
 
-int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
+int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
 						t_list *org_list)
 {
 	t_pipelist_info		pipelist_info;
@@ -107,9 +106,7 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
 	}
-	// waitpid(process_info.pid, &process_info.status, 0);
-	// 마지막 프로세스가 처리하도록 변경해야한다.
-	while (wait(&process_info.status) != -1)
+	while (wait(&process_info.status) != -1) // waitpid로 변경해야한다.
 		*(get_exit_status()) = handle_status(process_info.status);
 	return (*get_exit_status());
 }
