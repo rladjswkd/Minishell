@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/07/23 13:15:16 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:28:48 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ static int	add_env(t_env_list *env_list, char *key, char *value)
 int	init_value(t_env_list	**env_list, char **envp, int io_backup[2])
 {
 	size_t		idx;
-	t_env_node	*cur_node;
 	char		*key;
 	char		*value;
 
@@ -73,7 +72,6 @@ int	init_value(t_env_list	**env_list, char **envp, int io_backup[2])
 	if (env_list == NULL)
 		return (-1);
 	idx = 0;
-	cur_node = (*env_list)->header_node;
 	while (envp[idx])
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)

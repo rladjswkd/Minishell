@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:29 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:26:54 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:34:35 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@
 int	pwd_cmd(void)
 {
 	char	buf[PATH_MAX];
-	size_t	size;
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{

@@ -1,7 +1,6 @@
 NAME = minishell
 CC = cc -g
-#CFLAGS = -Wall -Wextra -Werror
-# CFLAGS = -g
+CFLAGS = -Wall -Wextra -Werror
 LDLIBS = -lreadline
 RM = rm -f
 INCLUDE = include
@@ -26,10 +25,13 @@ SRCS = $(addprefix $(SRCS_DIR)/, \
 			init.c	\
 )
 
+DATA_STRUCTURE_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/, \
+			data_structure_utils.c	\
+)
+
 LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
 			env_list.c	\
 			env_list_remove.c \
-			plain_linked_list.c \
 )
 
 LEXTER_SRCS = $(addprefix $(SRCS_DIR)/$(LEXER_DIR)/, \
@@ -60,9 +62,17 @@ PIPE_SRCS = $(addprefix $(SRCS_DIR)/$(PIPE_DIR)/, \
 
 EXPANSION_SRCS = $(addprefix $(SRCS_DIR)/$(EXPANSION_DIR)/, \
 			expansion.c	\
-			dollar_expansion.c	\
 			expansion_utils.c	\
+			dollar_expansion.c	\
+			dollar_expansion_utils.c	\
+			dollar_expansion_concat.c	\
 			wildcard.c	\
+			wildcard_utils.c	\
+			wildcard_pattern.c	\
+			wildcard_pattern_utils.c	\
+			wildcard_pattern_match.c	\
+			wildcard_cur_dir_file_list.c	\
+			concat_list.c \
 ) 
 
 BUILTIN_SRCS = $(addprefix $(SRCS_DIR)/$(BUILTIN_DIR)/, \
@@ -94,6 +104,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_substr.c	\
 			ft_is_alpha.c	\
 			ft_is_digit.c	\
+			ft_itoa.c	\
 			ft_error.c	\
 			exit_status.c \
 			check_valid_variable.c	\
@@ -107,30 +118,31 @@ REDIRECT_OBJS = $(REDIRECT_SRCS:.c=.o)
 HEREDOC_OBJS = $(HEREDOC_SRCS:.c=.o)
 PIPE_OBJS = $(PIPE_SRCS:.c=.o)
 EXPANSION_OBJS = $(EXPANSION_SRCS:.c=.o)
-BUILTIN_OBJS  = $(BUILTIN_SRCS:.c=.o)
-LINKED_OBJS  = $(LINKED_SRCS:.c=.o)
+BUILTIN_OBJS = $(BUILTIN_SRCS:.c=.o)
+LINKED_OBJS = $(LINKED_SRCS:.c=.o)
+DATA_STRUCTURE_OBJS = $(DATA_STRUCTURE_SRCS:.c=.o)
 SIGNAL_OBJS  = $(SIGNAL_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
-# $(CC) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+# $(CC) $(CFLAGS)-I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
-# $(CC) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
+# $(CC) $(CFLAGS) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
-$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
-	$(CC) $^ -o $@ $(LDLIBS)
+$(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(DATA_STRUCTURE_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
 
-# $(CC) $(LINKING_FLAGS) $^ -o $@
-# $(CC) $^ -o $@ $(LDLIBS)
+# $(CC) $(CFLAGS) $(LINKING_FLAGS) $^ -o $@
+# $(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
 # $(CC) $(CFLAGS) $^ -o $@
 
 all : $(NAME)
 
 clean :
-	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
+	$(RM) $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(DATA_STRUCTURE_OBJS)  $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
 
 fclean : clean
 	$(RM) $(NAME)

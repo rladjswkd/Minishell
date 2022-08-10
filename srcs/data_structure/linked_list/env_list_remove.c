@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 11:44:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:30:43 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,6 @@ int	clear_env_list(t_env_list *env_list)
 
 void	delete_env_list(t_env_list **env_list)
 {
-	t_env_node	*cur_node;
-
 	clear_env_list(*env_list);
 	free(*env_list);
 	*env_list = NULL;

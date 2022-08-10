@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 16:38:03 by jim               #+#    #+#             */
-/*   Updated: 2022/07/26 14:57:33 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/08 15:51:38 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 #include <stdlib.h>
 
-size_t	count_digits(int n)
+static size_t	count_digits(int n)
 {
 	size_t	expo;		
 

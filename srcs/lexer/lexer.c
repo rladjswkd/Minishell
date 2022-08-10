@@ -792,9 +792,6 @@ void	print_simple_content(t_list *command, char *tab)
 
 void	print_compound_content(t_list *command)
 {
-	int	types;
-
-	types = get_command_type(command);
 	printf("\n");
 	if (get_command_type(command) == COMPOUND_PIPELINE)
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_PIPELINE::START");

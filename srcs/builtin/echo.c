@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:04 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:24:11 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 19:07:56 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	is_n_option(char *argv)
 	size_t	idx;
 
 	idx = 0;
-	if (argv[idx] != '-')
+	if (argv[idx] && (argv[idx] != '-' || argv[idx + 1] == '\0'))
 		return (FALSE);
 	idx++;
 	while (argv[idx])

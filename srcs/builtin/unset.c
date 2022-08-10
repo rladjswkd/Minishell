@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:18:58 by jim               #+#    #+#             */
-/*   Updated: 2022/07/30 18:44:35 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 11:35:39 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 */
 int	unset_cmd(t_env_list *env_list, char **argument)
 {
-	t_env_node	*cur_node;
 	size_t		idx;
 
 	idx = 0;

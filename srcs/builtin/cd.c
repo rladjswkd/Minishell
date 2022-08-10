@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 19:26:17 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/09 16:23:37 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,9 @@ static char	*get_env_value(t_env_list	*env_list, char *env_key)
 */
 static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 {
-	char		*env_value;
 	t_env_node	*cur_env_node;
 	size_t		cmp_len;
 
-	env_value = NULL;
 	cur_env_node = env_list->header_node;
 	while (cur_env_node)
 	{
@@ -104,6 +102,8 @@ int	cd_cmd(char **path, t_env_list *env_list)
 	char	path_buf[PATH_MAX];
 	char	*cur_pwd;
 
+	if (path[0] && path[1])
+		return (error_handler("cd", NULL, "too many arguments", 1));
 	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
 	if (be_old_pwd == NULL)
 		error_handler(NULL, NULL, strerror(errno), errno);
@@ -113,7 +113,7 @@ int	cd_cmd(char **path, t_env_list *env_list)
 		cmd_path = *path;
 	ret = chdir(cmd_path);
 	if (ret < 0)
-		return (error_handler("cd", cmd_path, strerror(errno), errno));
+		return (error_handler("cd", cmd_path, strerror(errno), 1));
 	else if (getcwd(path_buf, sizeof(path_buf)) == NULL)
 		return (error_handler(NULL, NULL, strerror(errno), errno));
 	cur_pwd = ft_strdup(path_buf);

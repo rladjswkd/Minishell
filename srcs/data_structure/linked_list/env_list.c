@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/07/04 21:15:33 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/08 14:37:19 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,5 @@ t_env_node	*get_env_node(t_env_list *env_list, char *key)
 			break ;
 		cur_node = cur_node->next_node;
 	}
-	return (cur_node);	
+	return (cur_node);
 }
