@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 18:56:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 00:32:32 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 
 	scmd_list = get_simple(parse_list);
 	if (env_list == NULL || parse_list == NULL)
-		return (2);
+		return (1);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		update_exit_status(simple_cmd(env_list, scmd_list, is_child), org_list);
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 18:03:03 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 01:13:30 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,10 @@ typedef struct s_fd_info
 	int		spin_flag;
 }				t_fd_info;
 
-int	connect_to_prev(int fd[2]);
-int	connect_to_next(int fd[2]);
-int	is_exist_prev_pipe(t_list *start_node, t_list *cur_node);
-int	is_exist_next_pipe(t_list *cur_node);
+int		connect_to_prev(int fd[2]);
+int		connect_to_next(int fd[2]);
+int		is_exist_prev_pipe(t_list *start_node, t_list *cur_node);
+int		is_exist_next_pipe(t_list *cur_node);
+void	switch_flag(int *flag);
 
 #endif

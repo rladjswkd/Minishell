@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 20:32:40 by jim               #+#    #+#             */
-/*   Updated: 2022/07/28 17:18:13 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 01:02:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ typedef struct s_process_info
 {
 	pid_t	pid;
 	int		status;
+	int		process_count;
 }			t_process_info;
 
 typedef struct s_pipelist_info

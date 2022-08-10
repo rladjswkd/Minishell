@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 19:25:31 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:31:11 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 01:13:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 #include "linked_list.h"
 #include "pipe.h"
 #include "utils.h"
+
+void	switch_flag(int *flag)
+{
+	if (*flag)
+		*flag = 0;
+	else
+		*flag = 1;
+}
 
 int	connect_to_prev(int fd[2])
 {
