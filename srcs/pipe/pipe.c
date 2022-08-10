@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 01:13:43 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 01:21:20 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ static int	init_pipeline_process(t_list *pipeline_list, \
 	pipelist_info->start_node = pipeline_list;
 	pipelist_info->cur_node = pipeline_list;
 	(*process_info) = (t_process_info *)malloc(sizeof(t_process_info) \
-											* (*process_info)->process_count);
+											* count);
 	if ((*process_info) == NULL)
 		return (1);
 	(*process_info)->process_count = count;
