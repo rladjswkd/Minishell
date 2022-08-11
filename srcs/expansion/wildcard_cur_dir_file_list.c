@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:54:27 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:40:01 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 15:36:19 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,11 @@ static char	**alloc_word_list(void)
 	return (word_list);
 }
 
-static int	copy_cur_dir_file_list(DIR *dir_ptr, char buf[PATH_MAX],
-									char ***cur_dir_file_list)
+static int	copy_cur_dir_file_list(DIR *dir_ptr, char ***cur_dir_file_list)
 {
 	struct dirent	*file;
-	int				idx;
+	int			idx;
 
-	dir_ptr = opendir(buf);
 	if (dir_ptr == NULL)
 	{
 		free_list(cur_dir_file_list);
@@ -104,6 +102,7 @@ char	**get_cur_dir_file_list(void)
 	char	**cur_dir_file_list;
 	DIR		*dir_ptr;
 	char	buf[PATH_MAX];
+	int		ret;
 
 	cur_dir_file_list = alloc_word_list();
 	if (cur_dir_file_list == NULL)
@@ -111,10 +110,9 @@ char	**get_cur_dir_file_list(void)
 	if (getcwd(buf, sizeof(buf)) == NULL)
 		return (NULL);
 	dir_ptr = opendir(buf);
-	if (dir_ptr == NULL)
-		return (NULL);
-	if (copy_cur_dir_file_list(dir_ptr, buf, &cur_dir_file_list) < 0)
-		return (NULL);
+	ret = copy_cur_dir_file_list(dir_ptr, &cur_dir_file_list);
 	closedir(dir_ptr);
+	if (ret < 0)
+		return (NULL);
 	return (cur_dir_file_list);
 }

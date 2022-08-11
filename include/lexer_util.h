@@ -18,4 +18,5 @@
 int	is_delimiter(char *s);
 int	is_quote(char c);
 int	ignore_blank(char *str, int *types);
+int	is_all_whitespaces(char *input);
 #endif

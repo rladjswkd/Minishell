@@ -12,8 +12,10 @@
 
 #include "constants.h"
 #include "token.h"
+#include "destruct_wrapper.h"
 #include "extractor.h"
 #include "syntax.h"
+#include "ft_error.h"
 
 static int	get_index(char c1, char c2)
 {
@@ -98,13 +100,17 @@ static int	tokenize_input(char *str, t_list *token_header)
 
 int	lexer(char *input, t_list *token_header)
 {
-	t_list	*list;
-
 	if (!tokenize_input(input, token_header))
-		return (0);
-	list = token_header->next;
-	if (!check_syntax(list))
-		return (0);
+	{
+		safe_free_token_list(token_header->next);
+		print_error(SHELL_NAME, NULL, NULL, ALLOC_FAIL);
+		exit(EXIT_FAILURE);
+	}
+	if (!check_syntax(token_header->next))
+	{
+		safe_free_token_list(token_header->next);
+		return (error_handler(NULL, NULL, SYNTAX_ERR, 0));
+	}
 	mask_redirarg_type(token_header->next);
 	return (1);
 }

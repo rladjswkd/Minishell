@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 13:48:14 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 15:41:18 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "constants.h"
+#include "lexer_util.h"
 #include <stdlib.h>
 //debug
 #include <string.h>
@@ -35,16 +36,12 @@
 static int	preprocess(char *input, t_list *parsed_header)
 {
 	t_list		token_header;
-
-	if (!lexer(input, &token_header))
+	
+	if (!lexer(input, &token_header) ||
+		!parser(token_header.next, parsed_header))
 	{
-		printf("%s\n", "syntax error");
+		free(input);
 		return (1);
-	}
-	if (!parser(token_header.next, parsed_header))
-	{
-		printf("%s\n", "parser error");
-		return (2);
 	}
 	return (0);
 }
@@ -57,28 +54,20 @@ static int	reset_in_out_fd(int io_backup[2])
 	return (0);
 }
 
-static int	is_all_whitespaces(char *input)
-{
-	while (*input == CHAR_SPACE || *input == CHAR_TAB || *input == '\n'
-		|| *input == '\v' || *input == '\f' || *input == '\r')
-		input++;
-	return (!(*input));
-}
-
-static int	input_processing(char **input)
+static int	check_input(char **input)
 {
 	*input = readline("pepsi zero> ");
 	if (*input == NULL)
 	{
 		printf("exit\n");
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	if (is_all_whitespaces(*input))
 	{
 		free(*input);
-		return (0);
+		return (1);
 	}
-	return (1);
+	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -95,7 +84,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	while (1)
 	{
-		if (input_processing(&input) == 0)
+		if (check_input(&input))
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;

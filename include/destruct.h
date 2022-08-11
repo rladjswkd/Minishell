@@ -17,6 +17,7 @@
 # include "command.h"
 
 void	free_token(t_list *list);
+void	free_token_list(t_list *list);
 void	free_command(t_list *list);
 void	free_command_list(t_list *list);
 #endif

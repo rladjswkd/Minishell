@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/07/31 10:55:54 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 14:31:48 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 # include <stddef.h>
-# define SHELL_NAME "minishell"
+# include "constants.h"
 
 int		is_whitespace(char const ch);
 int		ft_is_alpha(int ch);

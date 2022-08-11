@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include "structure_linked_list.h"
+#include "destruct.h"
 #include "token.h"
 #include "utils.h"
 
@@ -23,26 +24,13 @@ int	wrapper_free_list(char ***word_list)
 
 void	safe_free_token(t_list **token)
 {
-	free(get_token(*token)->data);
-	get_token(*token)->data = NULL;
-	free((*token)->node);
-	(*token)->node = NULL;
-	free(*token);
+	free_token(*token);
 	*token = NULL;
 }
 
 void	safe_free_token_list(t_list *list)
 {
-	t_list	*next_node;
-	t_list	*cur_node;
-
-	cur_node = list;
-	while (cur_node)
-	{
-		next_node = cur_node->next;
-		safe_free_token(&cur_node);
-		cur_node = next_node;
-	}
+	free_token_list(list);
 	list = NULL;
 }
 

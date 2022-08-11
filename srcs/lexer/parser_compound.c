@@ -73,7 +73,7 @@ static int	process_subshell(t_list **parsed, t_list *r)
 	if (!r || !find_lbracket(*parsed, r, &l))
 		return (1);
 	if (get_simple_type(l->next) & COMPOUND_SUBSHELL && l->next->next == r)
-		return (0); // syntax error. ((...))
+		return (-1); // syntax error. ((...))
 	if (!create_command(&neu, COMPOUND_SUBSHELL))
 		return (0);
 	rearrange_subshell(parsed, l, r, neu);

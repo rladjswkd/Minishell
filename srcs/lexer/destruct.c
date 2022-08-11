@@ -21,7 +21,7 @@ void	free_token(t_list *list)
 	free(list);
 }
 
-static void	free_token_list(t_list *list)
+void	free_token_list(t_list *list)
 {
 	t_list	*next;
 

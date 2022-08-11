@@ -39,3 +39,11 @@ int	ignore_blank(char *str, int *types)
 		len++;
 	return (len);
 }
+
+int	is_all_whitespaces(char *input)
+{
+	while (*input == CHAR_SPACE || *input == CHAR_TAB || *input == '\n'
+		|| *input == '\v' || *input == '\f' || *input == '\r')
+		input++;
+	return (!(*input));
+}
