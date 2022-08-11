@@ -95,7 +95,8 @@ int	main(int argc, char **argv, char **envp)
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
 		free(input);
-		free(parsed_header.next);
+		free_command_list(parsed_header.next);
+		parsed_header.next = 0;
 	}	
 	delete_env_list(&env_list);
 	return (0);
