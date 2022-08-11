@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:41:02 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 13:48:14 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,8 @@ int	main(int argc, char **argv, char **envp)
 		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
+		free(input);
 	}	
-	/*	free_init_value*/
+	delete_env_list(&env_list);
 	return (0);
 }
