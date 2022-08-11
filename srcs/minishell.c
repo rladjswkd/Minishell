@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 15:41:18 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 16:54:07 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static int	preprocess(char *input, t_list *parsed_header)
 		!parser(token_header.next, parsed_header))
 	{
 		free(input);
+		free_command_list(parsed_header->next);
 		return (1);
 	}
 	return (0);
@@ -95,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
 		free(input);
-		free(parsed_header.next);
+		free_command_list(parsed_header.next);
 	}	
 	delete_env_list(&env_list);
 	return (0);
