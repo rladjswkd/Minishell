@@ -28,6 +28,7 @@
 #include "parser.h"
 #include "constants.h"
 #include "lexer_util.h"
+#include "destruct.h"
 #include <stdlib.h>
 //debug
 #include <string.h>
@@ -94,6 +95,7 @@ int	main(int argc, char **argv, char **envp)
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
 		free(input);
+		free(parsed_header.next);
 	}	
 	delete_env_list(&env_list);
 	return (0);

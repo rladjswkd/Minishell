@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc -g
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 LDLIBS = -lreadline
 RM = rm -f
 INCLUDE = include
