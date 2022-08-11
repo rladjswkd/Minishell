@@ -1,21 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   token.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/10 12:53:45 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+#ifndef TOKEN_H
+# define TOKEN_H
+# include "structure_token.h"
+# include "structure_linked_list.h"
+# include "type_token.h"
+# include "construct.h"
 
-int	lexer(char *input, t_list *token_header);
+t_token	*get_token(t_list *token_list);
+int		get_token_type(t_list *token_list);
+int		create_token(t_list **token_list, char *str, int len, int types);
 #endif

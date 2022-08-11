@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:24:15 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 11:58:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "heredoc.h"
-#include "structure_linked_list.h"
-#include "lexer.h"
 #include "redirect.h"
+#include "token.h"
 #include "utils.h"
 #include "ft_error.h"
 

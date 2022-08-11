@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 17:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:27:11 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:03:11 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "structure_linked_list.h"
-#include "lexer.h"
+#include "token.h"
 #include "utils.h"
 
 static int	get_alloc_size(t_list *tmp_expansion_list)

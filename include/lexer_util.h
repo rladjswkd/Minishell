@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   lexer_util.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/10 12:53:27 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:28 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
+#ifndef LEXER_UTIL_H
+# define LEXER_UTIL_H
 # include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+# include "type_token.h"
 
-int	lexer(char *input, t_list *token_header);
+int	is_delimiter(char *s);
+int	is_quote(char c);
+int	ignore_blank(char *str, int *types);
 #endif

@@ -35,7 +35,22 @@ LINKED_SRCS = $(addprefix $(SRCS_DIR)/$(DATA_STRUCT_DIR)/$(LINKED_LIST_DIR)/, \
 )
 
 LEXTER_SRCS = $(addprefix $(SRCS_DIR)/$(LEXER_DIR)/, \
-			lexer.c	\
+			command.c \
+			command_compound.c\
+			command_simple.c\
+			construct.c\
+			destruct.c\
+			extractor.c\
+			finder_compound.c\
+			lexer.c\
+			lexer_util.c\
+			linked_list.c\
+			parser.c\
+			parser_compound.c\
+			parser_simple.c\
+			printer.c\
+			syntax.c\
+			token.c\
 )
 
 EXECUTE_SRCS = $(addprefix $(SRCS_DIR)/$(EXECUTE_DIR)/, \

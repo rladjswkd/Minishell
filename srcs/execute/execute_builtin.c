@@ -6,15 +6,15 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 18:28:18 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 16:35:43 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 12:08:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "structure_token.h"
 #include "env_list.h"
 #include "execute.h"
 #include "builtin.h"
 #include "utils.h"
-#include "lexer.h"
 #include <stdlib.h>
 //debug
 #include <stdio.h>

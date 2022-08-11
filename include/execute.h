@@ -6,15 +6,16 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 18:04:32 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:50:38 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXECUTE_H
 # define EXECUTE_H
 
+# include "structure_linked_list.h"
+# include "structure_simple.h"
 # include "env_list.h"
-# include "lexer.h"
 
 int		execute_processing(t_env_list *env_list, t_list *parse_list, \
 							int is_child, t_list *org_list);

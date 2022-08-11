@@ -6,14 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:28:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:04:39 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "wildcard.h"
-#include "structure_linked_list.h"
-#include "lexer.h"
+#include "token.h"
 #include "utils.h"
 
 static void	copy_normal_case_pattern_sub_routine(t_pattern_info *pattern_info, \

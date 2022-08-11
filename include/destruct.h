@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   destruct.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/10 12:53:18 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:19 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
+#ifndef DESTRUCT_H
+# define DESTRUCT_H
+# include <stdlib.h>
 # include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+# include "command.h"
 
-int	lexer(char *input, t_list *token_header);
+void	free_token(t_list *list);
+void	free_command(t_list *list);
+void	free_command_list(t_list *list);
 #endif

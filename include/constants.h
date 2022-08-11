@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   constants.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/10 12:53:15 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:16 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
-
-int	lexer(char *input, t_list *token_header);
+#ifndef CONSTANTS_H
+# define CONSTANTS_H
+# define CHAR_SPACE	' '
+# define CHAR_TAB	'\t'
+# define CHAR_LREDIR	'<'
+# define CHAR_RREDIR	'>'
+# define CHAR_SQUOTE	'\''
+# define CHAR_DQUOTE	'\"'
+# define CHAR_VERBAR	'|'
+# define CHAR_LBRACKET	'('
+# define CHAR_RBRACKET	')'
+# define CHAR_AMPERSAND	'&'
 #endif

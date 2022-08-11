@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:46:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:20:36 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 11:55:05 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 # define EXPANSION_H
 
 # include "structure_linked_list.h"
+# include "structure_token.h"
+# include "structure_simple.h"
 # include "env_list.h"
-# include "lexer.h"
 
 typedef enum e_dollar_expansion_flag
 {

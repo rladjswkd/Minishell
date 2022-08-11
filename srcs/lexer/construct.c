@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   construct.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/08 19:53:13 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:53:14 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+#include <stdlib.h>
 
-int	lexer(char *input, t_list *token_header);
-#endif
+int	malloc_wrapper(size_t size, void **ptr)
+{
+	size_t	i;
+	char	*cptr;
+
+	*ptr = malloc(size);
+	if (!(*ptr))
+		return (0);
+	i = 0;
+	cptr = (char *)(*ptr);
+	while (i < size)
+		cptr[i++] = 0;
+	return (1);
+}

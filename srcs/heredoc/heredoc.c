@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/08/04 14:54:17 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:59:12 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 #include <unistd.h>
 #include <stdio.h>  // readline이전에 stdio를 include해야한다 왜?
 #include <readline/readline.h>
+#include "token.h"
 #include "heredoc.h"
 #include "expansion.h"
-#include "lexer.h"
 #include "utils.h"
 //계속 return시킬 것 아니라면 exit한다.
 // unlink 실패해도 free해야한다. 어쨌든, -1 return하므로 error 체크하지 않는다.

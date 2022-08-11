@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 00:52:44 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:29:14 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:05:12 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "destruct_wrapper.h"
-#include "lexer.h"
+#include "token.h"
 #include "utils.h"
 
 int	add_pattern_list(t_list *pattern_list, char *dir_file_name)

@@ -6,14 +6,15 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:35:06 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:21:28 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 11:56:32 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REDIRECT_H
 # define REDIRECT_H
+
 # include "structure_linked_list.h"
-# include "lexer.h"
+# include "structure_token.h"
 
 typedef enum e_redirection_flag
 {

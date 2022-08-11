@@ -1,21 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   command_simple.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/08 19:53:10 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:53:12 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+#include "structure_simple.h"
 
-int	lexer(char *input, t_list *token_header);
-#endif
+int	get_simple_type(t_list *parsed)
+{
+	return (((t_simple *)(parsed->node))->type);
+}
+
+t_simple	*get_simple(t_list *parsed)
+{
+	return ((t_simple *)(parsed->node));
+}

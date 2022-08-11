@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:37:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:26:56 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:02:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "lexer.h"
 #include "destruct_wrapper.h"
+#include "token.h"
 #include "expansion.h"
 #include "utils.h"
 

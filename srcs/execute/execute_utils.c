@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 16:32:30 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:31:33 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:08:51 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "destruct_wrapper.h"
+#include "token.h"
 #include "env_list.h"
-#include "lexer.h"
 #include "utils.h"
 
 static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)

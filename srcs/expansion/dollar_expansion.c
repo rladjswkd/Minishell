@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:26:29 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:02:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "destruct_wrapper.h"
+#include "token.h"
 #include "env_list.h"
-#include "lexer.h"
 #include "exit.h"
 #include "utils.h"
 #include "expansion.h"

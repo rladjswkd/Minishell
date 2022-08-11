@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 00:26:14 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:38:25 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "env_list.h"
 #include "utils.h"
 #include "execute.h"
-#include "lexer.h"
 #include "ft_error.h"
 //debug
 #include <stdio.h>

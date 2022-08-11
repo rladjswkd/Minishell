@@ -1,21 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   structure_command.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/10 12:53:35 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:37 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
-# include "constants.h"
-# include "token.h"
-# include "extractor.h"
-# include "syntax.h"
+#ifndef STRUCTURE_COMMAND_H
+# define STRUCTURE_COMMAND_H
+# include "structure_linked_list.h"
 
-int	lexer(char *input, t_list *token_header);
+typedef struct s_command
+{
+	t_list	*l1;
+	t_list	*l2;
+	int		type;
+}	t_command;
 #endif
