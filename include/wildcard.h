@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:01:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 01:09:58 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:52:44 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 # define WILDCARD_H
 
 # include "linked_list.h"
+
+typedef struct s_pattern_info
+{
+	char	*pattern;
+	int		*wildcard_pattern_flag;
+	char	*normal_str;
+	char	prev_char;
+}				t_pattern_info;
 
 char	**get_cur_dir_file_list(void);
 

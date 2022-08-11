@@ -127,7 +127,7 @@ UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 %.o : %.c
 	$(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
-# $(CC) $(CFLAGS)-I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+# $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
 # $(CC) $(CFLAGS) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@

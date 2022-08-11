@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:54:27 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 00:50:34 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:40:01 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "utils.h"
+
 /*
   매칭되는 것이 없다면 literal로 취급
   *만 들어오는 경우 현재 디렉토리에 있는 file or directory들을 넘겨준다.
@@ -70,7 +71,7 @@ static char	**alloc_word_list(void)
 }
 
 static int	copy_cur_dir_file_list(DIR *dir_ptr, char buf[PATH_MAX],
-								  char ***cur_dir_file_list)
+									char ***cur_dir_file_list)
 {
 	struct dirent	*file;
 	int				idx;

@@ -6,11 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 01:04:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:14:31 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:18:58 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "linked_list.h"
+#include <stddef.h>
 
 // match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
 // 그리고 기존 start_node 이후부터 end_node까지는 제거한다. 

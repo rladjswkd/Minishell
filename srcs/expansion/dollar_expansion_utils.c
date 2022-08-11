@@ -6,11 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:37:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 19:23:03 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:51:07 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include "lexer.h"
 #include "linked_list.h"
 #include "expansion.h"
 #include "utils.h"
@@ -58,9 +59,10 @@ static int	alloc_node(t_list **cur_node, t_list *tmp_expansion_list, \
 	(*cur_node)->next->node = (t_token *)malloc(sizeof(t_list));
 	if ((*cur_node)->next == NULL)
 		return (wrapper_free_token_list(tmp_expansion_list, -1));
-	get_token((*cur_node)->next)->data = \
-				ft_substr(sub_str_info->as_is_str, \
-							sub_str_info->start_idx, sub_str_info->len);
+	(get_token((*cur_node)->next)->data) = \
+											ft_substr(sub_str_info->as_is_str, \
+													sub_str_info->start_idx, \
+													sub_str_info->len);
 	if (get_token((*cur_node)->next)->data == NULL)
 		return (wrapper_free_token_list(tmp_expansion_list, -1));
 	reset_expansion_str_split_var((*cur_node)->next, \

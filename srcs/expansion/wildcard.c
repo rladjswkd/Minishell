@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:10:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/10 17:39:37 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "linked_list.h"
 #include "lexer.h"
 #include "utils.h"
-
 
 static void	link_conversion_to_middle_or_end(t_list **list, \
 											t_list **start_node, \
@@ -28,7 +27,6 @@ static void	link_conversion_to_middle_or_end(t_list **list, \
 	while (cur_node->next != tmp_start_node)
 		cur_node = cur_node->next;
 	cur_node->next = *start_node;
-	// cur_node= *start_node;
 }
 
 /*
@@ -42,7 +40,7 @@ static void	link_conversion_to_middle_or_end(t_list **list, \
 	- 매칭되는 것이 없으면 원본을 건들지 않는다.
 */
 static int	wildcard_conversion(t_list **start_node, t_list **end_node,
-							   char **cur_dir_file_list, t_list **list)
+								char **cur_dir_file_list, t_list **list)
 {
 	char	*pattern;
 	int		*wildcard_pattern_flag;
