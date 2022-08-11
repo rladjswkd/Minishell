@@ -12,7 +12,7 @@
 # define CHAR_RBRACKET	')'
 # define CHAR_AMPERSAND	'&'
 
-# include "linked_list.h"
+# include "structure_linked_list.h"
 
 typedef struct s_token
 {

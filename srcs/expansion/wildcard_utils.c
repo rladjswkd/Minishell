@@ -6,11 +6,11 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 01:04:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:18:58 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:27:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "linked_list.h"
+#include "destruct_wrapper.h"
 #include <stddef.h>
 
 // match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.

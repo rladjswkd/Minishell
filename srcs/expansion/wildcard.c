@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:39:37 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:27:40 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdlib.h>
 #include "wildcard.h"
-#include "linked_list.h"
+#include "destruct_wrapper.h"
 #include "lexer.h"
 #include "utils.h"
 

@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 20:32:40 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 01:02:06 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:21:13 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PROCESS_H
 # define PROCESS_H
 # include <sys/types.h>
-# include "linked_list.h"
+# include "structure_linked_list.h"
 
 typedef struct s_process_info
 {

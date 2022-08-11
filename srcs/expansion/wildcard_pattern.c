@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:59:46 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:28:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "wildcard.h"
-#include "linked_list.h"
+#include "structure_linked_list.h"
 #include "lexer.h"
 #include "utils.h"
 

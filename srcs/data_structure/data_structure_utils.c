@@ -6,12 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:23:52 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 00:59:37 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:23:55 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "linked_list.h"
+#include "structure_linked_list.h"
 #include "lexer.h"
 #include "utils.h"
 

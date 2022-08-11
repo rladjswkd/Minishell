@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 15:22:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 19:28:04 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:25:55 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "env_list.h"
-#include "linked_list.h"
+#include "structure_linked_list.h"
 #include "expansion.h"
 #include "lexer.h"
 #include "utils.h"

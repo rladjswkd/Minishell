@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:30:50 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:23:07 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "lexer.h"
 #include "heredoc.h"
 #include "ft_signal.h"
-#include "linked_list.h"
+#include "structure_linked_list.h"
 #include <stdlib.h>
 //debug
 #include <string.h>

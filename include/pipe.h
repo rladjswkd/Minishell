@@ -6,14 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 01:13:30 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:21:05 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPE_H
 # define PIPE_H
 
-# include "linked_list.h"
+# include "structure_linked_list.h"
 
 typedef enum e_pipe_type
 {

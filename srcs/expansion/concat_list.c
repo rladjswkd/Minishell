@@ -6,12 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 15:24:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:34:00 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:30:58 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "lexer.h"
+#include "destruct_wrapper.h"
 #include "utils.h"
 
 static int	get_alloc_size_in_condition(t_list *list)

@@ -6,12 +6,12 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 00:52:44 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:02:15 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:29:14 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "linked_list.h"
+#include "destruct_wrapper.h"
 #include "lexer.h"
 #include "utils.h"
 

@@ -6,13 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:32:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 18:08:58 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:20:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEREDOC_H
 # define HEREDOC_H
-# include "linked_list.h"
+# include "structure_linked_list.h"
 
 typedef struct s_heredoc_node
 {

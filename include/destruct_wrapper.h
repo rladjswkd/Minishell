@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   linked_list.h                                      :+:      :+:    :+:   */
+/*   destruct_wrapper.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:20 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 17:09:09 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/11 11:18:04 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LINKED_LIST_H
-# define LINKED_LIST_H
-
-typedef struct s_list
-{
-	void			*node;
-	struct s_list	*next;
-}				t_list;
+#ifndef DESTRUCT_WRAPPER_H
+# define DESTRUCT_WRAPPER_H
+# include "structure_linked_list.h"
 
 void	free_node(t_list **list);
 void	safe_free_token(t_list **token);

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 00:32:32 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/11 11:31:11 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "linked_list.h"
+#include "structure_linked_list.h"
 #include "env_list.h"
 #include "lexer.h"
 #include "redirect.h"
