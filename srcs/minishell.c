@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:51:17 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/11 12:41:02 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "structure_linked_list.h"
 #include "lexer.h"
 #include "parser.h"
+#include "constants.h"
 #include <stdlib.h>
 //debug
 #include <string.h>
@@ -56,6 +57,14 @@ static int	reset_in_out_fd(int io_backup[2])
 	return (0);
 }
 
+static int	is_all_whitespaces(char *input)
+{
+	while (*input == CHAR_SPACE || *input == CHAR_TAB || *input == '\n'
+		|| *input == '\v' || *input == '\f' || *input == '\r')
+		input++;
+	return (!(*input));
+}
+
 static int	input_processing(char **input)
 {
 	*input = readline("pepsi zero> ");
@@ -64,8 +73,11 @@ static int	input_processing(char **input)
 		printf("exit\n");
 		exit(0);
 	}
-	if (!(*input)[0])
+	if (is_all_whitespaces(*input))
+	{
+		free(*input);
 		return (0);
+	}
 	return (1);
 }
 
