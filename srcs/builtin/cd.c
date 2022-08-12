@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 16:23:37 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 13:19:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,6 @@ int	cd_cmd(char **path, t_env_list *env_list)
 
 	if (path[0] && path[1])
 		return (error_handler("cd", NULL, "too many arguments", 1));
-	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
-	if (be_old_pwd == NULL)
-		error_handler(NULL, NULL, strerror(errno), errno);
 	if (*path == NULL)
 		cmd_path = get_env_value(env_list, "HOME");
 	else
@@ -116,6 +113,9 @@ int	cd_cmd(char **path, t_env_list *env_list)
 		return (error_handler("cd", cmd_path, strerror(errno), 1));
 	else if (getcwd(path_buf, sizeof(path_buf)) == NULL)
 		return (error_handler(NULL, NULL, strerror(errno), errno));
+	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
+	if (be_old_pwd == NULL)
+		error_handler(NULL, NULL, strerror(errno), errno); // 실패시 처리 필요
 	cur_pwd = ft_strdup(path_buf);
 	if (cur_pwd == NULL)
 		return (error_handler(NULL, NULL, strerror(errno), errno));

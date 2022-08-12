@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:08:07 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 15:13:22 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 	envp = env_list_to_array(env_list);
 	if (envp == NULL)
 	{
-		free_list(&cmd);
+		free(cmd);
 		return (-1);
 	}
 	if (is_child)
@@ -70,7 +70,8 @@ static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 		else if (pid == 0)
 			execute_cmd(envp, cmd);
 		free_list(&envp);
-		free_list(&cmd);
+		// free_list(&cmd);
+		free(cmd);
 		waitpid(pid, &status, 0);
 		status = handle_status(status);
 	}

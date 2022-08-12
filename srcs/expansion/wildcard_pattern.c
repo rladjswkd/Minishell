@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:04:39 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 15:08:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, 
 	pattern_idx = 0;
 	pattern_info.normal_str = get_token(cur_node)->data;
 	pattern_info.pattern = pattern;
+	pattern_info.prev_char = '\0'; // init
 	pattern_info.wildcard_pattern_flag = wildcard_pattern_flag;
 	while (pattern_info.pattern[pattern_idx])
 		pattern_idx++;
