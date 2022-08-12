@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 14:31:48 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 13:33:14 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,6 @@ int		check_valid_variable(char *str);
 int		check_start_of_variable(char ch);
 int		check_mid_of_variable(char ch);
 void	safe_free(char **char_pptr);
+void	safe_free_cast(void **char_pptr, int size);
 
 #endif

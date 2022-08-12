@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:30:43 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 16:28:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ int	clear_env_list(t_env_list *env_list)
 	t_env_node	*be_removed_node;
 	t_env_node	*cur_node;
 
+	if (env_list == NULL)
+		return (-1);
 	cur_node = env_list->header_node;
 	while (cur_node)
 	{
@@ -68,7 +70,8 @@ int	clear_env_list(t_env_list *env_list)
 
 void	delete_env_list(t_env_list **env_list)
 {
-	clear_env_list(*env_list);
+	if (clear_env_list(*env_list) < 0)
+		return ;
 	free(*env_list);
 	*env_list = NULL;
 }

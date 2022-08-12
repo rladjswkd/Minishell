@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:38:25 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 18:11:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,10 @@
 #include "utils.h"
 #include "execute.h"
 #include "ft_error.h"
-//debug
-#include <stdio.h>
+#include <sys/errno.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-/**/
 
 static char	**find_path_list(char **envp)
 {
@@ -61,29 +59,42 @@ static void	exit_status_handling(int *status, char *cmd)
 	}
 }
 
-int	execute_cmd(char **envp, char **cmd)
+static void	execute_cmd_in_cur_path(char **path_list, char **cmd, char **envp)
+{
+	int	status;
+
+	if (path_list)
+		free_list(&path_list);
+	execve(cmd[0], cmd, envp);
+	exit_status_handling(&status, cmd[0]);
+	exit(status);
+}
+
+void	execute_cmd(char **envp, char **cmd)
 {
 	char	*cmd_path;
 	char	**path_list;
 	char	*path_with_slash;
 	size_t	idx;
-	int		status;
 
 	if (preprocess_path(&path_list, envp) == -1)
-		return (-1);
-	idx = 0;
-	while (path_list[idx])
 	{
-		path_with_slash = ft_strjoin(path_list[idx], "/");
-		cmd_path = ft_strjoin(path_with_slash, cmd[0]);
-		safe_free(&path_with_slash);
-		execve(cmd_path, cmd, envp);
-		safe_free(&cmd_path);
-		idx++;
+		if (errno != 0)
+			print_error(SHELL_NAME, cmd[0], NULL, strerror(errno));
+		execute_cmd_in_cur_path(path_list, cmd, envp);
 	}
-	free_list(&path_list);
-	execve(cmd[0], cmd, envp);
-	exit_status_handling(&status, cmd[0]);
-	exit(status);
+	else
+	{
+		idx = 0;
+		while (path_list[idx])
+		{
+			path_with_slash = ft_strjoin(path_list[idx], "/");
+			cmd_path = ft_strjoin(path_with_slash, cmd[0]);
+			safe_free(&path_with_slash);
+			execve(cmd_path, cmd, envp);
+			safe_free(&cmd_path);
+			idx++;
+		}
+		execute_cmd_in_cur_path(path_list, cmd, envp);
+	}
 }
-// manual*

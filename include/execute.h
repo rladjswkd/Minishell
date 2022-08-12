@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:50:38 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 15:17:02 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int		execute_processing(t_env_list *env_list, t_list *parse_list, \
 							int is_child, t_list *org_list);
 int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 							t_list *org_list);
-int		execute_cmd(char **envp, char **cmd);
+void	execute_cmd(char **envp, char **cmd);
 int		simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child);
 
 char	**list_to_array(t_list *env_list);

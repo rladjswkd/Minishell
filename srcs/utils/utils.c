@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 13:41:33 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 17:12:16 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ int	split_key_value(char *envp_element, char **key, char **value)
 	if (delimiter_posi < 0)
 	{
 		*key = ft_strdup(envp_element);
+		*value = NULL;
 		if (*key == NULL)
 			return (-1);
-		*value = NULL;
 	}
 	else
 	{

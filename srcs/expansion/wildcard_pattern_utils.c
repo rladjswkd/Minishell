@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:04:56 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 15:02:59 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static int	get_normal_case_pattern_size(t_list *cur_node)
 
 	idx = 0;
 	alloc_size = 0;
+	prev_char = '\0';
 	while ((get_token(cur_node)->data)[idx])
 	{
 		if ((get_token(cur_node)->data)[idx] != '*')

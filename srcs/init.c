@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:22:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 11:28:48 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:03:20 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,6 @@
 	우선은 linked를 활용해본다.
 	불편하면 array list로 변경가능.
 */
-#include <stdio.h>
-//debug
-
 /*
 	init할때 할당에서 실패한다면 어떻게 종료시킬것인가?
 	error 문구는 어떻게 표현할것인가?
@@ -51,6 +48,8 @@ static int	add_env(t_env_list *env_list, char *key, char *value)
 {
 	t_env_node	*cur_node;
 
+	if (key == NULL)
+		return (-1);
 	cur_node = create_env_node(key, value);
 	if (cur_node == NULL)
 	{
@@ -60,6 +59,14 @@ static int	add_env(t_env_list *env_list, char *key, char *value)
 	}
 	add_back_env_node(env_list, cur_node);
 	return (0);
+}
+
+static int	wrapper_free_init(t_env_list **env_list, char *key, char *value)
+{
+	delete_env_list(env_list);
+	free(key);
+	free(value);
+	return (-1);
 }
 
 int	init_value(t_env_list	**env_list, char **envp, int io_backup[2])
@@ -76,17 +83,14 @@ int	init_value(t_env_list	**env_list, char **envp, int io_backup[2])
 	{
 		if (split_key_value(envp[idx], &key, &value) < 0)
 			error_handler(NULL, NULL, strerror(errno), 1);
-		add_env((*env_list), key, value);
+		if (add_env((*env_list), key, value) < 0)
+			return (wrapper_free_init(env_list, key, value));
 		idx++;
 	}
 	if (get_env_node((*env_list), "OLDPWD") == NULL)
-		add_env((*env_list), "OLDPWD", NULL);
+		if (add_env((*env_list), ft_strdup("OLDPWD"), NULL) < 0)
+			return (wrapper_free_init(env_list, key, value));
 	io_backup[0] = dup(0);
 	io_backup[1] = dup(1);
 	return (0);
 }
-
-/*
-	singleton 예정
-	getter, setter
-*/

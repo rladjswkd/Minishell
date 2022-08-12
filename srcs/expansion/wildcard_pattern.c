@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:13:57 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:04:39 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 18:21:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,15 @@ static void	copy_normal_case_pattern_sub_routine(t_pattern_info *pattern_info, \
 	}
 }
 
-// 마지막 '\0' 넣는것에 대해 제대로 되는지 테스트 필요, 엣지 케이스는 없는가?
+static void	init_pattern_info(t_pattern_info *pattern_info, t_list *cur_node, \
+								char *pattern, int *wildcard_pattern_flag)
+{
+	pattern_info->normal_str = get_token(cur_node)->data;
+	pattern_info->pattern = pattern;
+	pattern_info->prev_char = '\0';
+	pattern_info->wildcard_pattern_flag = wildcard_pattern_flag;
+}
+
 static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, \
 										t_list *cur_node, int dst_size)
 {
@@ -36,9 +44,7 @@ static void	copy_normal_case_pattern(char *pattern, int *wildcard_pattern_flag, 
 
 	idx = 0;
 	pattern_idx = 0;
-	pattern_info.normal_str = get_token(cur_node)->data;
-	pattern_info.pattern = pattern;
-	pattern_info.wildcard_pattern_flag = wildcard_pattern_flag;
+	init_pattern_info(&pattern_info, cur_node, pattern, wildcard_pattern_flag);
 	while (pattern_info.pattern[pattern_idx])
 		pattern_idx++;
 	while (pattern_info.normal_str[idx] && pattern_idx < dst_size)

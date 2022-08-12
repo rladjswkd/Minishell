@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 15:41:18 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 18:07:24 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,13 @@
 #include "lexer_util.h"
 #include "destruct.h"
 #include <stdlib.h>
-//debug
-#include <string.h>
-#include <sys/errno.h>
 
 static int	preprocess(char *input, t_list *parsed_header)
 {
-	t_list		token_header;
-	
-	if (!lexer(input, &token_header) ||
-		!parser(token_header.next, parsed_header))
+	t_list	token_header;
+
+	if (!lexer(input, &token_header)
+		|| !parser(token_header.next, parsed_header))
 	{
 		free(input);
 		return (1);
@@ -91,7 +88,6 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		execute_processing(env_list, parsed_header.next, FALSE, &parsed_header);
 		add_history(input);
-		// error 발생시 free시키는 조건을 일괄적으로 할 필요가 있다.
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
 		free(input);

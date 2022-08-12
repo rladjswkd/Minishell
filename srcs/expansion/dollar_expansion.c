@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 13:44:26 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:02:31 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 14:31:27 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,5 +137,6 @@ int	dollar_sign_conversion(t_env_list *env_list, t_token *token)
 	safe_free(&(token->data));
 	if (concat_tmp_expansion_list(token, &tmp_expansion_list) < 0)
 		return (wrapper_free_token_list(&tmp_expansion_list, -1));
+	safe_free_token_list(tmp_expansion_list.next);
 	return (0);
 }
