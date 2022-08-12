@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:09:34 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 20:48:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,18 +69,20 @@ static int	set_path_env(t_env_list *env_list, char *env_key, char *set_value)
 			if (cur_env_node->value)
 				free(cur_env_node->value);
 			cur_env_node->value = set_value;
-			return (0);
+			return (1);
 		}
 		cur_env_node = cur_env_node->next_node;
 	}
-	return (1);
+	return (0);
 }
 
 static void	update_path_env(t_env_list *env_list, char *be_old_pwd, \
 							char *be_pwd)
 {
-	set_path_env(env_list, "OLDPWD", be_old_pwd);
-	set_path_env(env_list, "PWD", be_pwd);
+	if (set_path_env(env_list, "OLDPWD", be_old_pwd) == 0)
+		free(be_old_pwd);
+	if (set_path_env(env_list, "PWD", be_pwd) == 0)
+		free(be_pwd);
 }
 
 /*
@@ -104,21 +106,35 @@ int	cd_cmd(char **path, t_env_list *env_list)
 
 	if (path[0] && path[1])
 		return (error_handler("cd", NULL, "too many arguments", 1));
+	cmd_path = *path;
 	if (*path == NULL)
+	{
 		cmd_path = get_env_value(env_list, "HOME");
-	else
-		cmd_path = *path;
+		if (cmd_path == NULL)
+			return (error_handler("cd", NULL, "HOME not set", 1));
+	}
+	if (getcwd(path_buf, sizeof(path_buf)) == NULL)
+		return (error_handler(NULL, NULL, strerror(errno), errno));
+	be_old_pwd = ft_strdup(path_buf);
+	if (be_old_pwd == NULL)
+		return (error_handler(NULL, NULL, strerror(errno), errno));
 	ret = chdir(cmd_path);
 	if (ret < 0)
+	{
+		free(be_old_pwd);
 		return (error_handler("cd", cmd_path, strerror(errno), 1));
+	}
 	else if (getcwd(path_buf, sizeof(path_buf)) == NULL)
+	{
+		free(be_old_pwd);
 		return (error_handler(NULL, NULL, strerror(errno), errno));
-	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
-	if (be_old_pwd == NULL)
-		error_handler(NULL, NULL, strerror(errno), errno);
+	}
 	cur_pwd = ft_strdup(path_buf);
 	if (cur_pwd == NULL)
+	{
+		free(be_old_pwd);
 		return (error_handler(NULL, NULL, strerror(errno), errno));  // 실패시 처리 필요
+	}
 	update_path_env(env_list, be_old_pwd, cur_pwd);
 	return (ret);
 }
