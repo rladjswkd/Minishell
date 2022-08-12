@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:00:11 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:17:58 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	wildcard_conversion(t_list **start_node, t_list **end_node,
 		link_conversion_to_middle_or_end(list, start_node, tmp_start_node);
 	safe_free(&pattern);
 	free(wildcard_pattern_flag);
-	wildcard_pattern_flag = NULL; //
+	wildcard_pattern_flag = NULL;
 	return (0);
 }
 
@@ -90,7 +90,6 @@ static int	do_wildcard(t_list **list, char **cur_dir_file_list)
 
 	if (*list == NULL || cur_dir_file_list == NULL)
 		return (0);
-
 	cur_node = *list;
 	start_node = NULL;
 	while (cur_node)
@@ -116,7 +115,6 @@ static int	do_wildcard(t_list **list, char **cur_dir_file_list)
 /*< a << b >> c >> e << df
 	- 어떤 redir type인지 읽어서 처리한다.
 	- expansion 처리되었다는 가정하에 실행한다.
-	- ex
 */
 int	wildcard_for_curdir(t_simple *scmd_list)
 {
@@ -134,4 +132,3 @@ int	wildcard_for_curdir(t_simple *scmd_list)
 	free_list(&cur_dir_file_list);
 	return (0);
 }
-

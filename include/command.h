@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef COMMAND_H
-# define COMMAHD_H
+# define COMMAND_H
 # include "structure_command.h"
 # include "type_command.h"
 # include "construct.h"
@@ -20,4 +20,5 @@ t_command	*get_command(t_list *parsed);
 int			get_command_type(t_list *parsed);
 int			create_command(t_list **neu, int type);
 void		get_prev_command(t_list *parsed, t_list *node, t_list **prev);
+
 #endif

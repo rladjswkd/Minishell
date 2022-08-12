@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:54:27 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 15:36:19 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 18:17:48 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static char	**alloc_word_list(void)
 static int	copy_cur_dir_file_list(DIR *dir_ptr, char ***cur_dir_file_list)
 {
 	struct dirent	*file;
-	int			idx;
+	int				idx;
 
 	if (dir_ptr == NULL)
 	{

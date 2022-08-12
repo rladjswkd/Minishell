@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:28:49 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:11:51 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,6 @@
 #include "expansion.h"
 #include "exit.h"
 #include "utils.h"
-
-/*
-static int	execute_subshell(t_env_list *env_list, t_list *parse_list, \
-							int is_child, t_list *org_list)
-{
-	int	pid;
-	int	status;
-
-	pid = fork();
-	if (pid < 0)
-		return (-1);
-	else if (pid == 0)
-	{
-		status = execute_processing(env_list, \
-									parse_list, \
-									1, org_list);
-		exit(status);
-	}
-	waitpid(pid, &status, 0);
-	status = handle_status(status);
-	return (status);
-}
-*/
 
 static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 {
@@ -70,7 +47,6 @@ static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 		else if (pid == 0)
 			execute_cmd(envp, cmd);
 		free_list(&envp);
-		// free_list(&cmd);
 		free(cmd);
 		waitpid(pid, &status, 0);
 		status = handle_status(status);

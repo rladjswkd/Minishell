@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:10 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 13:19:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:09:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,10 @@ int	cd_cmd(char **path, t_env_list *env_list)
 		return (error_handler(NULL, NULL, strerror(errno), errno));
 	be_old_pwd = ft_strdup(get_env_value(env_list, "PWD"));
 	if (be_old_pwd == NULL)
-		error_handler(NULL, NULL, strerror(errno), errno); // 실패시 처리 필요
+		error_handler(NULL, NULL, strerror(errno), errno);
 	cur_pwd = ft_strdup(path_buf);
 	if (cur_pwd == NULL)
-		return (error_handler(NULL, NULL, strerror(errno), errno));
+		return (error_handler(NULL, NULL, strerror(errno), errno));  // 실패시 처리 필요
 	update_path_env(env_list, be_old_pwd, cur_pwd);
 	return (ret);
 }

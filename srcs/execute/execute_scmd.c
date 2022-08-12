@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 17:02:36 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:11:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,8 @@
 #include "ft_error.h"
 #include <sys/errno.h>
 #include <string.h>
-//debug
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-/**/
 
 static char	**find_path_list(char **envp)
 {
@@ -65,7 +61,7 @@ static void	exit_status_handling(int *status, char *cmd)
 
 static void	execute_cmd_in_cur_path(char **path_list, char **cmd, char **envp)
 {
-	int status;
+	int	status;
 
 	if (path_list)
 		free_list(&path_list);

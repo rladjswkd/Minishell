@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 17:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 14:21:52 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 18:21:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	concat_list_data(t_list *list, char *dst, \
 int	concat_tmp_expansion_list(t_token *token, t_list *tmp_expansion_list)
 {
 	int	alloc_size;
-	//$PWD$HOME
+
 	alloc_size = get_alloc_size(tmp_expansion_list->next) + 1;
 	token->data = (char *)malloc(sizeof(char) * alloc_size);
 	if (token->data == NULL)
