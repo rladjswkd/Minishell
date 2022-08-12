@@ -76,14 +76,14 @@ static int	tokenize_input(char *str, t_list *token_header)
 	int			types;
 	t_list		*cur;
 	static int	(*len_fp[6])(char *, int *) = {
-		&extract_normal, &extract_redir,
-		&extract_quote,	&extract_bracket,
-		&extract_logical_pipe, &ignore_blank
-	};
+		&extract_normal, &extract_redir, &extract_quote,
+		&extract_bracket, &extract_logical_pipe, &ignore_blank};
 
 	while (*str)
 	{	
 		len = (len_fp[get_index(*str, *(str + 1))])(str, &types);
+		if (len == -1)
+			return (len);
 		if (!create_token(&cur, str, len, types))
 			return (0);
 		if (!(types & TOKEN_IGNORE))
@@ -100,13 +100,16 @@ static int	tokenize_input(char *str, t_list *token_header)
 
 int	lexer(char *input, t_list *token_header)
 {
-	if (!tokenize_input(input, token_header))
+	int	ret;
+
+	ret = tokenize_input(input, token_header);
+	if (!ret)
 	{
 		safe_free_token_list(token_header->next);
 		print_error(SHELL_NAME, NULL, NULL, ALLOC_FAIL);
 		exit(EXIT_FAILURE);
 	}
-	if (!check_syntax(token_header->next))
+	if (ret == -1 || !check_syntax(token_header->next))
 	{
 		safe_free_token_list(token_header->next);
 		return (error_handler(NULL, NULL, SYNTAX_ERR, 0));

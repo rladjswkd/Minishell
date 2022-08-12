@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:33 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/11 12:10:49 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 20:21:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static void	parse_args_redirs(t_list *parsed, t_list **list)
 			if (get_token_type(*list) & TOKEN_HEREDOC)
 			{
 				if (concat_heredoc_word_list((*list)->next))
-					return ;// token, parse free and exit()
+					return ;
 				get_token((*list)->next)->heredoc_fd = heredoc_routine(
 					get_token((*list)->next)->data);
 				if (get_token((*list)->next)->heredoc_fd < 0)
