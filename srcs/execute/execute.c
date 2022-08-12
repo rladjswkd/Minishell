@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:13:22 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 15:28:49 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 		return (-1);
 	}
 	if (is_child)
-		status = execute_cmd(envp, cmd);
+		execute_cmd(envp, cmd);
 	else
 	{
 		pid = fork();

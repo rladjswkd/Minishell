@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/28 19:36:08 by jim               #+#    #+#             */
-/*   Updated: 2022/07/18 17:04:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 15:48:25 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,4 @@ t_env_node	*get_env_node(t_env_list *env_list, char *key);
 int			remove_env_node(t_env_list *env_list, char *key);
 int			clear_env_list(t_env_list *env_list);
 void		delete_env_list(t_env_list **env_list);
-
 #endif

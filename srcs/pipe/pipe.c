@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:01:31 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/12 15:33:31 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 #include "exit.h"
 #include "ft_error.h"
 
-static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
+static void	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *org_list);
 
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
@@ -135,8 +135,7 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
 		if (process_info[idx].pid < 0)
 			return (1);
 		else if (process_info[idx].pid == 0)
-			return (child_process(env_list, &fd_info, &pipelist_info, \
-									org_list));
+			child_process(env_list, &fd_info, &pipelist_info, org_list);
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
@@ -145,28 +144,22 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
 	return (pipeline_waitpid_processing(process_info));
 }
 
-static int	child_process(t_env_list *env_list, t_fd_info *fd_info, \
+static void	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 							t_pipelist_info *pipelist_info, t_list *org_list)
 {
-	int		status;
-
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]);
 	if (is_exist_next_pipe(pipelist_info->cur_node))
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-		status = execute_processing(env_list, pipelist_info->cur_node, TRUE, \
+		execute_processing(env_list, pipelist_info->cur_node, TRUE, \
 									org_list);
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
-		status = simple_cmd(env_list, \
+		simple_cmd(env_list, \
 							get_simple(pipelist_info->cur_node), TRUE);
 	else
-	{
-		status = 2;
 		print_error(SHELL_NAME, NULL, NULL, "unknown command_type");
-	}
-	return (status);
 }
 
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \

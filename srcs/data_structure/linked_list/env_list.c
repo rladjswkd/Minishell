@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 20:23:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/08 14:37:19 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 16:16:05 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ t_env_node	*create_env_node(char *key, char *value)
 {
 	t_env_node	*env_node;
 
+	if (key == NULL)
+		return (NULL);
 	env_node = (t_env_node *)malloc(sizeof(t_env_node));
 	if (env_node == NULL)
 		return (NULL);
@@ -61,7 +63,7 @@ t_env_node	*get_env_node(t_env_list *env_list, char *key)
 	t_env_node	*cur_node;
 	size_t		cmp_len;
 
-	if (env_list == NULL)
+	if (env_list == NULL || key == NULL)
 		return (NULL);
 	cur_node = env_list->header_node;
 	while (cur_node)

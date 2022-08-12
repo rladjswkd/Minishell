@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/10 16:56:48 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/12 17:13:15 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,11 @@ static int	add_to_export_list(t_env_list *env_list, char **arg_list)
 		if (split_key_value(arg_list[idx], &key, &value) == -1)
 			error_handler(NULL, NULL, ALLOC_FAIL, 1);
 		if (check_valid_variable(key) == 0)
-			return (error_handler("export", key, NONVALID, 1));
+		{
+			free(key);
+			free(value);
+			return (error_handler("export", NULL, NONVALID, 1));
+		}
 		if (export_result_replace_or_add(env_list, key, value) < 0)
 			return (-1);
 		idx++;
