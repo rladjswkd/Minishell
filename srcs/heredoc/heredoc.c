@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:59:12 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/14 01:20:24 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,9 @@
 #include "heredoc.h"
 #include "expansion.h"
 #include "utils.h"
-//계속 return시킬 것 아니라면 exit한다.
-// unlink 실패해도 free해야한다. 어쨌든, -1 return하므로 error 체크하지 않는다.
-static int	free_and_close(char *file_name, int tmp_file_fd, char *read_str)
-{
-	unlink(file_name);
-	safe_free(&file_name);
-	safe_free(&read_str);
-	close(tmp_file_fd);
-	return (-1);
-}
+#include "ft_error.h"
 
-static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
+static int	get_readline(int tmp_file_fd, char *heredoc_word)
 {
 	char	*read_str;
 	char	*with_newline;
@@ -49,25 +40,21 @@ static int	get_readline(char *file_name, int tmp_file_fd, char *heredoc_word)
 		with_newline = ft_strjoin(read_str, "\n");
 		safe_free(&read_str);
 		if (with_newline == NULL)
-			return (-1);
-		if (write(tmp_file_fd, with_newline, ft_strlen(with_newline)) < 0)
-			return (free_and_close(file_name, tmp_file_fd, read_str));
+			return (error_handler(NULL, heredoc_word, ALLOC_FAIL, -1));
+		write(tmp_file_fd, with_newline, ft_strlen(with_newline));
 		safe_free(&with_newline);
 	}
-	close(tmp_file_fd);
 	return (1);
 }
 
-static int	get_tmp_file_fd(char *file_name)
+static int	get_tmp_file_fd_for_read(char *file_name)
 {
 	int	open_fd;
 
 	open_fd = open(file_name, O_RDONLY, 0666);
+	unlink(file_name);
 	if (open_fd < 0)
 		return (-1);
-	if (unlink(file_name) < 0)
-		return (-1);
-	safe_free(&file_name);
 	return (open_fd);
 }
 
@@ -82,6 +69,13 @@ int	concat_heredoc_word_list(t_list *list)
 	return (0);
 }
 
+/*
+	- 반환값은 fd이다!
+	- heredoc 입력값을 임시파일에 저장하며 
+	  처리가 끝나면 임시파일을 삭제한 뒤 
+	  미리 open한 임시파일을 fd를 반환한다.
+	  만약 error가 중간에 발생했다면 STDIN_FILENO로 반환한다.
+*/
 int	heredoc_routine(char *heredoc_word)
 {
 	int		tmp_file_fd;
@@ -89,11 +83,18 @@ int	heredoc_routine(char *heredoc_word)
 
 	tmp_file_fd = create_heredoc_tmp_file(&file_name);
 	if (tmp_file_fd < 0)
-		return (-1);
-	if (get_readline(file_name, tmp_file_fd, heredoc_word) < 0)
-		return (-1);
-	tmp_file_fd = get_tmp_file_fd(file_name);
+		return (STDIN_FILENO);
+	if (get_readline(tmp_file_fd, heredoc_word) < 0)
+	{
+		unlink(file_name);
+		close(tmp_file_fd);
+		safe_free(&file_name);
+		return (STDIN_FILENO);
+	}
+	close(tmp_file_fd);
+	tmp_file_fd = get_tmp_file_fd_for_read(file_name);
+	safe_free(&file_name);
 	if (tmp_file_fd < 0)
-		return (-1);
+		return (STDIN_FILENO);
 	return (tmp_file_fd);
 }

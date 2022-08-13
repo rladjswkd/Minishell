@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/13 21:58:05 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/14 01:32:08 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ int	main(int argc, char **argv, char **envp)
 		if (reset_in_out_fd(io_backup) < 0)
 			return (wrapper_free_input_and_parse(&input, \
 					parsed_header.next, 1));
+		wrapper_free_input_and_parse(&input, parsed_header.next, 0);
 	}	
 	delete_env_list(&env_list);
 	return (0);

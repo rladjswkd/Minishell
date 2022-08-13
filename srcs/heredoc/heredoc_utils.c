@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 19:50:26 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 01:17:36 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	check_tmp_file_name(char *file_name)
 	if (dir_ptr == NULL)
 		return (-1);
 	file = readdir(dir_ptr);
-	while (file != NULL)
+	while (file)
 	{
 		if (ft_strncmp(file_name, file->d_name, \
 						max_nonnegative(file_name, file->d_name)) == 0)
@@ -49,6 +49,12 @@ static int	check_tmp_file_name(char *file_name)
 	return (0);
 }
 
+/*
+	- 현재 디렉토리 위치에서 .heredoc_tmp_file_0, heredoc_tmp_file_1, ... ,heredoc_tmp_file_n
+	  이름으로 되어있는 임시파일이 없다면 해당 이름은 heredoc 입력값을 저장한 임시파일 이름으로 정한다.
+	e.g) .heredoc_tmp_file_0 파일이 이미 존재하다면 heredoc_tmp_file_1 이름이 현재 디렉토리에 있는지 확인하고 없다면 
+	      tmp file로 쓰기위해 heredoc_tmp_file_1을 반환한다.
+*/
 static char	*get_tmp_file_name(void)
 {
 	char	*file_name;
