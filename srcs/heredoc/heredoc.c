@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:08:25 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 01:20:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 02:44:10 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ static int	get_readline(int tmp_file_fd, char *heredoc_word)
 	{
 		read_str = readline("$>");
 		if (read_str == NULL)
-			return (-1);
+			break ;
 		if (ft_strncmp(read_str, heredoc_word, \
-			max_nonnegative(read_str, heredoc_word)) == 0)
+						max_nonnegative(read_str, heredoc_word)) == 0)
 		{
 			safe_free(&read_str);
 			break ;
@@ -54,7 +54,7 @@ static int	get_tmp_file_fd_for_read(char *file_name)
 	open_fd = open(file_name, O_RDONLY, 0666);
 	unlink(file_name);
 	if (open_fd < 0)
-		return (-1);
+		return (error_handler(NULL, NULL, FILE_OPEN_FAIL, -1));
 	return (open_fd);
 }
 

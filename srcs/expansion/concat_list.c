@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 15:24:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:05:57 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/14 02:37:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "token.h"
 #include "structure_simple.h"
 #include "utils.h"
+#include "ft_error.h"
 
 static int	get_alloc_size_in_condition(t_list *list)
 {
@@ -62,7 +63,7 @@ int	concat_list_in_condition(t_list *list)
 	alloc_size = get_alloc_size_in_condition(list) + 1;
 	to_be_str = (char *)malloc(sizeof(char) * alloc_size);
 	if (to_be_str == NULL)
-		return (-1);
+		return (error_handler(NULL, NULL, ALLOC_FAIL, -1));
 	concat_list_data_in_condition(list, to_be_str, alloc_size);
 	return (0);
 }

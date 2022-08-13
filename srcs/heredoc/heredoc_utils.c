@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 14:07:43 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 01:17:36 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 02:36:10 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 #include <unistd.h>
 #include <limits.h>
 #include <fcntl.h>
-
 #include "heredoc.h"
 #include "structure_linked_list.h"
 #include "utils.h"
+#include "ft_error.h"
 
 static int	check_tmp_file_name(char *file_name)
 {
@@ -85,12 +85,12 @@ int	create_heredoc_tmp_file(char **file_name)
 
 	*file_name = get_tmp_file_name();
 	if (*file_name == NULL)
-		return (-1);
+		return (error_handler(NULL, NULL, ALLOC_FAIL, -1));
 	tmp_file_fd = open(*file_name, O_CREAT | O_WRONLY, 0666);
 	if (tmp_file_fd < 0)
 	{
 		safe_free(file_name);
-		return (-1);
+		return (error_handler(NULL, NULL, FILE_OPEN_FAIL, -1));
 	}
 	return (tmp_file_fd);
 }
