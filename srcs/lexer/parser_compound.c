@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_compound.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:30 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:32 by gyepark          ###   ########.kr       */
+/*   Updated: 2022/08/13 21:40:36 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static int	process_subshell(t_list **parsed, t_list *r)
 	if (!r || !find_lbracket(*parsed, r, &l))
 		return (1);
 	if (get_simple_type(l->next) & COMPOUND_SUBSHELL && l->next->next == r)
-		return (-1); // syntax error. ((...))
+		return (-1);
 	if (!create_command(&neu, COMPOUND_SUBSHELL))
 		return (0);
 	rearrange_subshell(parsed, l, r, neu);

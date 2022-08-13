@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:33 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/13 21:26:35 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/13 21:49:42 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static void	parse_args_redirs(t_list *parsed, t_list **list)
 			if (get_token_type(*list) & TOKEN_HEREDOC)
 			{
 				if (concat_heredoc_word_list((*list)->next))
-					return ;// token, parse free and exit()
+					return ;
 				get_token((*list)->next)->heredoc_fd = heredoc_routine(
 					get_token((*list)->next)->data);
 				if (get_token((*list)->next)->heredoc_fd < 0)
