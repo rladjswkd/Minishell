@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:17:02 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:58:33 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@
 # include "env_list.h"
 
 int		execute_processing(t_env_list *env_list, t_list *parse_list, \
-							int is_child, t_list *org_list);
-int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
-							t_list *org_list);
+							int is_child);
+int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list);
 void	execute_cmd(char **envp, char **cmd);
 int		simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child);
 

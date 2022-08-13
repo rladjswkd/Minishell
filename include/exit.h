@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 17:36:30 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:20:30 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/13 20:56:20 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <sys/wait.h>
 
 int		*get_exit_status(void);
-void	update_exit_status(int status, t_list *org_list);
+void	update_exit_status(int status);
 int		handle_status(int status);
 
 #endif

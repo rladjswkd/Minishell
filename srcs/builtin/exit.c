@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/08/09 16:40:35 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 14:41:49 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int	exit_cmd(char **status, int is_child)
 	{
 		print_error(SHELL_NAME, "exit", *status, \
 					"numeric argument required");
-		exit_status = (char)2;
+		exit_status = (char)255;
 	}
 	else if (*status != NULL && *(status + 1) != NULL)
 		return (error_handler("exit", NULL, "too many arguments", 1));

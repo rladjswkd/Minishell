@@ -140,7 +140,7 @@ SIGNAL_OBJS  = $(SIGNAL_SRCS:.c=.o)
 UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) $(COMFILE_FLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@ $(LDLIBS)
 
@@ -148,7 +148,7 @@ UTIL_OBJS = $(UTIL_SRCS:.c=.o)
 # $(CC) $(CFLAGS) -I ./$(INCLUDE)/ -c $^ -o $@
 
 $(NAME) : $(OBJS) $(UTIL_OBJS) $(LINKED_OBJS) $(DATA_STRUCTURE_OBJS) $(REDIRECT_OBJS) $(HEREDOC_OBJS) $(PIPE_OBJS) $(EXPANSION_OBJS) $(BUILTIN_OBJS) $(SIGNAL_OBJS) $(EXECUTE_OBJS) $(LEXTER_OBJS)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) $(LINKING_FLAGS) $^ -o $@
 
 # $(CC) $(CFLAGS) $(LINKING_FLAGS) $^ -o $@
 # $(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)

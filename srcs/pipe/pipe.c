@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/02 11:23:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:33:31 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:59:59 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #include "ft_error.h"
 
 static void	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info, t_list *org_list);
+							t_pipelist_info *pipelist_info);
 
 static int	parent_process(t_fd_info *fd_info, t_list *start_node, \
 							t_list *cur_node);
@@ -115,8 +115,7 @@ static int	pipeline_waitpid_processing(t_process_info *process_info)
 	return (status);
 }
 
-int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
-						t_list *org_list)
+int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list)
 {
 	t_pipelist_info		pipelist_info;
 	t_fd_info			fd_info;
@@ -135,7 +134,7 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
 		if (process_info[idx].pid < 0)
 			return (1);
 		else if (process_info[idx].pid == 0)
-			child_process(env_list, &fd_info, &pipelist_info, org_list);
+			child_process(env_list, &fd_info, &pipelist_info);
 		parent_process(&fd_info, pipeline_list, pipelist_info.cur_node);
 		pipelist_info.cur_node = pipelist_info.cur_node->next;
 		switch_flag(&fd_info.spin_flag);
@@ -145,7 +144,7 @@ int	pipeline_processing(t_env_list *env_list, t_list *pipeline_list,
 }
 
 static void	child_process(t_env_list *env_list, t_fd_info *fd_info, \
-							t_pipelist_info *pipelist_info, t_list *org_list)
+							t_pipelist_info *pipelist_info)
 {
 	if (is_exist_prev_pipe(pipelist_info->start_node, pipelist_info->cur_node))
 		connect_to_prev(fd_info->fd[fd_info->spin_flag % 2]);
@@ -153,8 +152,7 @@ static void	child_process(t_env_list *env_list, t_fd_info *fd_info, \
 		connect_to_next(fd_info->fd[(fd_info->spin_flag + 1) % 2]);
 	if (get_command_type(pipelist_info->cur_node) & COMPOUND_PIPELINE
 		|| get_command_type(pipelist_info->cur_node) & COMPOUND_SUBSHELL)
-		execute_processing(env_list, pipelist_info->cur_node, TRUE, \
-									org_list);
+		execute_processing(env_list, pipelist_info->cur_node, TRUE);
 	else if (get_command_type(pipelist_info->cur_node) & SIMPLE_NORMAL)
 		simple_cmd(env_list, \
 							get_simple(pipelist_info->cur_node), TRUE);

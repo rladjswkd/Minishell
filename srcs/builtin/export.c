@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 17:13:15 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:51:51 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static int	export_result_replace_or_add(t_env_list *env_list, \
 	found_node = find_export_key(env_list, key);
 	if (found_node != NULL && value != NULL)
 	{
+		free(key);
 		if (found_node->value != NULL)
 			free(found_node->value);
 		found_node->value = value;
@@ -67,6 +68,8 @@ static int	export_result_replace_or_add(t_env_list *env_list, \
 			return (-1);
 		add_back_env_node(env_list, new_node);
 	}
+	else
+		free(key);
 	return (0);
 }
 

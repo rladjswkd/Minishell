@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:58:31 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/13 21:15:52 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,15 @@ static int	redirect_ordinary_case(t_list *cur_node, int is_child)
 	return (status);
 }
 
+static int	is_more_than_one_redirect_data(t_list *cur_node)
+{
+	if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
+		&& (cur_node->next->next
+			&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
+		return (1);
+	return (0);
+}
+
 /*
 	- expasion으로 합쳐주었다는 가정!
 	그러므로 짝수개씩 들어오게 된다.
@@ -92,14 +101,10 @@ int	redirection(t_list *redir_list, int is_child)
 	t_list	*cur_node;
 	int		status;
 
-	if (redir_list == NULL)
-		return (0);
 	cur_node = redir_list;
 	while (cur_node)
 	{
-		if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next \
-			&& (cur_node->next->next
-				&& !(get_token(cur_node->next->next)->types & TOKEN_REDIR)))
+		if (is_more_than_one_redirect_data(cur_node))
 			return (error_handler(NULL, get_token(cur_node->next)->data, \
 					AMBIGUOUS_REDIRECT, 1));
 		else if (get_token(cur_node)->types & TOKEN_REDIR && cur_node->next)

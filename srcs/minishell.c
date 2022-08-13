@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:07:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:58:37 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		execute_processing(env_list, parsed_header.next, FALSE, &parsed_header);
+		execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		if (reset_in_out_fd(io_backup) < 0)
 			return (1); // free
