@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 22:40:10 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 22:56:59 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,13 +111,11 @@ static int	check_execute_operator_skip(t_list *parse_list)
 int	execute_processing(t_env_list *env_list, t_list *parse_list, \
 						int is_child, int io_backup[2])
 {
-	t_simple	*scmd_list;
-
 	if (env_list == NULL || parse_list == NULL)
 		return (1);
-	scmd_list = get_simple(parse_list);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
-		update_exit_status(simple_cmd(env_list, scmd_list, is_child));
+		update_exit_status(simple_cmd(env_list, get_simple(parse_list), \
+							is_child));
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
 		update_exit_status(pipeline_processing(env_list, \
 								get_compound(parse_list)->list, io_backup));
@@ -127,7 +125,8 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, \
 											is_child, io_backup));
 	if (parse_list->next)
 	{
-		reset_in_out_fd(io_backup);
+		if (reset_in_out_fd(io_backup) < 0)
+			return (1);
 		parse_list = parse_list->next;
 		while (parse_list && check_execute_operator_skip(parse_list))
 			parse_list = parse_list->next->next;
