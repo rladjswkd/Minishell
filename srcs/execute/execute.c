@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 18:06:28 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 22:40:10 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,30 +108,32 @@ static int	check_execute_operator_skip(t_list *parse_list)
 		return (0);
 }
 
-int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
+int	execute_processing(t_env_list *env_list, t_list *parse_list, \
+						int is_child, int io_backup[2])
 {
 	t_simple	*scmd_list;
 
-	scmd_list = get_simple(parse_list);
 	if (env_list == NULL || parse_list == NULL)
 		return (1);
+	scmd_list = get_simple(parse_list);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
 		update_exit_status(simple_cmd(env_list, scmd_list, is_child));
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
 		update_exit_status(pipeline_processing(env_list, \
-											get_compound(parse_list)->list));
+								get_compound(parse_list)->list, io_backup));
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
 		update_exit_status(execute_processing(env_list, \
-											get_compound(parse_list)->list, \
-											is_child));
+								get_compound(parse_list)->list, \
+											is_child, io_backup));
 	if (parse_list->next)
 	{
+		reset_in_out_fd(io_backup);
 		parse_list = parse_list->next;
 		while (parse_list && check_execute_operator_skip(parse_list))
 			parse_list = parse_list->next->next;
 		if (parse_list != NULL)
 			update_exit_status(execute_processing(env_list, parse_list, \
-												is_child));
+												is_child, io_backup));
 	}
 	return (*(get_exit_status()));
 }

@@ -6,13 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 17:51:10 by gyepark          ###   ########.kr       */
+/*   Updated: 2022/08/14 22:27:55 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -29,7 +30,6 @@
 #include "constants.h"
 #include "lexer_util.h"
 #include "destruct.h"
-#include <stdlib.h>
 
 static int	preprocess(char *input, t_list *parsed_header)
 {
@@ -42,14 +42,6 @@ static int	preprocess(char *input, t_list *parsed_header)
 		free(input);
 		return (1);
 	}
-	return (0);
-}
-
-static int	reset_in_out_fd(int io_backup[2])
-{
-	if (dup2(io_backup[0], STDIN_FILENO) < 0
-		|| dup2(io_backup[1], STDOUT_FILENO) < 0)
-		return (-1);
 	return (0);
 }
 
@@ -96,7 +88,7 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		execute_processing(env_list, parsed_header.next, FALSE);
+		execute_processing(env_list, parsed_header.next, FALSE, io_backup);
 		add_history(input);
 		if (reset_in_out_fd(io_backup) < 0)
 			return (wrapper_free_input_and_parse(&input, \
