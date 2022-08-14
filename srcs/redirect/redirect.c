@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 13:12:10 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 16:02:36 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ static int	redirect_ordinary_case(t_list *cur_node, int is_child)
 	return (status);
 }
 
-
 /*
 	- redirect 데이터가 1개도 없거나
 	- 2개이상일때 ambiguous(중의적) redirect error 발생
@@ -87,11 +86,9 @@ static int	redirect_ordinary_case(t_list *cur_node, int is_child)
 static int	is_ambiguous_redirect(t_list **cur_node)
 {
 	if (get_token_type(*cur_node) & TOKEN_REDIR
-		&& !(get_token_type(*cur_node) & TOKEN_HEREDOC)
 		&& (*cur_node)->next == NULL)
 		return (1);
 	else if (get_token_type(*cur_node) & TOKEN_REDIR 
-			&& !(get_token_type(*cur_node) & TOKEN_HEREDOC)
 			&& (*cur_node)->next
 			&& ((*cur_node)->next->next
 				&& !(get_token_type((*cur_node)->next->next) & TOKEN_REDIR)

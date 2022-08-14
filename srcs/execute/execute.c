@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/13 20:59:20 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/14 15:48:12 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,15 +72,17 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 	int		status;
 	char	**cmd;
 
-	if (expansion(env_list, scmd_list) < 0)
-		return (1);
-	if (wildcard_for_curdir(scmd_list) < 0)
-		return (1);
-	if (concat_list(scmd_list) < 0)
+	if ((expansion(env_list, scmd_list) < 0)
+		|| (wildcard_for_curdir(scmd_list) < 0)
+		|| (concat_list(scmd_list) < 0))
 		return (1);
 	status = redirection(scmd_list->redirs, is_child);
 	if (status != 0)
+	{
+		if (is_child)
+			exit(status);
 		return (status);
+	}
 	if (scmd_list->args == NULL)
 		return (0);
 	cmd = list_to_array(scmd_list->args);
