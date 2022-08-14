@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 01:32:08 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 17:51:10 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static int	preprocess(char *input, t_list *parsed_header)
 {
 	t_list	token_header;
 
+	token_header.next = 0;
 	if (!lexer(input, &token_header)
 		|| !parser(token_header.next, parsed_header))
 	{
