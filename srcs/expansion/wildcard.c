@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 12:25:48 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:17:58 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 17:14:34 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,42 +70,46 @@ static int	wildcard_conversion(t_list **start_node, t_list **end_node,
 	return (0);
 }
 
-static int	is_there_any_wildcard(t_list *cur_node)
+/*
+	- "42"*'test'* 이런식으로 조합된 경우도 있을수 있다.
+		각 값은 42, *, test, * 이렇게 노드에 나뉘어있다. 
+		그 노드들을 시작노드부터 끝 노드까지 포인터를 찾아서 전달한다.
+*/
+static int	wildcard_conversion_with_preprocessing(t_list **cur_node, \
+													t_list **start_node, \
+													char **cur_dir_file_list, \
+													t_list **list)
 {
-	char	*str;
-
-	if (get_token(cur_node)->types & TOKEN_SQUOTE
-		|| get_token(cur_node)->types & TOKEN_DQUOTE)
-		return (0);
-	str = get_token(cur_node)->data;
-	if (ft_strchr(str, '*') < 0)
-		return (0);
-	return (1);
+	while (*cur_node && get_token(*cur_node)->types & TOKEN_CONCAT)
+		*cur_node = (*cur_node)->next;
+	if (wildcard_conversion(start_node, cur_node, \
+							cur_dir_file_list, list) < 0)
+		return (-1);
+	return (0);
 }
 
 static int	do_wildcard(t_list **list, char **cur_dir_file_list)
 {
 	t_list	*cur_node;
 	t_list	*start_node;
+	t_list	*prev_node;
 
 	if (*list == NULL || cur_dir_file_list == NULL)
 		return (0);
 	cur_node = *list;
+	prev_node = NULL;
 	start_node = NULL;
 	while (cur_node)
 	{
 		if (start_node == NULL)
 			start_node = cur_node;
-		if (is_there_any_wildcard(cur_node))
-		{
-			while (cur_node && get_token(cur_node)->types & TOKEN_CONCAT)
-				cur_node = cur_node->next;
-			if (wildcard_conversion(&start_node, &cur_node, \
-									cur_dir_file_list, list) < 0)
+		if (is_there_any_wildcard(cur_node, prev_node))
+			if (wildcard_conversion_with_preprocessing(&cur_node, &start_node, \
+											cur_dir_file_list, list) < 0)
 				return (-1);
-		}
 		if (cur_node && !(get_token(cur_node)->types & TOKEN_CONCAT))
 			start_node = NULL;
+		prev_node = cur_node;
 		if (cur_node)
 			cur_node = cur_node->next;
 	}

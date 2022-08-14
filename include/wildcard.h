@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:01:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 11:21:40 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/14 17:24:21 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ typedef struct s_pattern_info
 	char	*normal_str;
 	char	prev_char;
 }				t_pattern_info;
+
+int		is_there_any_wildcard(t_list *cur_node, t_list *prev_node);
 
 char	**get_cur_dir_file_list(void);
 

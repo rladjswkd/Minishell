@@ -6,11 +6,14 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/09 01:04:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 15:00:42 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 17:16:58 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "destruct_wrapper.h"
+#include "token.h"
+#include "type_token.h"
+#include "utils.h"
 #include <stddef.h>
 
 // match된 list들을 start_node에는 첫번쨰 list 값을 넣어주며 이후 노드들에 이어붙인다.
@@ -45,4 +48,21 @@ int	concat_matched_list_to_org_list(t_list **start_node, \
 	}
 	*end_node = cur_node;
 	return (0);
+}
+
+/*
+	- heredoc은 실행부 이전에 처리하기에 wildcard로 변환하지 않는다.
+*/
+int	is_there_any_wildcard(t_list *cur_node, t_list *prev_node)
+{
+	char	*str;
+
+	if (get_token_type(cur_node) & TOKEN_SQUOTE
+		|| get_token_type(cur_node) & TOKEN_DQUOTE
+		|| (prev_node && get_token_type(prev_node) & TOKEN_HEREDOC))
+		return (0);
+	str = get_token(cur_node)->data;
+	if (ft_strchr(str, '*') < 0)
+		return (0);
+	return (1);
 }
