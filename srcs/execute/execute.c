@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 15:48:12 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 18:06:28 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,12 @@ int	simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child)
 
 static int	check_execute_operator_skip(t_list *parse_list)
 {
-	int	operator;
+	int	_operator;
 
-	operator = get_command_type(parse_list);
-	if (operator & SIMPLE_AND && *get_exit_status() != 0)
+	_operator = get_command_type(parse_list);
+	if (_operator & SIMPLE_AND && *get_exit_status() != 0)
 		return (1);
-	else if (operator & SIMPLE_OR && *get_exit_status() == 0)
+	else if (_operator & SIMPLE_OR && *get_exit_status() == 0)
 		return (1);
 	else
 		return (0);
