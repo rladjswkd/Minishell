@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 16:37:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 14:27:35 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/12 20:00:42 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ static void	reset_expansion_str_split_var(t_list *cur_node, \
 }
 
 static void	init_expansion_str_split_var(t_sub_str_info *sub_str_info, \
+								t_token *token, \
 								int *dollar_expansion_flag)
 {
+	sub_str_info->as_is_str = (const char *)token->data;
 	*dollar_expansion_flag = NORMAL;
 	if ((sub_str_info->as_is_str)[0] == '$')
 		*dollar_expansion_flag = VARIABLE;
@@ -80,8 +82,7 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 	int				dollar_flag;
 
 	cur_node = tmp_expansion_list;
-	sub_str_info.as_is_str = (const char *)token->data;
-	init_expansion_str_split_var(&sub_str_info, &dollar_flag);
+	init_expansion_str_split_var(&sub_str_info, token, &dollar_flag);
 	while (sub_str_info.as_is_str[sub_str_info.idx])
 	{
 		if (check_dollar_flag(dollar_flag, sub_str_info))
@@ -94,6 +95,7 @@ int	expansion_str_split(t_token *token, t_list *tmp_expansion_list)
 			}
 			alloc_node(&cur_node, tmp_expansion_list, &sub_str_info, \
 						&dollar_flag);
+			continue ;
 		}
 		(sub_str_info.len)++;
 		(sub_str_info.idx)++;

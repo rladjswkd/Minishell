@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 22:49:58 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:07:24 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 01:32:08 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,15 @@ static int	check_input(char **input)
 	return (0);
 }
 
+static int	wrapper_free_input_and_parse(char **input, t_list *parse_list, \
+										int ret_val)
+{
+	safe_free(input);
+	free_command_list(parse_list);
+	parse_list = NULL;
+	return (ret_val);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
@@ -86,13 +95,12 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		if (preprocess(input, &parsed_header))
 			continue ;
-		execute_processing(env_list, parsed_header.next, FALSE, &parsed_header);
+		execute_processing(env_list, parsed_header.next, FALSE);
 		add_history(input);
 		if (reset_in_out_fd(io_backup) < 0)
-			return (1); // free
-		free(input);
-		free_command_list(parsed_header.next);
-		parsed_header.next = 0;
+			return (wrapper_free_input_and_parse(&input, \
+					parsed_header.next, 1));
+		wrapper_free_input_and_parse(&input, parsed_header.next, 0);
 	}	
 	delete_env_list(&env_list);
 	return (0);

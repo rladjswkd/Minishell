@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 16:06:09 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:17:03 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:56:21 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,7 @@ int	*get_exit_status(void)
 	return (&exit_status);
 }
 
-void	update_exit_status(int status, t_list *org_list)
+void	update_exit_status(int status)
 {
-	if (status < 0)
-	{
-		free_command_list(org_list);
-		status = 2;
-	}
 	*(get_exit_status()) = status;
 }

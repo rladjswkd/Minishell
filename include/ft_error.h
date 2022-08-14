@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 15:25:01 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 14:38:37 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/14 02:36:00 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # define NONVALID "not a valid identifier"
 # define ALLOC_FAIL "allocation fail"
+# define FILE_OPEN_FAIL "file open fail"
 # define AMBIGUOUS_REDIRECT "ambiguous redirect"
 # define NO_SUCH "No such file or directory"
 # define SYNTAX_ERR "syntax error"

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 15:58:05 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 18:11:51 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/13 20:59:20 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,30 @@
 #include "exit.h"
 #include "utils.h"
 
+static int	init_and_parse_extern_cmd(t_env_list *env_list, char ***envp, \
+										int *status, char **cmd)
+{
+	*status = 0;
+	*envp = env_list_to_array(env_list);
+	if (*envp == NULL)
+	{
+		free(cmd);
+		return (-1);
+	}
+	return (0);
+}
+
 static int	extern_cmd(t_env_list *env_list, char **cmd, int is_child)
 {
 	char	**envp;
 	int		pid;
 	int		status;
 
-	envp = env_list_to_array(env_list);
-	if (envp == NULL)
+	if (init_and_parse_extern_cmd(env_list, &envp, &status, cmd) < 0)
 	{
-		free(cmd);
-		return (-1);
+		if (is_child)
+			exit(1);
+		return (1);
 	}
 	if (is_child)
 		execute_cmd(envp, cmd);
@@ -93,8 +106,7 @@ static int	check_execute_operator_skip(t_list *parse_list)
 		return (0);
 }
 
-int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
-						t_list *org_list)
+int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child)
 {
 	t_simple	*scmd_list;
 
@@ -102,15 +114,14 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 	if (env_list == NULL || parse_list == NULL)
 		return (1);
 	if (get_command_type(parse_list) == SIMPLE_NORMAL)
-		update_exit_status(simple_cmd(env_list, scmd_list, is_child), org_list);
+		update_exit_status(simple_cmd(env_list, scmd_list, is_child));
 	else if (get_command_type(parse_list) == COMPOUND_PIPELINE)
 		update_exit_status(pipeline_processing(env_list, \
-											get_compound(parse_list)->list, \
-											org_list), org_list);
+											get_compound(parse_list)->list));
 	else if (get_command_type(parse_list) == COMPOUND_SUBSHELL)
 		update_exit_status(execute_processing(env_list, \
 											get_compound(parse_list)->list, \
-											is_child, org_list), org_list);
+											is_child));
 	if (parse_list->next)
 	{
 		parse_list = parse_list->next;
@@ -118,7 +129,7 @@ int	execute_processing(t_env_list *env_list, t_list *parse_list, int is_child, \
 			parse_list = parse_list->next->next;
 		if (parse_list != NULL)
 			update_exit_status(execute_processing(env_list, parse_list, \
-												is_child, org_list), org_list);
+												is_child));
 	}
 	return (*(get_exit_status()));
 }

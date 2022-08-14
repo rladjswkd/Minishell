@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   parser_simple.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:33 by gyepark           #+#    #+#             */
 /*   Updated: 2022/08/12 20:21:33 by gyepark          ###   ########.fr       */
