@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 20:01:02 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 17:16:36 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 17:24:21 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,5 @@ t_list	*get_pattern_matched_list(char *pattern, \
 int		concat_matched_list_to_org_list(t_list **start_node, \
 										t_list **end_node, \
 										t_list *matched_list);
-
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:17:37 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 16:02:36 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 17:27:46 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,11 @@ static int	is_ambiguous_redirect(t_list **cur_node)
 	if (get_token_type(*cur_node) & TOKEN_REDIR
 		&& (*cur_node)->next == NULL)
 		return (1);
-	else if (get_token_type(*cur_node) & TOKEN_REDIR 
-			&& (*cur_node)->next
-			&& ((*cur_node)->next->next
-				&& !(get_token_type((*cur_node)->next->next) & TOKEN_REDIR)
-				)
+	else if (get_token_type(*cur_node) & TOKEN_REDIR \
+			&& (*cur_node)->next \
+			&& ((*cur_node)->next->next \
+				&& !(get_token_type((*cur_node)->next->next) & TOKEN_REDIR) \
+				) \
 			)
 	{
 		(*cur_node) = (*cur_node)->next;
