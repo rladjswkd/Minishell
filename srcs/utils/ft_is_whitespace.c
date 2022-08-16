@@ -6,11 +6,11 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/14 22:09:56 by jim               #+#    #+#             */
-/*   Updated: 2022/08/17 00:45:48 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/17 00:47:27 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	is_whitespace(char const ch)
+int	ft_is_whitespace(char const ch)
 {
 	if (ch == ' ' || ch == '\t')
 		return (1);
