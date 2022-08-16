@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 18:19:12 by jim               #+#    #+#             */
-/*   Updated: 2022/08/13 14:41:49 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/16 14:20:23 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static long long	ft_atol(char *str, int *num_flag)
 	ret = 0;
 	idx = 0;
 	sign = 1;
-	while (is_whitespace(str[idx]))
+	while (ft_is_white_space(str[idx]))
 		idx++;
 	handle_sign(str, &idx, &sign);
 	if (is_it_over_long_long(&str[idx], sign))

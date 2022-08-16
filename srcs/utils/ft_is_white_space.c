@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_is_white_space.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 14:12:17 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/16 14:12:19 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/16 14:21:16 by jim              ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-int ft_is_white_sapce(const char ch)
+int	ft_is_white_space(const char ch)
 {
-    if (ch == '\t' || ch == ' ')
-        return (1);
-    return (0);
+	if (ch == '\t' || ch == ' ')
+		return (1);
+	return (0);
 }
