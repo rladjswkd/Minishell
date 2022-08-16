@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/14 17:29:06 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/16 13:40:05 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static int	tokenize_input(char *str, t_list *token_header)
 	int			len;
 	int			types;
 	t_list		*cur;
-	static	int	(*len_fp[6])(char *, int *) = {
+	static int	(*len_fp[6])(char *, int *) = {
 		&extract_normal, &extract_redir, &extract_quote,
 		&extract_bracket, &extract_logical_pipe, &ignore_blank};
 
