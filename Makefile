@@ -123,6 +123,7 @@ UTIL_SRCS = $(addprefix $(SRCS_DIR)/$(UTILS_DIR)/, \
 			ft_error.c	\
 			exit_status.c \
 			check_valid_variable.c	\
+			ft_is_whitespace.c	\
 			utils.c	\
 )
 

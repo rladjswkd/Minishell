@@ -6,12 +6,13 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 14:10:59 by jim               #+#    #+#             */
-/*   Updated: 2022/08/12 17:12:16 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/14 22:28:41 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include <unistd.h>
 #include <stdlib.h>
+#include "utils.h"
 
 /*
 	gnu bash
@@ -78,9 +79,10 @@ size_t	max_nonnegative(char const *s1, char const *s2)
 	return (s2_size);
 }
 
-int	is_whitespace(char const ch)
+int	reset_in_out_fd(int io_backup[2])
 {
-	if (ch == ' ' || ch == '\t')
-		return (1);
+	if (dup2(io_backup[0], STDIN_FILENO) < 0
+		|| dup2(io_backup[1], STDOUT_FILENO) < 0)
+		return (-1);
 	return (0);
 }
