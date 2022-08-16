@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_is_white_space.c                                :+:      :+:    :+:   */
+/*   ft_is_whitespace.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/16 14:12:17 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/16 14:12:19 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/14 22:09:56 by jim               #+#    #+#             */
+/*   Updated: 2022/08/14 22:09:57 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int ft_is_white_sapce(const char ch)
+int	is_whitespace(char const ch)
 {
-    if (ch == '\t' || ch == ' ')
-        return (1);
-    return (0);
+	if (ch == ' ' || ch == '\t')
+		return (1);
+	return (0);
 }

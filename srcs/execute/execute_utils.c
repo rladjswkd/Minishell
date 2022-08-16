@@ -6,15 +6,17 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 16:32:30 by jim               #+#    #+#             */
-/*   Updated: 2022/08/11 12:08:51 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/08/17 00:21:04 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <sys/errno.h>
 #include "destruct_wrapper.h"
 #include "token.h"
 #include "env_list.h"
 #include "utils.h"
+#include "ft_error.h"
 
 static int	safe_strjoin(char **dst, char *s1, char *s2, char **depend_list)
 {
@@ -94,4 +96,18 @@ char	**env_list_to_array(t_env_list *env_list)
 	}
 	arr_list[env_list->list_length] = NULL;
 	return (arr_list);
+}
+
+void	exit_status_handling(int *status, char *cmd)
+{
+	if (errno == ENOENT)
+	{
+		print_error(SHELL_NAME, cmd, NULL, "command not found");
+		*status = 127;
+	}
+	else
+	{
+		print_error(SHELL_NAME, cmd, NULL, "command not an executable");
+		*status = 126;
+	}
 }
