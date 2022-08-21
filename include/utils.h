@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 14:45:28 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 22:27:47 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/17 00:47:06 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 # include <stddef.h>
 # include "constants.h"
 
-int		is_whitespace(char const ch);
+int		ft_is_whitespace(char const ch);
 int		ft_is_alpha(int ch);
 int		ft_is_digit(int ch);
 

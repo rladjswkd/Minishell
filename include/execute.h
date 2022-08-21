@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:33:03 by jim               #+#    #+#             */
-/*   Updated: 2022/08/14 22:30:33 by jim              ###   ########.fr       */
+/*   Updated: 2022/08/17 00:20:29 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int		pipeline_processing(t_env_list *env_list, t_list *pipeline_list, \
 							int io_bacup[2]);
 void	execute_cmd(char **envp, char **cmd);
 int		simple_cmd(t_env_list *env_list, t_simple *scmd_list, int is_child);
+void	exit_status_handling(int *status, char *cmd);
 
 char	**list_to_array(t_list *env_list);
 char	**env_list_to_array(t_env_list *env_list);

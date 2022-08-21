@@ -6,7 +6,7 @@
 /*   By: jim <jim@student.42seoul.kr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 16:30:38 by jim               #+#    #+#             */
-/*   Updated: 2022/08/13 14:22:08 by jim              ###   ########seoul.kr  */
+/*   Updated: 2022/08/17 00:19:44 by jim              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "utils.h"
 #include "execute.h"
 #include "ft_error.h"
-#include <sys/errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -45,20 +44,6 @@ static int	preprocess_path(char ***path_list, char **envp)
 	return (1);
 }
 
-static void	exit_status_handling(int *status, char *cmd)
-{
-	if (errno == ENOENT)
-	{
-		print_error(SHELL_NAME, cmd, NULL, "command not found");
-		*status = 127;
-	}
-	else
-	{
-		print_error(SHELL_NAME, cmd, NULL, "command not an executable");
-		*status = 126;
-	}
-}
-
 static void	execute_cmd_in_cur_path(char **path_list, char **cmd, char **envp)
 {
 	int	status;
@@ -70,6 +55,14 @@ static void	execute_cmd_in_cur_path(char **path_list, char **cmd, char **envp)
 	exit(status);
 }
 
+static int	is_absolute_path(char *cmd)
+{
+	if (cmd[0] == '.'
+		|| cmd[0] == '/')
+		return (1);
+	return (0);
+}
+
 void	execute_cmd(char **envp, char **cmd)
 {
 	char	*cmd_path;
@@ -77,7 +70,7 @@ void	execute_cmd(char **envp, char **cmd)
 	char	*path_with_slash;
 	size_t	idx;
 
-	if (preprocess_path(&path_list, envp) == -1)
+	if (preprocess_path(&path_list, envp) == -1 || is_absolute_path(cmd[0]))
 	{
 		if (errno != 0)
 			print_error(SHELL_NAME, cmd[0], NULL, strerror(errno));
